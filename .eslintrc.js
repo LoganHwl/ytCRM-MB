@@ -1,5 +1,6 @@
 module.exports = {
   parser: 'babel-eslint',
+  parser: 'typescript-eslint-parser',
   extends: ['airbnb', 'prettier', 'plugin:compat/recommended'],
   env: {
     browser: true,
@@ -12,6 +13,7 @@ module.exports = {
   globals: {
     APP_TYPE: true,
   },
+  plugins: ['react', 'react-native', 'typescript'],
   rules: {
     'react/jsx-filename-extension': [1, { extensions: ['.js'] }],
     'react/jsx-wrap-multilines': 0,
@@ -24,8 +26,10 @@ module.exports = {
     'jsx-a11y/click-events-have-key-events': 0,
     'jsx-a11y/no-static-element-interactions': 0,
     'jsx-a11y/anchor-is-valid': 0,
-    "linebreak-style": [0, "error", "windows"],
-    'semi': 0,
+    'linebreak-style': [0, 'error', 'windows'],
+    semi: 0,
+    'no-undef': 0,
+    'typescript/class-name-casing': 2,
   },
   settings: {
     polyfills: ['fetch', 'promises', 'url'],
