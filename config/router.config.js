@@ -25,6 +25,16 @@ export default [
             name: 'home',
             component: './Home',
           },
+          {
+            path: '/customer-list',
+            name: 'customer-list',
+            component: './Customer/CustomerList',
+          },
+          {
+            path: '/customer-add',
+            name: 'customer-add',
+            component: './Customer/AddCustomer',
+          },
         ],
       },
     ],

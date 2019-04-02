@@ -1,0 +1,203 @@
+.page {
+  color: black;
+  font-size: 16px;
+
+  .search {
+    width: 100%;
+    height: 5em;
+    font-weight: bold;
+    padding: 10px 8px;
+    box-shadow: rgb(236, 230, 230) 1px 1px 6px 0px;
+
+    .search_top {
+      display: flex;
+      width: 100%;
+
+      .search_input {
+        width: 80%;
+        background: none;
+        align-items: baseline;
+        height: 36px;
+
+        :global {
+          .am-search-input {
+            border-radius: 1em;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            height: 32px;
+
+            input[type="search"] {
+              height: 30px;
+            }
+
+            .am-search-synthetic-ph {
+              line-height: 30px;
+            }
+          }
+        }
+
+      }
+
+      .search_btn {
+        height: 32px;
+        line-height: 32px;
+        border-radius: 3em;
+        border: 1px solid #219DDD;
+        color: #219DDD;
+      }
+    }
+
+    .search_bottom {
+      .search_select {
+        width: 20%;
+        text-align: center;
+        margin: 0 1.1em 0 0.5em;
+
+        :global {
+          .ant-select-selection {
+            border: none;
+            border-radius: 0;
+
+            .ant-select-selection__rendered {
+              margin-right: 0;
+              margin-left: 3px;
+
+              .ant-select-selection__placeholder,
+              .ant-select-search__field__placeholder {
+                // text-align: center;
+                color: #1E1E1E;
+              }
+
+              .ant-select-selection-selected-value {
+                padding-right: 0;
+                color: #1E1E1E;
+              }
+            }
+
+            .ant-select-arrow {
+              right: 0;
+            }
+          }
+        }
+
+      }
+    }
+  }
+
+  .list_card {
+    width: 93%;
+    margin: 0.5em auto;
+    box-shadow: rgb(236, 230, 230) 2px 3px 10px 1px;
+
+    .col {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: nowrap;
+      color: #999999;
+      font-size: 14px;
+
+      .spec {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+
+        b {
+          color: #1E1E1E
+        }
+      }
+
+      .btn {
+        height: 32px;
+        line-height: 32px;
+        border-radius: 3em;
+        border: 1px solid #219DDD;
+        color: #219DDD;
+        margin: 1em 0.3em;
+      }
+
+      :global {
+        .am-card-body {
+          &:befor {
+            background-color: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+.modal_body{
+    text-align: left;
+    color: black;
+    font-family:PingFangSC-Regular;
+    font-size: 14px;
+    .stage{
+        margin: 8px 0 15px;
+        span{
+            color: #DADADA;
+            border: 1px solid #DADADA;
+            padding: 1px 7px;
+            border-radius: 5px;
+            margin-right: 7px;
+        }
+        .active{
+            color: #1990FF;
+            border: 1px solid #1990FF;
+        }
+    }
+    :global{
+        .am-list-item{
+            border: 1px solid #DADADA;
+            padding-left: 5px;
+            border-radius: 5px;
+            font-size: 14px;
+            .am-textarea-control textarea{
+                font-size: 14px;
+                line-height: 14px;
+            } 
+        }
+        .am-modal-button-group-h .am-modal-button{
+            height: 45px;
+            line-height: 45px;
+            font-size: 16px;
+        }
+       
+    }
+}
+
+.add_page{
+  .tab_pane{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto; 
+    background: #fff
+  }
+}
+
+:global {
+  .am-card-header-content {
+    flex: unset;
+    width: 67%;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: black;
+  }
+  .am-card-body{
+      padding: 3px 10px 6px;
+  }
+  .am-modal-mask{
+    background-color: rgba(0, 0, 0, 0.04);
+}
+  html:not([data-scale]) .am-card-body::before{
+      background-color: none;
+  }
+}
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx){
+    html:not([data-scale]) .am-card-body::before {
+        background-color:none;
+    }
+}

@@ -19,47 +19,19 @@ class app extends Component {
   state = {};
 
   submit = () => {
-    const { getFieldProps, getFieldError } = this.props.form;
-    this.props.form.validateFields((error, values) => {
-      if (error) {
-        const msg = `请输入${getFieldError('user') || ''}${getFieldError('password') || ''}`;
-        Toast.info(msg, 1);
-        return;
-      }
-      // this.props.history.push({ pathname: '/home' })
-      const { dispatch } = this.props;
-      dispatch({
-        type: 'common/login',
-        payload: {
-          ...values,
-        },
-      });
-    });
-  };
-  normalize = (val, prev) => {
-    if (!loginReg.test(val)) {
-      Toast.info('不能包含中文和大写', 1);
-      return prev;
-    }
-    return val;
+    window.location.href='https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx66b2e7cfd85a93fd&redirect_uri=https%3a%2f%2fcrm.quxiangkeji.com%2fcrm%2fuser%2fopenCallback&response_type=code&scope=snsapi_userinfo&state=3d6be0a4035d839573b04816624a415e#wechat_redirect'
+    // const { dispatch } = this.props;
+    // dispatch({
+    //   type: 'login/login'
+    // });
   };
   render() {
-    let errors;
-    const { getFieldProps } = this.props.form;
     return (
       <div className={`page ${style.login}`}>
-        <div className={`${style['page-header']}`}>
-          <label>夜听管理系统</label>
-          <img src={avataSrc} alt="" />
-        </div>
         <WhiteSpace size="xl" />
         <img src={login_logo} alt="" />
-
-        <WhiteSpace size="xl" />
-        <WhiteSpace size="xl" />
-        <WhiteSpace size="xl" />
-        <div>登陆需授权</div>
-        <WhiteSpace size="xl" />
+        <div className={style.title}>客户管理后台</div>
+        <div className={style.loginTips}>登陆需授权</div>
         <Button type="primary" onClick={this.submit}>
           确定
         </Button>

@@ -1,0 +1,76 @@
+.qual_pane{
+    width: 97%;
+    :global{
+        .ant-radio-group{
+            width: 60%;
+            text-align: right
+        }
+        .ant-radio-wrapper{
+            margin-right: 3px;
+        }
+    }
+    .radio_title{
+        margin-left: 15px;
+        width: 35%;
+        padding: 10px 10px 0 0;
+        display: inline-block;
+        font-size: 14px;
+        color: black;
+    }
+}
+.col{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    font-size: 14px;
+    margin-top: 10px;
+    div{
+        margin-bottom: 10px;
+    }
+    span {
+      color: #1E1E1E;
+      width: 35%;
+      text-align: right;
+      display: inline-block;
+      margin-right: 5px;
+    }
+    input{
+        width: 60%;
+        border-radius: .4em;
+        border: 1px solid grey;
+        padding: 2px 5px;
+        font-size: 14px;
+        text-align: right;
+    }
+}
+.addOne{
+    text-align: center;
+}
+.history_pane{
+    width: 100%;
+    :global{
+        .am-textarea-label.am-textarea-label-5,
+        .am-list-item .am-input-label.am-input-label-5{
+            width: 75px;
+        }
+    }
+}
+:global{
+    .am-textarea-label.am-textarea-label-5,
+    .am-list-item .am-input-label.am-input-label-5{
+        width: 105px;
+        font-size: 14px;
+    }
+    .am-textarea-control textarea,
+    .am-list-item .am-input-control input{
+        text-align: right;
+        font-size: 14px;
+    }
+    .am-list-item .am-input-control input:disabled,
+    .am-list-item .am-textarea-control textarea:disabled{
+        color: #1E1E1E;
+        text-align: left;
+    }
+}

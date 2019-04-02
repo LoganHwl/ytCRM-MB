@@ -1,25 +1,52 @@
 @import '~@/utils/utils.less';
-.card-wrap{
-  display: flex;
-  flex-wrap: wrap;
-  background: #fff;
-  flex-direction: row;
-  color:@color-deep;
-  // flex: 1;
-  .card{
-    flex: 1;
+
+.list_card {
+  width: 92%;
+  margin: 0.5em auto;
+  box-shadow: rgb(236, 230, 230) 2px 3px 10px 1px;
+
+  .col {
     display: flex;
+    width: 100%;
     align-items: center;
-    width: 50%;
-    height: 80px;
-    flex-direction: column;
-    max-width: 25%;
-    min-width: 25%;
-    flex-direction: column;
-    justify-content: center;
-    img{
-      height: 50px;
-      width: 50px;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    color: #999999;
+    font-size: 14px;
+
+    .spec {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: flex-start;
+      flex-wrap: nowrap;
+
+      b {
+        color: #1E1E1E
+      }
+    }
+
+    .btn {
+      height: 32px;
+      line-height: 32px;
+      border-radius: 3em;
+      border: 1px solid #219DDD;
+      color: #219DDD;
+      margin: 1em 0.3em;
+    }
+
+    :global {
+      .am-card-body {
+        &:befor {
+          background-color: none;
+        }
+      }
     }
   }
+}
+
+.detail_card{
+  // width: 92%;
+  margin: 0.5em auto;
+  box-shadow: rgb(236, 230, 230) 2px 3px 10px 1px;
 }

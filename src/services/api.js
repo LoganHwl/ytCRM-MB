@@ -1,6 +1,15 @@
 import { stringify } from 'qs';
 import request from '@/utils/request';
 
+
+
+
+// 首页
+//超时预警列表数据
+export async function getWarningList(params) {
+  return request(`/home/page?${stringify(params)}`);
+}
+
 export async function queryProjectNotice() {
   return request('/api/project/notice');
 }

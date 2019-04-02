@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
-import { NavBar } from 'antd-mobile';
-import img from '@/images/icon/menu_user.png';
+import { NavBar,Icon } from 'antd-mobile';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
-@connect(({}) => ({}))
+
+
 class Header extends Component {
-  PropTypes = {
-    onClose: PropTypes.func,
-    visibility: PropTypes.bool,
-  };
+  PropTypes = {};
 
   state = {};
   //展开侧边栏
@@ -20,15 +17,14 @@ class Header extends Component {
     });
   };
   render() {
-    const { onClose } = this.props;
     return (
       <NavBar
-        mode="dark"
-        leftContent={<img src={img} className="icon-larget" alt="" />}
-        onLeftClick={this.iconClick}
-      >
-        夜听
-      </NavBar>
+            mode="dark"
+            leftContent={<Icon type="left" size='md' />}
+            onLeftClick={() => console.log('onLeftClick')}
+          >
+          {this.props.children}
+          </NavBar>
     );
   }
 }

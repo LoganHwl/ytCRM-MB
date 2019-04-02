@@ -1,0 +1,48 @@
+.page{
+    color: black;
+    font-size: 16px;
+    .title{
+        width: 100%;
+        height: 3.05em;
+        background: #002140;
+        color: white;
+        text-align: center;
+        line-height: 3.05em;
+        font-weight: bold;
+    }
+    .timeout_warn{
+        .warn_title{
+            width: 100%;
+            height: 2.5em;
+            background: red;
+            color: white;
+            line-height: 2.5em;
+            padding-left: 1em;
+        }
+        .warn_card{
+            width: 92%;
+            margin: 0.5em auto;
+            .spec{
+                display: flex;
+                width: 100%;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: nowrap;
+            }
+            :global{
+                .am-card-body{
+                    &:befor{
+                        background-color: none;
+                    }        
+                }
+            }
+        }
+    }
+}
+:global{
+    .am-card-body{
+        &:befor{
+            background-color: none;
+        }        
+    }
+}
