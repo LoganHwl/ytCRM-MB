@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { NavBar,Icon } from 'antd-mobile';
+import { NavBar, Icon } from 'antd-mobile';
 import PropTypes from 'prop-types';
 import { connect } from 'dva';
-
 
 class Header extends Component {
   PropTypes = {};
@@ -19,12 +18,28 @@ class Header extends Component {
   render() {
     return (
       <NavBar
-            mode="dark"
-            leftContent={<Icon type="left" size='md' />}
-            onLeftClick={() => console.log('onLeftClick')}
-          >
-          {this.props.children}
-          </NavBar>
+        style={{ background: '#002140' }}
+        mode="dark"
+        leftContent={<Icon type="left" size="lg" />}
+        onLeftClick={() => {
+          //window.location.href=document.referrer;
+          history.back(1);
+        }}
+        // rightContent={this.props.children}
+      >
+        {this.props.children}
+      </NavBar>
+      // React.Children.map(this.props.children, function (child) {
+      //   debugger
+      //   return <NavBar
+      //   mode="dark"
+      //   leftContent={<Icon type="left" size='lg' />}
+      //   onLeftClick={() => { window.location.href=document.referrer;}}
+      //   rightContent={child}
+      // >
+      // {child}
+      // </NavBar>
+      // })
     );
   }
 }

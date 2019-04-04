@@ -1,13 +1,52 @@
 import { stringify } from 'qs';
 import request from '@/utils/request';
 
-
-
-
 // 首页
 //超时预警列表数据
 export async function getWarningList(params) {
   return request(`/home/page?${stringify(params)}`);
+}
+//客户列表数据
+export async function getCustomerList(params) {
+  return request(`/customer/page?${stringify(params)}`);
+}
+// 获取责任人列表
+export async function getUserForAssign() {
+  return request(`/user/getUserForAssign`, { method: 'POST' });
+}
+// 修改阶段信息
+export async function changeSaleInfo(params) {
+  // debugger;
+  return request(`/customer/updateSaleInfo`, {
+    method: 'POST',
+    body: {
+      ...params,
+    },
+  });
+}
+// 修改状态信息
+export async function changeStatusInfo(params) {
+  // debugger;
+  return request(`/customer/updateStatus`, {
+    method: 'POST',
+    body: {
+      ...params,
+    },
+  });
+}
+// 转移负责人
+export async function changeBelong(params) {
+  // debugger;
+  return request(`/customer/change`, {
+    method: 'POST',
+    body: {
+      ...params,
+    },
+  });
+}
+// 客户详情
+export async function getCustomerDetail(params) {
+  return request(`/customer/detail/${params}`);
 }
 
 export async function queryProjectNotice() {

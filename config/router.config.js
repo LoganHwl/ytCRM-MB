@@ -35,6 +35,11 @@ export default [
             name: 'customer-add',
             component: './Customer/AddCustomer',
           },
+          {
+            path: '/status-detail',
+            name: 'status-detail',
+            component: './Customer/StatusDetail',
+          },
         ],
       },
     ],
