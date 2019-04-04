@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { InputItem, Button, WhiteSpace, WingBlank } from 'antd-mobile';
 import router from 'umi/router';
 import Header from './header';
-import NavLeft from './navLeft';
 
 class Base extends Component {
   state = {
@@ -18,13 +17,10 @@ class Base extends Component {
 
   render() {
     return (
-      <>
         <div className="page">
           {/* <Header /> */}
           <div className="page-content">{this.props.children}</div>
         </div>
-        <NavLeft {...this.props} />
-      </>
     );
   }
 }

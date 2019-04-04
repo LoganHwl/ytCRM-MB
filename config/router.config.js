@@ -7,11 +7,11 @@ export default [
     routes: [
       // { path: '/', redirect: '/login' },
       { path: '/login', component: './User/Login' },
-      {
-        path: '/user',
-        component: './User',
-        hideInMenu: true,
-      },
+      // {
+      //   path: '/user',
+      //   component: './User',
+      //   hideInMenu: true,
+      // },
       {
         path: '/',
         component: './Base',

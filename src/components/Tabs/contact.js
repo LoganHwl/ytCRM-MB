@@ -1,67 +1,108 @@
-import { Icon, Card,DatePicker } from 'antd-mobile';
+import { Icon, Card,DatePicker,InputItem } from 'antd-mobile';
 import { createForm } from 'rc-form';
-// import { styles } from 'ansi-colors';
+import { connect } from 'dva';
 import styles from './tabs.less'
 import MyCard from "../Card";
 
+@connect(({ home }) => ({
+    ...home,
+  }))
+
 class Contact extends React.Component {
     state = {
-        value: 1,
-        date: 2019,
+        contactInfos: {},
+        componentArray: [1],
+        num: 1,
     }
-    onSubmit = () => {
-        this.props.form.validateFields({ force: true }, (error) => {
-            if (!error) {
-                console.log(this.props.form.getFieldsValue());
-            } else {
-                alert('Validation failed');
-            }
-        });
-    }
-    onReset = () => {
-        this.props.form.resetFields();
-    }
-    validateAccount = (rule, value, callback) => {
-        if (value && value.length > 4) {
-            callback();
-        } else {
-            callback(new Error('At least four characters for account'));
-        }
-    }
+    
+  onValueChange(pair) {
+    const { expendInfos } = this.state;
+    this.setState({ ...expendInfos, expendInfos: pair });
+  }
+  addComponent = () => {
+    const { num } = this.state;
+    let arr = [...this.state.componentArray];
+    let newNum = num + 1;
+    arr.push(newNum);
+    this.setState({
+      componentArray: arr,
+      num: newNum,
+    });
+  };
+  deleteComponent(key, e) {
+    let arr = [...this.state.componentArray];
+    arr = arr.filter((item, index) => {
+      return item !== key;
+    });
+    debugger;
+    this.setState({ componentArray: arr });
+  }
     render() {
+        const { componentArray } = this.state;
         return (
-            <div>
-                <MyCard>
+          <div>
+            {componentArray &&
+              componentArray.length > 0 &&
+              componentArray.map((item, index) => (
+                <div className={styles.tabsCard} key={index}>
+                  <MyCard>
                     <Card.Header
-                        extra={<Icon type="cross-circle" size='md' />}
+                      extra={
+                        <Icon
+                          onClick={this.deleteComponent.bind(this, item)}
+                          type="cross-circle"
+                          size="md"
+                        />
+                      }
                     />
                     <Card.Body>
-                        <div className={styles.col}>
-                            <div className={styles.spec}>
-                                <div>
-                                    <span>姓名</span>
-                                    <input placeholder='联系人姓名'/>
-                                </div>
-                                <div>
-                                    <span>电话</span>
-                                    <input placeholder='联系电话' />
-                                </div>
-                            </div>
-                            <div className={styles.spec}>
-                                <div>
-                                    <span>职位</span>
-                                    <input placeholder='职位' />
-                                </div>
-                                <div>
-                                    <span>其他</span>
-                                    <input placeholder='其他' />
-                                </div>
-                            </div>
+                      <div className={styles.col}>
+                        <div>
+                          <div>
+                            <InputItem
+                              onChange={value => this.onValueChange({ name: value })}
+                              placeholder="联系人姓名"
+                            >
+                              姓名
+                            </InputItem>
+                          </div>
+                          <div>
+                            <InputItem
+                              onChange={value => this.onValueChange({ phone: value })}
+                              placeholder="联系电话"
+                            >
+                              电话
+                            </InputItem>
+                          </div>
+                          </div>
+                          <div>
+                          <div>
+                            <InputItem
+                              onChange={value => this.onValueChange({ position: value })}
+                              placeholder="职位"
+                            >
+                              职位
+                            </InputItem>
+                          </div>
+                          <div>
+                            <InputItem
+                              onChange={value => this.onValueChange({ shows: value })}
+                              placeholder="其他"
+                            >
+                              其他
+                            </InputItem>
+                          </div>
+                         
                         </div>
+                      </div>
                     </Card.Body>
-                </MyCard>
-                <div className={styles.addOne}><Icon type="down" size='lg' /></div>
+                  </MyCard>
                 </div>
+              ))}
+            <div className={styles.addOne}>
+              <Icon onClick={this.addComponent} type="down" size="lg" />
+            </div>
+          </div>
         );
     }
 }
