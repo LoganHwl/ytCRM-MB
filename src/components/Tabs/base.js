@@ -58,7 +58,7 @@ class BasicInput extends React.Component {
   render() {
     const { customerDetail, userForAssign } = this.props;
     const { getFieldProps, getFieldError, getFieldDecorator } = this.props.form;
-
+    // debugger;
     return (
       <form style={{ width: '97%' }}>
         <List>
@@ -68,12 +68,13 @@ class BasicInput extends React.Component {
             placeholder={`${!customerDetail && '当前责任人'}`}
             allowClear={true}
             onChange={value => this.onConditionChange({ belongUserId: value })}
+            value={customerDetail ? customerDetail.belongUserName : null}
           >
             {userForAssign &&
               userForAssign.length > 0 &&
               userForAssign.map((item, index) => (
                 <Option key={index} value={item.id}>
-                  {item.realName}
+                  {item.realName ? item.realName : null}
                 </Option>
               ))}
           </Select>

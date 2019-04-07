@@ -28,22 +28,25 @@ class OtherInputs extends React.Component {
     });
   };
   deleteComponent(key, e) {
-    let arr = [...this.state.componentArray];
-    arr = arr.filter((item, index) => {
-      return item !== key;
+    const { componentArray } = this.state;
+    let arr = [];
+    componentArray.map((item, index) => {
+      if (key != item) {
+        arr.push(item);
+      }
     });
-    debugger;
     this.setState({ componentArray: arr });
   }
 
   render() {
     const { componentArray } = this.state;
+    // debugger;
     return (
       <div>
         {componentArray &&
           componentArray.length > 0 &&
           componentArray.map((item, index) => (
-            <div className={styles.tabsCard} key={index}>
+            <div className={styles.tabsCard} key={item}>
               <MyCard>
                 <Card.Header
                   title={
