@@ -24,11 +24,11 @@ class StatusDetail extends Component {
       this.setState({ saleInfos: res.saleInfos });
     });
   }
-  shouldComponentUpdate(nextProps) {
-    if (this.props.customerDetail != nextProps.customerDetail) {
-      return true;
-    }
-  }
+  // shouldComponentUpdate(nextProps) {
+  //   if (this.props.customerDetail != nextProps.customerDetail) {
+  //     return true;
+  //   }
+  // }
   render() {
     const { customerDetail } = this.props;
     // const { saleInfos } = this.state
@@ -70,36 +70,67 @@ class StatusDetail extends Component {
           </div>
         </div>
         <div className={styles.change_title}>变更信息</div>
-        {customerDetail && customerDetail.saleInfos && customerDetail.saleInfos.length > 0 ? (
-          customerDetail.saleInfos.map(item => {
+        {customerDetail && customerDetail.saleInfos && customerDetail.saleInfos.length > 0 ? 
+          customerDetail.saleInfos.map(item => (
+            <div className={styles.status_card}  key={item.id}>
             <MyCard key={item.id}>
               <Card.Body>
                 <div>
                   <div>
                     <div>
-                      <span>日期</span>
+                      <span>日期:</span>
                       <b>{item.createTime}</b>
-                      <b>{item.customerStatus}</b>
-                      <b>{item.saleStatus}</b>
+                      <b className={
+                    item.customerStatus && item.customerStatus === 2
+                      ? `${styles.spec_color} ${styles.normal}`
+                      : styles.normal
+                  } style={{float:'right'}}>
+                  {item.customerStatus&&item.customerStatus === 1
+                        ? '正常'
+                        : item.customerStatus === 2
+                          ? '超时'
+                          : item.customerStatus === 3
+                            ? '关闭'
+                            : item.customerStatus === 4
+                              ? '回收'
+                              : item.customerStatus === 5
+                                ? '删除'
+                                : null
+                                }</b>
+                      <b className={styles.normal
+                  } style={{float:'right'}}>
+                  {item.saleStatus && customerDetail.saleStatus === 1
+                        ? '线索'
+                        : customerDetail.saleStatus === 2
+                          ? '沟通'
+                          : customerDetail.saleStatus === 3
+                            ? '面谈'
+                            : customerDetail.saleStatus === 4
+                              ? '签约'
+                              : customerDetail.saleStatus === 5
+                                ? '合作'
+                                : null}</b>
                     </div>
                     <div>
-                      <span>备注</span>
+                      <span>备注:</span>
                       <b>{item.remark}</b>
                     </div>
                   </div>
                   <div>
                     <div>
-                      <span>备注人</span>
+                      <span>备注人:</span>
                       <b>{item.userNmae}</b>
                     </div>
                   </div>
                 </div>
               </Card.Body>
-            </MyCard>;
-          })
-        ) : (
-          <div className={styles.change_title}>无数据</div>
-        )}
+            </MyCard>
+            </div>
+          )
+          )
+         :
+         <div style={{    paddingTop: '2em', width: '100%', height: '5em',textAlign: 'center',color:'#999999'}}>暂无数据</div>
+        }
       </div>
     );
   }

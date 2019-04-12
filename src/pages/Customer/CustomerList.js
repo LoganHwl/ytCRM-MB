@@ -2,17 +2,15 @@ import React, { Component } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import {
-  NavBar,
   Card,
   SearchBar,
-  Flex,
   Button,
   WhiteSpace,
   Icon,
   Modal,
   Toast,
   TextareaItem,
-  InputItem,
+  ListView 
 } from 'antd-mobile';
 import { createForm } from 'rc-form';
 import Header from '../Base/header';
@@ -63,25 +61,60 @@ const statusList = [
   },
 ];
 
+
+
+
 @connect(({ home, loading }) => ({
   ...home,
   loading: loading.effects['home/getCustomerList'],
 }))
 class CustomerList extends Component {
-  state = {
-    modal1: false,
-    key: '',
-    customer_value: '',
-    pageSize: 100,
-    saleStatusNum: null,
-    saleStatusNumChange: null,
-    statusNum: null,
-    statusNumChange: null,
-    remark: '',
-    customerId: '',
-    userId: '',
-    radio_value: false,
-  };
+  constructor(props) {
+    super(props)
+    const ds = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2
+    });
+    this.state = {
+      modal1: false,
+      key: '',
+      customer_value: '',
+      page:1,
+      pageSize: 20,
+      saleStatusNum: null,
+      saleStatusNumChange: null,
+      statusNum: null,
+      statusNumChange: null,
+      remark: '',
+      customerId: '',
+      userId: '',
+      radio_value: false,
+      isLoading: true,
+      dataSource:ds,
+      customerList:[]
+    }
+  }
+    componentWillReceiveProps(nextState) {      
+    if (nextState.customerList !== this.state.customerList) {
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(nextState.customerList)
+      });
+    }
+  }
+  componentWillMount(){
+    Toast.loading('正在加载...',0);
+  }
+  onEndReached = (event) => {
+    // debugger
+    const { page } = this.state;
+    // hasMore: from backend data, indicates whether it is the last page, here is false
+    if (this.state.isLoading && !this.state.hasMore) {
+      return;
+    }
+    let p =page+1
+    this.onSearch(1)
+    this.setState( { isLoading: true,page:p });
+  }
+
   componentWillUnmount() {
     // 清除状态
     this.props.dispatch({
@@ -90,16 +123,16 @@ class CustomerList extends Component {
   }
   componentDidMount() {
     const { dispatch } = this.props;
-    this.onSearch();
     dispatch({
       type: 'home/getUserForAssign',
     });
+    this.onSearch();
   }
   // 分页&过滤查询客户列表数据
-  onSearch(page = 1) {
-    const { dispatch } = this.props;
-    const { search } = this.props;
-    const { pageSize } = this.state;
+  async onSearch(v) {
+    const { dispatch ,search} = this.props;
+    const { pageSize,page,customerList } = this.state;
+    
     dispatch({
       type: 'home/CHANGE_PAGENO',
       startPage: page,
@@ -115,12 +148,21 @@ class CustomerList extends Component {
         params[key] = value;
       }
     }
-    // console.log(params)
-    // debugger
-    dispatch({
+   const res = await dispatch({
       type: 'home/getCustomerList',
       payload: params,
     });
+    if(res&&res.list){
+      // debugger
+      if(v===1){
+        let list = customerList.concat(res.list)
+        this.setState({isLoading: false,customerList:list})
+        
+      }else{
+        this.setState({isLoading: false,customerList:res.list})
+      }
+      Toast.hide()
+    }   
   }
   // 存储搜索条件
   onSearchConditionChange(searchPair) {
@@ -132,17 +174,20 @@ class CustomerList extends Component {
   }
   showDetail(id, e) {
     e.preventDefault();
+    let getTimestamp=new Date().getTime();
     router.push({
       pathname: '/customer-add',
-      query: { type: 'detail', id },
+      query: { type: 'detail', id,timestamp:getTimestamp },
     });
   }
   showStatusDetail(id, e) {
     e.stopPropagation();
     e.preventDefault();
+    let getTimestamp=new Date().getTime();
     router.push({
       pathname: '/status-detail',
-      query: { id },
+      query: { id,timestamp:getTimestamp },
+      
     });
   }
   // 打开模态框
@@ -238,7 +283,7 @@ class CustomerList extends Component {
         if (res.code === 0) {
           Toast.success('修改成功', 1);
           this.onClose()();
-          this.onSearch();
+          this.onSearch(1);
         } else {
           Toast.fail(res.msg, 1);
           return;
@@ -257,7 +302,7 @@ class CustomerList extends Component {
         if (res.code === 0) {
           Toast.success('修改成功', 1);
           this.onClose()();
-          this.onSearch();
+          this.onSearch(1);
         } else {
           Toast.fail(res.msg, 1);
           return;
@@ -276,7 +321,7 @@ class CustomerList extends Component {
         if (res.code === 0) {
           Toast.success('修改成功', 1);
           this.onClose()();
-          this.onSearch();
+          this.onSearch(1);
         } else {
           Toast.fail(res.msg, 1);
           return;
@@ -286,18 +331,17 @@ class CustomerList extends Component {
   };
   // 是否重置销售阶段
   onChange = e => {
-    console.log('radio checked', e.target.value);
     this.setState({
       radio_value: e.target.value,
     });
   };
+
+  
+
   render() {
     const {
-      customerList,
+      // customerList,
       userForAssign,
-      // form:{
-      //   getFieldProps
-      // }
     } = this.props;
     const {
       key,
@@ -307,20 +351,152 @@ class CustomerList extends Component {
       saleStatusNumChange,
       statusNum,
       statusNumChange,
+      dataSource,
+      customerList
     } = this.state;
+//获取item进行展示
+const row = (item) => {
+  return (
+        <div> 
+        <Card
+          key={item.id}
+          className={styles.list_card}
+          onClick={this.showDetail.bind(this, item.id)}
+        >
+          <Card.Header
+            title={item.name}
+            // thumb=""
+            extra={
+              <span onClick={this.showStatusDetail.bind(this, item.id)} style={{ zIndex: 999 }}>
+                <b
+                  className={
+                    item.saleStatus && item.saleStatus === 5
+                      ? `${styles.spec_color} ${styles.normal}`
+                      : styles.normal
+                  }
+                >
+                  {item.saleStatus && item.saleStatus === 1
+                    ? '线索'
+                    : item.saleStatus === 2
+                      ? '沟通'
+                      : item.saleStatus === 3
+                        ? '面谈'
+                        : item.saleStatus === 4
+                          ? '签约'
+                          : item.saleStatus === 5
+                            ? '合作'
+                            : null}
+                </b>
+                <b
+                  style={item.status ? { marginLeft: '15px' } : { marginLeft: '37px' }}
+                  className={
+                    item.status && item.status === 2
+                      ? `${styles.spec_color} ${styles.normal}`
+                      : styles.normal
+                  }
+                >
+                  {item.status && item.status === 1
+                    ? '正常'
+                    : item.status === 2
+                      ? '超时'
+                      : item.status === 3
+                        ? '关闭'
+                        : item.status === 4
+                          ? '回收'
+                          : null}
+                </b>
+              </span>
+            }
+          />
+          <Card.Body>
+            <div className={styles.col}>
+              <div style={{ width: '90%' }}>
+                <div className={styles.spec}>
+                  <div style={{ width: '48%' }}>
+                    联系人：
+                    <b>
+                      {item.contactInfos &&
+                        item.contactInfos.length > 0 &&
+                        item.contactInfos[0].name}
+                    </b>
+                  </div>
+                  <div>
+                    电话：
+                    <b>
+                      {item.contactInfos &&
+                        item.contactInfos.length > 0 &&
+                        item.contactInfos[0].phone}
+                    </b>
+                  </div>
+                </div>
+                <div className={styles.spec}>
+                  <div style={{ width: '48%' }}>
+                    责任人：
+                    <b>{item.belongUserName}</b>
+                  </div>
+                  <div>
+                    级别：
+                    <b>
+                      {item.level && item.level === 1
+                        ? '高'
+                        : item.level === 2
+                          ? '中'
+                          : item.level === 3
+                            ? '低'
+                            : null}
+                    </b>
+                  </div>
+                </div>
+              </div>
+              <div style={{ width: '10%', textAlign: 'right', margin: '1em -0.3em 0 0' }}>
+                <div>
+                  {' '}
+                  <Icon type="right" size="md" />
+                </div>
+              </div>
+            </div>
+          </Card.Body>
+          <Card.Footer
+            extra={
+              <div className={styles.col}>
+                <Button
+                  className={styles.btn}
+                  size="small"
+                  onClick={this.showModal(1)}
+                  data-id={item.id}
+                >
+                  阶段变更
+                </Button>
+                <Button
+                  className={styles.btn}
+                  size="small"
+                  onClick={this.showModal(2)}
+                  data-id={item.id}
+                >
+                  状态变更
+                </Button>
+                <Button
+                  className={styles.btn}
+                  size="small"
+                  onClick={this.showModal(3)}
+                  data-id={item.id}
+                  style={{ margin: '1em 0 1em 0.3em' }}
+                >
+                  转移
+                </Button>
+              </div>
+            }
+          />
+        </Card>
+</div>
+    )
+}
     return (
       <div className={styles.page}>
         <div>
           <Header>
             客户列表
-            {/* {type==='add'?'新增客户':type==='detail'?'客户详情':''}                 */}
           </Header>
-          {/* <NavBar
-            mode="dark"
-            //   icon={<Icon type="left" />}
-            leftContent={<Icon type="left" size='md' />}
-            onLeftClick={() => console.log('onLeftClick')}
-          >客户列表</NavBar> */}
         </div>
         <div className={styles.search}>
           <div className={styles.search_top}>
@@ -350,6 +526,9 @@ class CustomerList extends Component {
               placeholder="责任人"
               allowClear={true}
               onChange={value => this.onSearchConditionChange({ belongUserName: value })}
+              dropdownMatchSelectWidth={false}
+              // dropdownStyle={{width:"30%"}}
+              
             >
               {userForAssign &&
                 userForAssign.length > 0 &&
@@ -365,6 +544,7 @@ class CustomerList extends Component {
               placeholder="级别"
               allowClear={true}
               onChange={value => this.onSearchConditionChange({ level: value })}
+              dropdownMatchSelectWidth={false}
             >
               <Option value={1}>高</Option>
               <Option value={2}>中</Option>
@@ -376,6 +556,7 @@ class CustomerList extends Component {
               placeholder="阶段"
               allowClear={true}
               onChange={value => this.onSearchConditionChange({ saleStatus: value })}
+              dropdownMatchSelectWidth={false}
             >
               <Option value={1} style={{ width: '110%' }}>
                 线索
@@ -399,6 +580,7 @@ class CustomerList extends Component {
               placeholder="状态"
               allowClear={true}
               onChange={value => this.onSearchConditionChange({ status: value })}
+              dropdownMatchSelectWidth={false}
             >
               <Option value={1} style={{ width: '110%' }}>
                 正常
@@ -419,11 +601,12 @@ class CustomerList extends Component {
               placeholder="排序"
               allowClear={true}
               onChange={value => this.onSearchConditionChange({ order: value })}
+              dropdownMatchSelectWidth={false}
             >
-              <Option value={1} style={{ width: '150%' }}>
+              <Option value={1}>
                 低-中-高
               </Option>
-              <Option value={0} style={{ width: '150%' }}>
+              <Option value={0}>
                 高-中-低
               </Option>
             </Select>
@@ -431,147 +614,34 @@ class CustomerList extends Component {
         </div>
 
         <WhiteSpace size="md" />
-        {customerList && customerList.list && customerList.list.length > 0 ? (
-          customerList.list.map((item, index) => (
-            <Card
-              key={index}
-              className={styles.list_card}
-              onClick={this.showDetail.bind(this, item.id)}
-            >
-              <Card.Header
-                title={item.name}
-                // thumb=""
-                extra={
-                  <span onClick={this.showStatusDetail.bind(this, item.id)} style={{ zIndex: 999 }}>
-                    <b
-                      className={
-                        item.saleStatus && item.saleStatus === 5
-                          ? `${styles.spec_color} ${styles.normal}`
-                          : styles.normal
-                      }
-                    >
-                      {item.saleStatus && item.saleStatus === 1
-                        ? '线索'
-                        : item.saleStatus === 2
-                          ? '沟通'
-                          : item.saleStatus === 3
-                            ? '面谈'
-                            : item.saleStatus === 4
-                              ? '签约'
-                              : item.saleStatus === 5
-                                ? '合作'
-                                : null}
-                    </b>
-                    <b
-                      style={item.status ? { marginLeft: '15px' } : { marginLeft: '37px' }}
-                      className={
-                        item.status && item.status === 2
-                          ? `${styles.spec_color} ${styles.normal}`
-                          : styles.normal
-                      }
-                    >
-                      {item.status && item.status === 1
-                        ? '正常'
-                        : item.status === 2
-                          ? '超时'
-                          : item.status === 3
-                            ? '关闭'
-                            : item.status === 4
-                              ? '回收'
-                              : null}
-                    </b>
-                  </span>
-                }
-              />
-              <Card.Body>
-                <div className={styles.col}>
-                  <div style={{ width: '90%' }}>
-                    <div className={styles.spec}>
-                      <div style={{ width: '48%' }}>
-                        联系人：
-                        <b>
-                          {item.contactInfos &&
-                            item.contactInfos.length > 0 &&
-                            item.contactInfos[0].name}
-                        </b>
-                      </div>
-                      <div>
-                        电话：
-                        <b>
-                          {item.contactInfos &&
-                            item.contactInfos.length > 0 &&
-                            item.contactInfos[0].phone}
-                        </b>
-                      </div>
-                    </div>
-                    <div className={styles.spec}>
-                      <div style={{ width: '48%' }}>
-                        责任人：
-                        <b>{item.belongUserName}</b>
-                      </div>
-                      <div>
-                        级别：
-                        <b>
-                          {item.level && item.level === 1
-                            ? '高'
-                            : item.level === 2
-                              ? '中'
-                              : item.level === 3
-                                ? '低'
-                                : null}
-                        </b>
-                      </div>
-                    </div>
-                  </div>
-                  <div style={{ width: '10%', textAlign: 'right', margin: '1em -0.3em 0 0' }}>
-                    <div>
-                      {' '}
-                      <Icon type="right" size="md" />
-                    </div>
-                  </div>
-                </div>
-              </Card.Body>
-              <Card.Footer
-                extra={
-                  <div className={styles.col}>
-                    <Button
-                      className={styles.btn}
-                      size="small"
-                      onClick={this.showModal(1)}
-                      data-id={item.id}
-                    >
-                      阶段变更
-                    </Button>
-                    <Button
-                      className={styles.btn}
-                      size="small"
-                      onClick={this.showModal(2)}
-                      data-id={item.id}
-                    >
-                      状态变更
-                    </Button>
-                    <Button
-                      className={styles.btn}
-                      size="small"
-                      onClick={this.showModal(3)}
-                      data-id={item.id}
-                      style={{ margin: '1em 0 1em 0.3em' }}
-                    >
-                      转移
-                    </Button>
-                  </div>
-                }
-              />
-            </Card>
-          ))
-        ) : (
-          <div>暂无数据</div>
-        )}
+        <div style={{marginTop:'124px'}}>
+        {customerList && customerList.length > 0 ? 
+        <ListView
+          dataSource={dataSource.cloneWithRows(customerList)}
+          renderFooter={() => (<div style={{ textAlign: 'center' }}>
+            {this.state.isLoading ? '拼命加载中...' : '加载完毕'}
+          </div>)}
+          renderRow={row}
+          // renderSeparator={separator}
+          className="am-list"
+          initialListSize={20}
+          pageSize={20}
+          useBodyScroll
+          onScroll={() => { console.log('scroll')}}
+          scrollRenderAheadDistance={500}
+          onEndReached={this.onEndReached}
+          onEndReachedThreshold={20}
+          // scrollEventThrottle={50}
+        />
+        :
+        <div style={{marginTop:'80px',textAlign:'center',color:'#999999'}}>暂无数据~</div>
+        }
+        </div>
         {/* 弹窗 */}
         <Modal
           visible={this.state.modal1}
           transparent
-          maskClosable={false}
+          maskClosable={true}
           onClose={this.onClose()}
           title={
             key === 1 ? '更新阶段信息' : key === 2 ? '更新状态信息' : key === 3 ? '负责人转移' : ''

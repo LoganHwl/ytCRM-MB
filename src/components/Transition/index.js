@@ -16,10 +16,10 @@ class app extends Component {
 
 componentWillMount() {
   document.body.style.margin = "0px";
-  // 这是防止页面被拖拽
-  document.body.addEventListener('touchmove', (ev) => {
-    ev.preventDefault();
-  });
+  // // 这是防止页面被拖拽
+  // document.body.addEventListener('touchmove', (ev) => {
+  //   ev.preventDefault();
+  // });
 }
 
 componentWillReceiveProps(nextProps, nextContext) {
@@ -42,6 +42,7 @@ componentDidUpdate() {
     // const className = 'translation-arrow-left'
     const {pathname} =location
     const key = (pathname!=="/user")?'':"pathname"
+    // debugger
       return (
         <ReactCSSTransitionGroup
           component="div"

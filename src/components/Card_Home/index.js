@@ -18,9 +18,10 @@ class app extends Component {
   goto(id) {
     switch (id) {
       case 1:
+      let getTimestamp=new Date().getTime();
         router.push({
           pathname: '/customer-add',
-          query: { type: 'add' },
+          query: { type: 'add',timestamp:getTimestamp  },
         });
         break;
       case 2:
@@ -29,13 +30,13 @@ class app extends Component {
         });
         break;
       case 3:
-        router.push({
-          pathname: '/login',
-          //  query: { type: 'detail.id' },
-        });
+        // router.push({
+        //   pathname: '/login',
+        //   //  query: { type: 'detail.id' },
+        // });
         break;
       case 4:
-        router.push('/login');
+        // router.push('/login');
         break;
 
       default:

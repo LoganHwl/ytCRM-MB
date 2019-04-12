@@ -1,6 +1,11 @@
 import { stringify } from 'qs';
 import request from '@/utils/request';
 
+// 登陆
+// 获取登陆者信息
+export async function getUserInfo() {
+  return request('/user/info');
+}
 // 首页
 //超时预警列表数据
 export async function getWarningList(params) {
@@ -47,6 +52,31 @@ export async function changeBelong(params) {
 // 客户详情
 export async function getCustomerDetail(params) {
   return request(`/customer/detail/${params}`);
+}
+
+// 验证客户名是否存在
+export async function getCustomerName(params) {
+  return request(`/customer/getName/${String(params)}`);
+}
+// 新增客户
+export async function submitCustomerForm(params) {
+  // debugger;
+  return request(`/customer/add`, {
+    method: 'POST',
+    body: {
+      ...params,
+    },
+  });
+}
+// 修改客户信息
+export async function updateCustomerInfo(params) {
+  // debugger;
+  return request(`/customer/update`, {
+    method: 'POST',
+    body: {
+      ...params,
+    },
+  });
 }
 
 // export async function queryProjectNotice() {

@@ -6,8 +6,12 @@ import {
   changeSaleInfo,
   changeStatusInfo,
   changeBelong,
+  submitCustomerForm,
+  updateCustomerInfo,
+  getCustomerName
 } from '@/services/api';
 import { message } from 'antd';
+import { Toast } from 'antd-mobile';
 
 export default {
   namespace: 'home',
@@ -31,9 +35,10 @@ export default {
             type: 'GET_WARNING_LIST',
             warningList: warningList.data,
           });
+          return warningList.data
         } else {
           message.error(warningList.msg);
-          return;
+          return false;
         }
       } catch (err) {
         const { msg } = err.response || {};
@@ -49,9 +54,10 @@ export default {
             type: 'GET_CUSTOMER_LIST',
             customerList: customerList.data,
           });
+          return customerList.data
         } else {
           message.error(customerList.msg);
-          return;
+          return false;
         }
       } catch (err) {
         const { msg } = err.response || {};
@@ -98,6 +104,50 @@ export default {
       const res = yield call(changeBelong, payload);
       return res;
     },
+    *submitCustomerForm({ payload }, { call, put }) {
+      const res = yield call(submitCustomerForm, payload);
+      if (res.code === 0) {
+        Toast.success('提交成功',.5)
+        setTimeout(() => {
+          history.go(-1)
+        }, 500);
+        return res
+      } else {
+        Toast.fail(res.msg,1.5);
+        return false;
+      }
+    },
+    *updateCustomerInfo({ payload }, { call, put }) {
+      try {
+        const customerInfo = yield call(updateCustomerInfo, payload);
+        if (customerInfo.code === 0) {
+          Toast.success('修改成功',.5);
+          setTimeout(() => {
+            history.go(-1)
+          }, 500);
+        } else {
+          message.error(customerInfo.msg);
+          return false;
+        }
+      } catch (err) {
+        const { msg } = err.response || {};
+        console.log('错误信息', msg);
+      }
+    },
+    *getCustomerName({ payload }, { call, put }) {
+      try {
+        const customerName = yield call(getCustomerName, payload);
+        if (customerName.code === 0) {
+          return customerName;
+        } else {
+          message.error(customerName.msg);
+          return false;
+        }
+      } catch (err) {
+        const { msg } = err.response || {};
+        console.log('错误信息', msg);
+      }
+    },
   },
 
   reducers: {
@@ -105,7 +155,7 @@ export default {
       return { ...state, warningList };
     },
     GET_CUSTOMER_LIST(state, { customerList }) {
-      return { ...state, customerList };
+      return { ...state, dataSource:customerList };
     },
     GET_CUSTOMER_DETAIL(state, { customerDetail }) {
       return { ...state, customerDetail };
@@ -126,7 +176,7 @@ export default {
       return { ...state, userForAssign };
     },
     CLEAR_ALL(state) {
-      return { ...state, search: {}, customerList: {}, customerInfo: {} };
+      return { ...state, search: {}, tabsInfo: {},customerDetail:null};
     },
   },
 };

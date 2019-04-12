@@ -1,31 +1,30 @@
 .page {
   color: black;
-  font-size: 16px;
+  font-size: 18px;
   .title {
+    position: fixed;
+    z-index: 999;
+    top: 45px;
     width: 100%;
-    height: 3.05em;
-    background: #002140;
-    color: white;
-    text-align: center;
-    line-height: 3.05em;
-    font-weight: bold;
-  }
-  .timeout_warn {
     .warn_title {
       width: 100%;
-      height: 2.5em;
+      height: 40px;
       background: red;
       color: white;
-      line-height: 2.5em;
+      line-height: 40px;
       padding-left: 1em;
     }
+  }
+
+  .timeout_warn {
+    margin-top: 200px;
     .warn_card {
       width: 92%;
       margin: 0.5em auto;
       box-shadow: rgb(236, 230, 230) 2px 3px 10px 1px;
       .normal {
         color: #d48265;
-        font-size: 12px;
+        font-size: 18px;
       }
       .spec_color {
         color: red !important;
@@ -36,12 +35,13 @@
         align-items: center;
         justify-content: space-between;
         flex-wrap: nowrap;
-        font-size: 14px;
+        font-size: 16px;
         padding: 0 0 0 5px;
         color: #999999;
       }
       b {
         color: black;
+        font-weight: normal
       }
       :global {
         .am-card-body {
@@ -54,9 +54,30 @@
   }
 }
 :global {
-  .am-card-body {
-    &:befor {
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx){
+    html:not([data-scale]) .am-card-body::before{
       background-color: none;
     }
   }
+  .am-navbar {
+    position: fixed;
+    width: 100%;
+    z-index: 999;
+  }
+  .am-card-body {
+    ::before {
+      background-color: none;
+    }
+  }
+    .am-card-header-content {
+      flex: unset;
+      display: block;
+      width: 71%;
+      font-size: 18px;
+      font-weight: bold;
+      font-family: black;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 }

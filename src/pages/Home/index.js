@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import { Card, WhiteSpace, Icon } from 'antd-mobile';
+import router from 'umi/router';
+import { Card, WhiteSpace, Icon,NavBar,Toast } from 'antd-mobile';
 import Card_Home from '@/components/Card_Home';
 
 import new_customer from '@/assets/home/new_customer.svg';
@@ -16,17 +17,41 @@ import styles from './home.less';
 }))
 class app extends Component {
   state = {};
-  componentDidMount() {
+  componentWillMount(){
+    Toast.loading('正在加载...',0);
+  }
+ async componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({
+  const res = await  dispatch({
       type: 'home/getWarningList',
       payload: {
         startPage: 1,
         pageSize: 100,
       },
+    })
+    if(res !==false){    
+      Toast.hide()
+    }
+  }
+  showDetail(id, e) {
+    e.preventDefault();
+    let getTimestamp=new Date().getTime();
+    router.push({
+      pathname: '/customer-add',
+      query: { type: 'detail', id,timestamp:getTimestamp },
     });
   }
-  showDetail() {}
+  showStatusDetail(id, e) {
+    e.stopPropagation();
+    e.preventDefault();
+    let getTimestamp=new Date().getTime();
+    router.push({
+      pathname: '/status-detail',
+      query: { id,timestamp:getTimestamp },
+      
+    });
+  }
+
   cardList = [
     { id: 1, title: '新增用户', src: new_customer },
     { id: 2, title: '客户列表', src: customer_list },
@@ -37,22 +62,28 @@ class app extends Component {
     const { warningList } = this.props;
     return (
       <div className={styles.page}>
-        <div className={styles.title}>客户管理后台</div>
+      <NavBar
+          style={{ background: '#002140' }}
+          mode="dark"
+        >
+        客户管理后台
+        </NavBar>
+        <div className={styles.title}>
         <Card_Home list={this.cardList} />
-
+        <div className={styles.warn_title}>超时预警</div>
+          </div>
         <div className={styles.timeout_warn}>
-          <div className={styles.warn_title}>超时预警</div>
           <WhiteSpace size="md" />
           {warningList &&
             warningList.list &&
             warningList.list.length > 1 &&
             warningList.list.map((item, index) => (
-              <Card key={index} className={styles.warn_card} onClick={this.showDetail.bind(this)}>
+              <Card key={index} className={styles.warn_card} onClick={this.showDetail.bind(this,item.id)}>
                 <Card.Header
                   title={item.name}
                   // thumb=""
                   extra={
-                    <span>
+                    <span onClick={this.showStatusDetail.bind(this, item.id)} style={{ zIndex: 999 }}>
                       <b
                         className={
                           item.saleStatus && item.saleStatus === 5
@@ -72,6 +103,24 @@ class app extends Component {
                                   ? '合作'
                                   : null}
                       </b>
+                      {/* <b
+                  style={item.customerStatus ? { marginLeft: '15px' } : { marginLeft: '37px' }}
+                  className={
+                    item.customerStatus && item.customerStatus === 2
+                      ? `${styles.spec_color} ${styles.normal}`
+                      : styles.normal
+                  }
+                >
+                  {item.customerStatus && item.customerStatus === 1
+                    ? '正常'
+                    : item.customerStatus === 2
+                      ? '超时'
+                      : item.customerStatus === 3
+                        ? '关闭'
+                        : item.customerStatus === 4
+                          ? '回收'
+                          : null}
+                </b> */}
                     </span>
                   }
                 />
