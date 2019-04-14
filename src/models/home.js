@@ -8,7 +8,7 @@ import {
   changeBelong,
   submitCustomerForm,
   updateCustomerInfo,
-  getCustomerName
+  getCustomerName,
 } from '@/services/api';
 import { message } from 'antd';
 import { Toast } from 'antd-mobile';
@@ -35,9 +35,10 @@ export default {
             type: 'GET_WARNING_LIST',
             warningList: warningList.data,
           });
-          return warningList.data
+          return warningList.data;
+        } else if (warningList) {
+          return warningList;
         } else {
-          message.error(warningList.msg);
           return false;
         }
       } catch (err) {
@@ -54,12 +55,14 @@ export default {
             type: 'GET_CUSTOMER_LIST',
             customerList: customerList.data,
           });
-          return customerList.data
+          return customerList.data;
+        } else if (customerList) {
+          return customerList;
         } else {
-          message.error(customerList.msg);
           return false;
         }
       } catch (err) {
+        // debugger;
         const { msg } = err.response || {};
 
         console.log('错误信息', msg);
@@ -107,13 +110,13 @@ export default {
     *submitCustomerForm({ payload }, { call, put }) {
       const res = yield call(submitCustomerForm, payload);
       if (res.code === 0) {
-        Toast.success('提交成功',.5)
+        Toast.success('提交成功', 0.5);
         setTimeout(() => {
-          history.go(-1)
+          history.go(-1);
         }, 500);
-        return res
+        return res;
       } else {
-        Toast.fail(res.msg,1.5);
+        Toast.fail(res.msg, 1.5);
         return false;
       }
     },
@@ -121,9 +124,9 @@ export default {
       try {
         const customerInfo = yield call(updateCustomerInfo, payload);
         if (customerInfo.code === 0) {
-          Toast.success('修改成功',.5);
+          Toast.success('修改成功', 0.5);
           setTimeout(() => {
-            history.go(-1)
+            history.go(-1);
           }, 500);
         } else {
           message.error(customerInfo.msg);
@@ -155,7 +158,7 @@ export default {
       return { ...state, warningList };
     },
     GET_CUSTOMER_LIST(state, { customerList }) {
-      return { ...state, dataSource:customerList };
+      return { ...state, dataSource: customerList };
     },
     GET_CUSTOMER_DETAIL(state, { customerDetail }) {
       return { ...state, customerDetail };
@@ -169,14 +172,11 @@ export default {
     CONDITION_CHANGE(state, { payload }) {
       return { ...state, tabsInfo: { ...state.tabsInfo, ...payload } };
     },
-    // COMPONENT_ARRAY_CHANGE(state, { componentArray }) {
-    //   return { ...state, componentArray};
-    // },
     GET_USERT_FOR_ASSIGN(state, { userForAssign }) {
       return { ...state, userForAssign };
     },
     CLEAR_ALL(state) {
-      return { ...state, search: {}, tabsInfo: {},customerDetail:null};
+      return { ...state, search: {}, tabsInfo: {}, customerDetail: null };
     },
   },
 };

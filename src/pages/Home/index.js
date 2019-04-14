@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Card, WhiteSpace, Icon,NavBar,Toast } from 'antd-mobile';
+import { Card, WhiteSpace, Icon, NavBar, Toast, Button } from 'antd-mobile';
 import Card_Home from '@/components/Card_Home';
 
 import new_customer from '@/assets/home/new_customer.svg';
@@ -16,41 +16,49 @@ import styles from './home.less';
   loading: loading.effects['home/getWarningList'],
 }))
 class app extends Component {
-  state = {};
-  componentWillMount(){
-    Toast.loading('正在加载...',0);
+  state = { noNet: false };
+  componentWillMount() {
+    Toast.loading('正在加载...', 0);
   }
- async componentDidMount() {
+  async componentDidMount() {
     const { dispatch } = this.props;
-  const res = await  dispatch({
+    const res = await dispatch({
       type: 'home/getWarningList',
       payload: {
         startPage: 1,
         pageSize: 100,
       },
-    })
-    if(res !==false){    
-      Toast.hide()
+    });
+    if (res !== false) {
+      if (res === 'Failed to fetch') {
+        this.setState({ noNet: true });
+        debugger;
+      }
+      Toast.hide();
     }
   }
   showDetail(id, e) {
     e.preventDefault();
-    let getTimestamp=new Date().getTime();
+    let getTimestamp = new Date().getTime();
     router.push({
       pathname: '/customer-add',
-      query: { type: 'detail', id,timestamp:getTimestamp },
+      query: { type: 'detail', id, timestamp: getTimestamp },
     });
   }
   showStatusDetail(id, e) {
     e.stopPropagation();
     e.preventDefault();
-    let getTimestamp=new Date().getTime();
+    let getTimestamp = new Date().getTime();
     router.push({
       pathname: '/status-detail',
-      query: { id,timestamp:getTimestamp },
-      
+      query: { id, timestamp: getTimestamp },
     });
   }
+
+  // 重新刷新页面
+  reload = () => {
+    location.reload();
+  };
 
   cardList = [
     { id: 1, title: '新增用户', src: new_customer },
@@ -60,30 +68,49 @@ class app extends Component {
   ];
   render() {
     const { warningList } = this.props;
+
     return (
       <div className={styles.page}>
-      <NavBar
-          style={{ background: '#002140' }}
-          mode="dark"
-        >
-        客户管理后台
+        <NavBar style={{ background: '#002140' }} mode="dark">
+          客户管理后台
         </NavBar>
         <div className={styles.title}>
-        <Card_Home list={this.cardList} />
-        <div className={styles.warn_title}>超时预警</div>
-          </div>
+          <Card_Home list={this.cardList} />
+          <div className={styles.warn_title}>超时预警</div>
+        </div>
         <div className={styles.timeout_warn}>
           <WhiteSpace size="md" />
-          {warningList &&
+          {this.state.noNet ? (
+            <div style={{ textAlign: 'center', color: 'grey', marginTop: '60px' }}>
+              <h4 style={{ color: 'grey' }}>网络请求出错~</h4>
+              <WhiteSpace />
+              <Button
+                onClick={this.reload}
+                type="primary"
+                size="small"
+                style={{ width: '32%', margin: '0 auto' }}
+              >
+                点击重试~
+              </Button>
+            </div>
+          ) : (
+            warningList &&
             warningList.list &&
             warningList.list.length > 1 &&
             warningList.list.map((item, index) => (
-              <Card key={index} className={styles.warn_card} onClick={this.showDetail.bind(this,item.id)}>
+              <Card
+                key={index}
+                className={styles.warn_card}
+                onClick={this.showDetail.bind(this, item.id)}
+              >
                 <Card.Header
                   title={item.name}
                   // thumb=""
                   extra={
-                    <span onClick={this.showStatusDetail.bind(this, item.id)} style={{ zIndex: 999 }}>
+                    <span
+                      onClick={this.showStatusDetail.bind(this, item.id)}
+                      style={{ zIndex: 999 }}
+                    >
                       <b
                         className={
                           item.saleStatus && item.saleStatus === 5
@@ -104,23 +131,23 @@ class app extends Component {
                                   : null}
                       </b>
                       {/* <b
-                  style={item.customerStatus ? { marginLeft: '15px' } : { marginLeft: '37px' }}
-                  className={
-                    item.customerStatus && item.customerStatus === 2
-                      ? `${styles.spec_color} ${styles.normal}`
-                      : styles.normal
-                  }
-                >
-                  {item.customerStatus && item.customerStatus === 1
-                    ? '正常'
-                    : item.customerStatus === 2
-                      ? '超时'
-                      : item.customerStatus === 3
-                        ? '关闭'
-                        : item.customerStatus === 4
-                          ? '回收'
-                          : null}
-                </b> */}
+                            style={item.customerStatus ? { marginLeft: '15px' } : { marginLeft: '37px' }}
+                            className={
+                              item.customerStatus && item.customerStatus === 2
+                                ? `${styles.spec_color} ${styles.normal}`
+                                : styles.normal
+                            }
+                          >
+                            {item.customerStatus && item.customerStatus === 1
+                              ? '正常'
+                              : item.customerStatus === 2
+                                ? '超时'
+                                : item.customerStatus === 3
+                                  ? '关闭'
+                                  : item.customerStatus === 4
+                                    ? '回收'
+                                    : null}
+                          </b> */}
                     </span>
                   }
                 />
@@ -159,7 +186,8 @@ class app extends Component {
                   }
                 />
               </Card>
-            ))}
+            ))
+          )}
         </div>
       </div>
     );

@@ -10,7 +10,7 @@ import {
   Modal,
   Toast,
   TextareaItem,
-  ListView 
+  ListView,
 } from 'antd-mobile';
 import { createForm } from 'rc-form';
 import Header from '../Base/header';
@@ -61,24 +61,21 @@ const statusList = [
   },
 ];
 
-
-
-
 @connect(({ home, loading }) => ({
   ...home,
   loading: loading.effects['home/getCustomerList'],
 }))
 class CustomerList extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     const ds = new ListView.DataSource({
-      rowHasChanged: (r1, r2) => r1 !== r2
+      rowHasChanged: (r1, r2) => r1 !== r2,
     });
     this.state = {
       modal1: false,
       key: '',
       customer_value: '',
-      page:1,
+      page: 1,
       pageSize: 20,
       saleStatusNum: null,
       saleStatusNumChange: null,
@@ -89,31 +86,33 @@ class CustomerList extends Component {
       userId: '',
       radio_value: false,
       isLoading: true,
-      dataSource:ds,
-      customerList:[]
-    }
+      dataSource: ds,
+      customerList: [],
+      noNet: false,
+    };
   }
-    componentWillReceiveProps(nextState) {      
+  componentWillReceiveProps(nextState) {
     if (nextState.customerList !== this.state.customerList) {
       this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(nextState.customerList)
+        dataSource: this.state.dataSource.cloneWithRows(nextState.customerList),
       });
     }
   }
-  componentWillMount(){
-    Toast.loading('正在加载...',0);
+  componentWillMount() {
+    debugger;
+    Toast.loading('正在加载...', 0);
   }
-  onEndReached = (event) => {
+  onEndReached = () => {
     // debugger
     const { page } = this.state;
     // hasMore: from backend data, indicates whether it is the last page, here is false
     if (this.state.isLoading && !this.state.hasMore) {
       return;
     }
-    let p =page+1
-    this.onSearch(1)
-    this.setState( { isLoading: true,page:p });
-  }
+    let p = page + 1;
+    this.setState({ isLoading: true, page: p });
+    this.onSearch(1);
+  };
 
   componentWillUnmount() {
     // 清除状态
@@ -122,6 +121,7 @@ class CustomerList extends Component {
     });
   }
   componentDidMount() {
+    debugger;
     const { dispatch } = this.props;
     dispatch({
       type: 'home/getUserForAssign',
@@ -130,9 +130,9 @@ class CustomerList extends Component {
   }
   // 分页&过滤查询客户列表数据
   async onSearch(v) {
-    const { dispatch ,search} = this.props;
-    const { pageSize,page,customerList } = this.state;
-    
+    const { dispatch, search } = this.props;
+    const { pageSize, page, customerList } = this.state;
+
     dispatch({
       type: 'home/CHANGE_PAGENO',
       startPage: page,
@@ -148,21 +148,25 @@ class CustomerList extends Component {
         params[key] = value;
       }
     }
-   const res = await dispatch({
+    const res = await dispatch({
       type: 'home/getCustomerList',
       payload: params,
     });
-    if(res&&res.list){
-      // debugger
-      if(v===1){
-        let list = customerList.concat(res.list)
-        this.setState({isLoading: false,customerList:list})
-        
-      }else{
-        this.setState({isLoading: false,customerList:res.list})
+    // debugger;
+    if (res && res.list) {
+      // debugger;
+      if (v === 1) {
+        let list = customerList.concat(res.list);
+        this.setState({ isLoading: false, customerList: list });
+      } else {
+        this.setState({ isLoading: false, customerList: res.list });
       }
-      Toast.hide()
-    }   
+      Toast.hide();
+    } else if (res === 'Failed to fetch') {
+      Toast.hide();
+      this.setState({ noNet: true, isLoading: false });
+      // debugger;
+    }
   }
   // 存储搜索条件
   onSearchConditionChange(searchPair) {
@@ -174,31 +178,30 @@ class CustomerList extends Component {
   }
   showDetail(id, e) {
     e.preventDefault();
-    let getTimestamp=new Date().getTime();
+    let getTimestamp = new Date().getTime();
     router.push({
       pathname: '/customer-add',
-      query: { type: 'detail', id,timestamp:getTimestamp },
+      query: { type: 'detail', id, timestamp: getTimestamp },
     });
   }
   showStatusDetail(id, e) {
     e.stopPropagation();
     e.preventDefault();
-    let getTimestamp=new Date().getTime();
+    let getTimestamp = new Date().getTime();
     router.push({
       pathname: '/status-detail',
-      query: { id,timestamp:getTimestamp },
-      
+      query: { id, timestamp: getTimestamp },
     });
   }
   // 打开模态框
   showModal = key => e => {
     e.stopPropagation();
     e.preventDefault(); // 修复 Android 上点击穿透
-    const { customerList, dispatch } = this.props;
+    const { customerList } = this.state;
     const cutomerId = e.currentTarget.dataset.id;
     if (customerList && cutomerId) {
-      customerList.list && customerList.list.length > 0
-        ? customerList.list.map(item => {
+      customerList && customerList.length > 0
+        ? customerList.map(item => {
             if (item.id === Number(cutomerId)) {
               if (key === 1) {
                 this.setState({
@@ -283,7 +286,7 @@ class CustomerList extends Component {
         if (res.code === 0) {
           Toast.success('修改成功', 1);
           this.onClose()();
-          this.onSearch(1);
+          this.onSearch();
         } else {
           Toast.fail(res.msg, 1);
           return;
@@ -302,7 +305,7 @@ class CustomerList extends Component {
         if (res.code === 0) {
           Toast.success('修改成功', 1);
           this.onClose()();
-          this.onSearch(1);
+          this.onSearch();
         } else {
           Toast.fail(res.msg, 1);
           return;
@@ -321,7 +324,7 @@ class CustomerList extends Component {
         if (res.code === 0) {
           Toast.success('修改成功', 1);
           this.onClose()();
-          this.onSearch(1);
+          this.onSearch();
         } else {
           Toast.fail(res.msg, 1);
           return;
@@ -335,9 +338,15 @@ class CustomerList extends Component {
       radio_value: e.target.value,
     });
   };
-
-  
-
+  // 重新刷新页面
+  reload = () => {
+    location.reload();
+    // const { dispatch } = this.props;
+    // dispatch({
+    //   type: 'home/getUserForAssign',
+    // });
+    // this.onSearch();
+  };
   render() {
     const {
       // customerList,
@@ -352,151 +361,152 @@ class CustomerList extends Component {
       statusNum,
       statusNumChange,
       dataSource,
-      customerList
+      customerList,
+      isLoading,
+      noNet,
     } = this.state;
-//获取item进行展示
-const row = (item) => {
-  return (
-        <div> 
-        <Card
-          key={item.id}
-          className={styles.list_card}
-          onClick={this.showDetail.bind(this, item.id)}
-        >
-          <Card.Header
-            title={item.name}
-            // thumb=""
-            extra={
-              <span onClick={this.showStatusDetail.bind(this, item.id)} style={{ zIndex: 999 }}>
-                <b
-                  className={
-                    item.saleStatus && item.saleStatus === 5
-                      ? `${styles.spec_color} ${styles.normal}`
-                      : styles.normal
-                  }
-                >
-                  {item.saleStatus && item.saleStatus === 1
-                    ? '线索'
-                    : item.saleStatus === 2
-                      ? '沟通'
-                      : item.saleStatus === 3
-                        ? '面谈'
-                        : item.saleStatus === 4
-                          ? '签约'
-                          : item.saleStatus === 5
-                            ? '合作'
+    debugger;
+    //获取item进行展示
+    const row = item => {
+      return (
+        <div>
+          <Card
+            key={item.id}
+            className={styles.list_card}
+            onClick={this.showDetail.bind(this, item.id)}
+          >
+            <Card.Header
+              title={item.name}
+              // thumb=""
+              extra={
+                <span onClick={this.showStatusDetail.bind(this, item.id)} style={{ zIndex: 999 }}>
+                  <b
+                    className={
+                      item.saleStatus && item.saleStatus === 5
+                        ? `${styles.spec_color} ${styles.normal}`
+                        : styles.normal
+                    }
+                  >
+                    {item.saleStatus && item.saleStatus === 1
+                      ? '线索'
+                      : item.saleStatus === 2
+                        ? '沟通'
+                        : item.saleStatus === 3
+                          ? '面谈'
+                          : item.saleStatus === 4
+                            ? '签约'
+                            : item.saleStatus === 5
+                              ? '合作'
+                              : null}
+                  </b>
+                  <b
+                    style={item.status ? { marginLeft: '15px' } : { marginLeft: '37px' }}
+                    className={
+                      item.status && item.status === 2
+                        ? `${styles.spec_color} ${styles.normal}`
+                        : styles.normal
+                    }
+                  >
+                    {item.status && item.status === 1
+                      ? '正常'
+                      : item.status === 2
+                        ? '超时'
+                        : item.status === 3
+                          ? '关闭'
+                          : item.status === 4
+                            ? '回收'
                             : null}
-                </b>
-                <b
-                  style={item.status ? { marginLeft: '15px' } : { marginLeft: '37px' }}
-                  className={
-                    item.status && item.status === 2
-                      ? `${styles.spec_color} ${styles.normal}`
-                      : styles.normal
-                  }
-                >
-                  {item.status && item.status === 1
-                    ? '正常'
-                    : item.status === 2
-                      ? '超时'
-                      : item.status === 3
-                        ? '关闭'
-                        : item.status === 4
-                          ? '回收'
-                          : null}
-                </b>
-              </span>
-            }
-          />
-          <Card.Body>
-            <div className={styles.col}>
-              <div style={{ width: '90%' }}>
-                <div className={styles.spec}>
-                  <div style={{ width: '48%' }}>
-                    联系人：
-                    <b>
-                      {item.contactInfos &&
-                        item.contactInfos.length > 0 &&
-                        item.contactInfos[0].name}
-                    </b>
-                  </div>
-                  <div>
-                    电话：
-                    <b>
-                      {item.contactInfos &&
-                        item.contactInfos.length > 0 &&
-                        item.contactInfos[0].phone}
-                    </b>
-                  </div>
-                </div>
-                <div className={styles.spec}>
-                  <div style={{ width: '48%' }}>
-                    责任人：
-                    <b>{item.belongUserName}</b>
-                  </div>
-                  <div>
-                    级别：
-                    <b>
-                      {item.level && item.level === 1
-                        ? '高'
-                        : item.level === 2
-                          ? '中'
-                          : item.level === 3
-                            ? '低'
-                            : null}
-                    </b>
-                  </div>
-                </div>
-              </div>
-              <div style={{ width: '10%', textAlign: 'right', margin: '1em -0.3em 0 0' }}>
-                <div>
-                  {' '}
-                  <Icon type="right" size="md" />
-                </div>
-              </div>
-            </div>
-          </Card.Body>
-          <Card.Footer
-            extra={
+                  </b>
+                </span>
+              }
+            />
+            <Card.Body>
               <div className={styles.col}>
-                <Button
-                  className={styles.btn}
-                  size="small"
-                  onClick={this.showModal(1)}
-                  data-id={item.id}
-                >
-                  阶段变更
-                </Button>
-                <Button
-                  className={styles.btn}
-                  size="small"
-                  onClick={this.showModal(2)}
-                  data-id={item.id}
-                >
-                  状态变更
-                </Button>
-                <Button
-                  className={styles.btn}
-                  size="small"
-                  onClick={this.showModal(3)}
-                  data-id={item.id}
-                  style={{ margin: '1em 0 1em 0.3em' }}
-                >
-                  转移
-                </Button>
+                <div style={{ width: '90%' }}>
+                  <div className={styles.spec}>
+                    <div style={{ width: '48%' }}>
+                      联系人：
+                      <b>
+                        {item.contactInfos &&
+                          item.contactInfos.length > 0 &&
+                          item.contactInfos[0].name}
+                      </b>
+                    </div>
+                    <div>
+                      电话：
+                      <b>
+                        {item.contactInfos &&
+                          item.contactInfos.length > 0 &&
+                          item.contactInfos[0].phone}
+                      </b>
+                    </div>
+                  </div>
+                  <div className={styles.spec}>
+                    <div style={{ width: '48%' }}>
+                      责任人：
+                      <b>{item.belongUserName}</b>
+                    </div>
+                    <div>
+                      级别：
+                      <b>
+                        {item.level && item.level === 1
+                          ? '高'
+                          : item.level === 2
+                            ? '中'
+                            : item.level === 3
+                              ? '低'
+                              : null}
+                      </b>
+                    </div>
+                  </div>
+                </div>
+                <div style={{ width: '10%', textAlign: 'right', margin: '1em -0.3em 0 0' }}>
+                  <div>
+                    {' '}
+                    <Icon type="right" size="md" />
+                  </div>
+                </div>
               </div>
-            }
-          />
-        </Card>
-</div>
-    )
-}
+            </Card.Body>
+            <Card.Footer
+              extra={
+                <div className={styles.col}>
+                  <Button
+                    className={styles.btn}
+                    size="small"
+                    onClick={this.showModal(1)}
+                    data-id={item.id}
+                  >
+                    阶段变更
+                  </Button>
+                  <Button
+                    className={styles.btn}
+                    size="small"
+                    onClick={this.showModal(2)}
+                    data-id={item.id}
+                  >
+                    状态变更
+                  </Button>
+                  <Button
+                    className={styles.btn}
+                    size="small"
+                    onClick={this.showModal(3)}
+                    data-id={item.id}
+                    style={{ margin: '1em 0 1em 0.3em' }}
+                  >
+                    转移
+                  </Button>
+                </div>
+              }
+            />
+          </Card>
+        </div>
+      );
+    };
     return (
       <div className={styles.page}>
         <div>
-          <Header>
-            客户列表
-          </Header>
+          <Header>客户列表</Header>
         </div>
         <div className={styles.search}>
           <div className={styles.search_top}>
@@ -528,7 +538,6 @@ const row = (item) => {
               onChange={value => this.onSearchConditionChange({ belongUserName: value })}
               dropdownMatchSelectWidth={false}
               // dropdownStyle={{width:"30%"}}
-              
             >
               {userForAssign &&
                 userForAssign.length > 0 &&
@@ -603,39 +612,72 @@ const row = (item) => {
               onChange={value => this.onSearchConditionChange({ order: value })}
               dropdownMatchSelectWidth={false}
             >
-              <Option value={1}>
-                低-中-高
-              </Option>
-              <Option value={0}>
-                高-中-低
-              </Option>
+              <Option value={1}>低-中-高</Option>
+              <Option value={0}>高-中-低</Option>
             </Select>
           </div>
         </div>
 
         <WhiteSpace size="md" />
-        <div style={{marginTop:'124px'}}>
-        {customerList && customerList.length > 0 ? 
-        <ListView
-          dataSource={dataSource.cloneWithRows(customerList)}
-          renderFooter={() => (<div style={{ textAlign: 'center' }}>
-            {this.state.isLoading ? '拼命加载中...' : '加载完毕'}
-          </div>)}
-          renderRow={row}
-          // renderSeparator={separator}
-          className="am-list"
-          initialListSize={20}
-          pageSize={20}
-          useBodyScroll
-          onScroll={() => { console.log('scroll')}}
-          scrollRenderAheadDistance={500}
-          onEndReached={this.onEndReached}
-          onEndReachedThreshold={20}
-          // scrollEventThrottle={50}
-        />
-        :
-        <div style={{marginTop:'80px',textAlign:'center',color:'#999999'}}>暂无数据~</div>
-        }
+        <div style={{ marginTop: '124px' }}>
+          {customerList && customerList.length > 0 ? (
+            <ListView
+              dataSource={dataSource.cloneWithRows(customerList)}
+              renderFooter={() => (
+                <div style={{ textAlign: 'center' }}>
+                  {isLoading ? (
+                    '拼命加载中...'
+                  ) : noNet ? (
+                    <div>
+                      网络请求出错~
+                      <Button
+                        onClick={this.reload}
+                        type="primary"
+                        size="small"
+                        style={{ width: '32%', margin: '0 auto' }}
+                      >
+                        点击重试~
+                      </Button>
+                    </div>
+                  ) : (
+                    '加载完毕'
+                  )}
+                </div>
+              )}
+              renderRow={row}
+              // renderSeparator={separator}
+              className="am-list"
+              initialListSize={20}
+              pageSize={20}
+              useBodyScroll
+              onScroll={() => {
+                console.log('scroll');
+              }}
+              scrollRenderAheadDistance={500}
+              onEndReached={this.onEndReached}
+              onEndReachedThreshold={20}
+              // scrollEventThrottle={50}
+            />
+          ) : (
+            <div style={{ marginTop: '200px', textAlign: 'center', color: '#999999' }}>
+              {noNet ? (
+                <div>
+                  <h4 style={{ color: 'grey' }}>网络请求出错~</h4>
+                  <WhiteSpace />
+                  <Button
+                    onClick={this.reload}
+                    type="primary"
+                    size="small"
+                    style={{ width: '32%', margin: '0 auto' }}
+                  >
+                    点击重试~
+                  </Button>
+                </div>
+              ) : (
+                '暂无数据~'
+              )}
+            </div>
+          )}
         </div>
         {/* 弹窗 */}
         <Modal
