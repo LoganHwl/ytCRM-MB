@@ -108,16 +108,10 @@ class app extends Component {
                   // thumb=""
                   extra={
                     <span
+                      className={styles.warn_card_status}
                       onClick={this.showStatusDetail.bind(this, item.id)}
-                      style={{ zIndex: 999 }}
                     >
-                      <b
-                        className={
-                          item.saleStatus && item.saleStatus === 5
-                            ? `${styles.spec_color} ${styles.normal}`
-                            : styles.normal
-                        }
-                      >
+                      <b className={styles.warn_card_status_text}>
                         {item.saleStatus && item.saleStatus === 1
                           ? '线索'
                           : item.saleStatus === 2
@@ -169,10 +163,10 @@ class app extends Component {
                               : null}
                       </b>
                     </div>
-                    <div style={{ paddingTtop: '.45em' }}>
+                    {/* <div style={{ paddingTtop: '.45em' }}>
                       {' '}
                       <Icon type="right" size="md" />
-                    </div>
+                    </div> */}
                   </div>
                 </Card.Body>
                 <Card.Footer

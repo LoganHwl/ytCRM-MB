@@ -9,6 +9,10 @@ import {
   submitCustomerForm,
   updateCustomerInfo,
   getCustomerName,
+  getCountInfo,
+  getUserList,
+  getAllRole,
+  setRole,
 } from '@/services/api';
 import { message } from 'antd';
 import { Toast } from 'antd-mobile';
@@ -19,11 +23,12 @@ export default {
   state: {
     search: {},
     startPage: 1,
-    customerList: {},
+    customerList: [],
     customerInfo: {},
     saleInfo: {},
     tabsInfo: {},
     componentArray: [1],
+    userList: [],
   },
 
   effects: {
@@ -151,6 +156,56 @@ export default {
         console.log('错误信息', msg);
       }
     },
+    *getCountInfo({ payload }, { call, put }) {
+      try {
+        const countInfo = yield call(getCountInfo, payload);
+        if (countInfo && countInfo.data) {
+          yield put({
+            type: 'GET_COUNT_INFO',
+            countInfo: countInfo.data,
+          });
+          return countInfo.data;
+        } else {
+          message.error(countInfo.msg);
+          return false;
+        }
+      } catch (err) {
+        const { msg } = err.response || {};
+
+        console.log('错误信息', msg);
+      }
+    },
+    *getUserList({ payload }, { call, put }) {
+      try {
+        const userList = yield call(getUserList, payload);
+        if (userList && userList.data) {
+          yield put({
+            type: 'GET_LIST',
+            userList: userList.data,
+          });
+          return userList.data;
+        } else if (!userList.data) {
+          return userList;
+        } else {
+          return false;
+        }
+      } catch (err) {
+        // debugger;
+        const { msg } = err.response || {};
+
+        console.log('错误信息', msg);
+      }
+    },
+    *getAllRole({ payload }, { call, put }) {
+      const allRole = yield call(getAllRole);
+      yield put({
+        type: 'GET_ROLE',
+        allRole,
+      });
+    },
+    *setRole({ payload }, { call }) {
+      yield call(setRole, payload);
+    },
   },
 
   reducers: {
@@ -158,7 +213,7 @@ export default {
       return { ...state, warningList };
     },
     GET_CUSTOMER_LIST(state, { customerList }) {
-      return { ...state, dataSource: customerList };
+      return { ...state, customerList };
     },
     GET_CUSTOMER_DETAIL(state, { customerDetail }) {
       return { ...state, customerDetail };
@@ -177,6 +232,15 @@ export default {
     },
     CLEAR_ALL(state) {
       return { ...state, search: {}, tabsInfo: {}, customerDetail: null };
+    },
+    GET_COUNT_INFO(state, { countInfo }) {
+      return { ...state, countInfo };
+    },
+    GET_LIST(state, { userList }) {
+      return { ...state, userList };
+    },
+    GET_ROLE(state, { allRole }) {
+      return { ...state, allRole };
     },
   },
 };

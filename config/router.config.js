@@ -35,6 +35,16 @@ export default [
             name: 'status-detail',
             component: './Customer/StatusDetail',
           },
+          {
+            path: '/static',
+            name: 'static',
+            component: './DataStatistics/dataStatistics',
+          },
+          {
+            path: '/user-list',
+            name: 'user-list',
+            component: './UserManager/userManager',
+          },
         ],
       },
     ],

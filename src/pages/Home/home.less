@@ -1,6 +1,7 @@
 .page {
   color: black;
-  font-size: 18px;
+  font-size: 14px;
+  background: #edf2f6;
   .title {
     position: fixed;
     z-index: 999;
@@ -17,31 +18,35 @@
   }
 
   .timeout_warn {
-    margin-top: 200px;
+    margin-top: 190px;
     .warn_card {
-      width: 92%;
-      margin: 0.5em auto;
-      box-shadow: rgb(236, 230, 230) 2px 3px 10px 1px;
-      .normal {
-        color: #d48265;
-        font-size: 18px;
-      }
-      .spec_color {
-        color: red !important;
+      width: 100%;
+      margin: 0 auto 0.5em;
+      border-radius: 0;
+      // box-shadow: rgb(236, 230, 230) 2px 3px 10px 1px;
+      .warn_card_status {
+        z-index: 999;
+        display: inline-block;
+        width: 47px;
+        height: 22px;
+        text-align: center;
+        line-height: 18px;
+        border-radius: 2px;
+        border: 1px solid rgba(212, 130, 101, 1);
+        .warn_card_status_text {
+          font-size: 10px;
+          color: #d48265;
+        }
       }
       .spec {
-        display: flex;
         width: 100%;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: nowrap;
-        font-size: 16px;
+        font-size: 14px;
         padding: 0 0 0 5px;
         color: #999999;
       }
       b {
         color: black;
-        font-weight: normal
+        font-weight: normal;
       }
       :global {
         .am-card-body {
@@ -54,8 +59,8 @@
   }
 }
 :global {
-  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx){
-    html:not([data-scale]) .am-card-body::before{
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+    html:not([data-scale]) .am-card-body::before {
       background-color: none;
     }
   }
@@ -69,15 +74,15 @@
       background-color: none;
     }
   }
-    .am-card-header-content {
-      flex: unset;
-      display: block;
-      width: 71%;
-      font-size: 18px;
-      font-weight: bold;
-      font-family: black;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+  .am-card-header-content {
+    flex: unset;
+    display: block;
+    width: 71%;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: black;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }

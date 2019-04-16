@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import router from 'umi/router';
 import style from './index.less';
+import { styles } from '_ansi-colors@3.2.4@ansi-colors';
 
 class app extends Component {
   PropTypes = {
@@ -18,10 +19,10 @@ class app extends Component {
   goto(id) {
     switch (id) {
       case 1:
-      let getTimestamp=new Date().getTime();
+        let getTimestamp = new Date().getTime();
         router.push({
           pathname: '/customer-add',
-          query: { type: 'add',timestamp:getTimestamp  },
+          query: { type: 'add', timestamp: getTimestamp },
         });
         break;
       case 2:
@@ -30,13 +31,13 @@ class app extends Component {
         });
         break;
       case 3:
-        // router.push({
-        //   pathname: '/login',
-        //   //  query: { type: 'detail.id' },
-        // });
+        router.push({
+          pathname: '/static',
+          //  query: { type: 'detail.id' },
+        });
         break;
       case 4:
-        // router.push('/login');
+        router.push('/user-list');
         break;
 
       default:
@@ -57,7 +58,7 @@ class app extends Component {
             <div className="card-img">
               <img src={item.src} alt="" />
             </div>
-            <div className="title">{item.title}</div>
+            <div className={styles.title}>{item.title}</div>
           </div>
         ))}
       </div>

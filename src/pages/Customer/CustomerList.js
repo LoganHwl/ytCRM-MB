@@ -11,6 +11,8 @@ import {
   Toast,
   TextareaItem,
   ListView,
+  Accordion,
+  List,
 } from 'antd-mobile';
 import { createForm } from 'rc-form';
 import Header from '../Base/header';
@@ -60,6 +62,20 @@ const statusList = [
     title: '回收',
   },
 ];
+const level = [
+  {
+    id: 1,
+    title: '高',
+  },
+  {
+    id: 2,
+    title: '中',
+  },
+  {
+    id: 3,
+    title: '低',
+  },
+];
 
 @connect(({ home, loading }) => ({
   ...home,
@@ -89,6 +105,13 @@ class CustomerList extends Component {
       dataSource: ds,
       customerList: [],
       noNet: false,
+      realName: '不限责任人',
+      saleStatus: '不限阶段',
+      moreCondition: '更多筛选',
+      activeKey: '',
+      statusId: '',
+      levelId: '',
+      order: '',
     };
   }
   componentWillReceiveProps(nextState) {
@@ -99,11 +122,9 @@ class CustomerList extends Component {
     }
   }
   componentWillMount() {
-    debugger;
     Toast.loading('正在加载...', 0);
   }
   onEndReached = () => {
-    // debugger
     const { page } = this.state;
     // hasMore: from backend data, indicates whether it is the last page, here is false
     if (this.state.isLoading && !this.state.hasMore) {
@@ -121,7 +142,6 @@ class CustomerList extends Component {
     });
   }
   componentDidMount() {
-    debugger;
     const { dispatch } = this.props;
     dispatch({
       type: 'home/getUserForAssign',
@@ -152,9 +172,7 @@ class CustomerList extends Component {
       type: 'home/getCustomerList',
       payload: params,
     });
-    // debugger;
     if (res && res.list) {
-      // debugger;
       if (v === 1) {
         let list = customerList.concat(res.list);
         this.setState({ isLoading: false, customerList: list });
@@ -165,7 +183,6 @@ class CustomerList extends Component {
     } else if (res === 'Failed to fetch') {
       Toast.hide();
       this.setState({ noNet: true, isLoading: false });
-      // debugger;
     }
   }
   // 存储搜索条件
@@ -347,6 +364,58 @@ class CustomerList extends Component {
     // });
     // this.onSearch();
   };
+
+  // 手风琴点击及选择对应筛选条件后回调
+  onAccordionChange = e => {
+    if (!e) {
+      this.setState({ activeKey: '' });
+    } else if (e) {
+      this.setState({ activeKey: e });
+    }
+  };
+  // 筛选项---销售阶段
+  saleStatusChange(e, title) {
+    this.setState({ saleStatus: title });
+    if (title === '不限阶段') {
+      this.onSearchConditionChange({ saleStatus: '' });
+    }
+    saleStatusList.map(item => {
+      if (item.title === title) {
+        this.onSearchConditionChange({ saleStatus: item.id });
+      }
+    });
+    this.onAccordionChange();
+  }
+  // 更多筛选---状态
+  statusChange(e, id) {
+    if (this.state.levelId === id) {
+      this.setState({ statusId: '' });
+    } else {
+      this.setState({ statusId: id });
+    }
+
+    // this.onAccordionChange()
+  }
+  // 更多筛选---级别
+  levelChange(e, id) {
+    if (this.state.levelId === id) {
+      this.setState({ levelId: '' });
+    } else {
+      this.setState({ levelId: id });
+    }
+
+    // this.onAccordionChange()
+  }
+  // 更多筛选---排序
+  sortChange(e, id) {
+    if (this.state.order === id) {
+      this.setState({ order: '' });
+    } else {
+      this.setState({ order: id });
+    }
+
+    // this.onAccordionChange()
+  }
   render() {
     const {
       // customerList,
@@ -364,8 +433,14 @@ class CustomerList extends Component {
       customerList,
       isLoading,
       noNet,
+      realName,
+      saleStatus,
+      moreCondition,
+      activeKey,
+      statusId,
+      levelId,
+      order,
     } = this.state;
-    debugger;
     //获取item进行展示
     const row = item => {
       return (
@@ -422,7 +497,7 @@ class CustomerList extends Component {
             />
             <Card.Body>
               <div className={styles.col}>
-                <div style={{ width: '90%' }}>
+                <div style={{ width: '100%' }}>
                   <div className={styles.spec}>
                     <div style={{ width: '48%' }}>
                       联系人：
@@ -460,15 +535,15 @@ class CustomerList extends Component {
                     </div>
                   </div>
                 </div>
-                <div style={{ width: '10%', textAlign: 'right', margin: '1em -0.3em 0 0' }}>
+                {/* <div style={{ width: '10%', textAlign: 'right', margin: '1em -0.3em 0 0' }}>
                   <div>
                     {' '}
                     <Icon type="right" size="md" />
                   </div>
-                </div>
+                </div> */}
               </div>
             </Card.Body>
-            <Card.Footer
+            {/* <Card.Footer
               extra={
                 <div className={styles.col}>
                   <Button
@@ -498,7 +573,7 @@ class CustomerList extends Component {
                   </Button>
                 </div>
               }
-            />
+            /> */}
           </Card>
         </div>
       );
@@ -530,8 +605,97 @@ class CustomerList extends Component {
               搜索
             </Button>
           </div>
-          <div className={styles.search_bottom}>
-            <Select
+          <Accordion
+            accordion
+            activeKey={activeKey}
+            openAnimation={{}}
+            className={styles.search_bottom}
+            onChange={this.onAccordionChange}
+          >
+            <Accordion.Panel key={'0'} header={realName} className={styles.search_select}>
+              <List className="my-list">
+                <List.Item
+                  onClick={v => {
+                    this.setState({ realName: '不限责任人' });
+                    this.onAccordionChange();
+                  }}
+                >
+                  不限责任人
+                </List.Item>
+                {userForAssign &&
+                  userForAssign.length > 0 &&
+                  userForAssign.map((item, index) => (
+                    <List.Item
+                      key={index}
+                      onClick={v => {
+                        this.setState({ realName: item.realName });
+                        this.onAccordionChange();
+                      }}
+                    >
+                      {item.realName}
+                    </List.Item>
+                  ))}
+              </List>
+            </Accordion.Panel>
+            <Accordion.Panel key={'1'} header={saleStatus} className={styles.search_select}>
+              <List className="my-list">
+                <List.Item onClick={e => this.saleStatusChange(e, '不限阶段')}>不限阶段</List.Item>
+                {saleStatusList.map((item, index) => (
+                  <List.Item key={index} onClick={e => this.saleStatusChange(e, item.title)}>
+                    {item.title}
+                  </List.Item>
+                ))}
+              </List>
+            </Accordion.Panel>
+            <Accordion.Panel key={'2'} header={moreCondition} className={styles.search_select}>
+              <div>级别:</div>
+              {level.map((item, index) => (
+                <Button
+                  key={index}
+                  type={item.id === levelId ? 'primary' : ''}
+                  inline
+                  size="small"
+                  style={{ marginRight: '4px' }}
+                  onClick={e => this.levelChange(e, item.id)}
+                >
+                  {item.title}
+                </Button>
+              ))}
+              <div>状态:</div>
+              {statusList.map((item, index) => (
+                <Button
+                  key={index}
+                  type={item.id === statusId ? 'primary' : ''}
+                  inline
+                  size="small"
+                  style={{ marginRight: '4px' }}
+                  onClick={e => this.statusChange(e, item.id)}
+                >
+                  {item.title}
+                </Button>
+              ))}
+              <div>排序:</div>
+              <Button
+                type={order === 0 ? 'primary' : ''}
+                inline
+                size="small"
+                style={{ marginRight: '4px' }}
+                onClick={e => this.sortChange(e, 0)}
+              >
+                高-中-低
+              </Button>
+              <Button
+                type={order === 1 ? 'primary' : ''}
+                inline
+                size="small"
+                style={{ marginRight: '4px' }}
+                onClick={e => this.sortChange(e, 1)}
+              >
+                低-中-高
+              </Button>
+            </Accordion.Panel>
+          </Accordion>
+          {/* <Select
               className={styles.search_select}
               placeholder="责任人"
               allowClear={true}
@@ -614,12 +778,11 @@ class CustomerList extends Component {
             >
               <Option value={1}>低-中-高</Option>
               <Option value={0}>高-中-低</Option>
-            </Select>
-          </div>
+            </Select> */}
         </div>
 
         <WhiteSpace size="md" />
-        <div style={{ marginTop: '124px' }}>
+        <div style={{ marginTop: '115px' }}>
           {customerList && customerList.length > 0 ? (
             <ListView
               dataSource={dataSource.cloneWithRows(customerList)}
