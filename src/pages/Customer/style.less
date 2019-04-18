@@ -1,6 +1,6 @@
 .page {
-  color: black;
-  font-size: 14px;
+  height: 100%;
+  // background: white;
   .search {
     width: 100%;
     height: 79px;
@@ -53,11 +53,19 @@
       justify-content: center;
       .search_select {
         width: 34%;
-        text-align: center;
+        // text-align: center;
         margin: 0 0.8em 0 0.5em;
         font-size: 14px;
         font-weight: normal;
         font-family: PingFangSC-Regular;
+        .search_select_more {
+          padding: 10px 16px;
+          .search_select_more_btn {
+            margin: 8px 20px 6px 0;
+            min-width: 6em;
+            line-height: 32px;
+          }
+        }
         :global {
           .am-list-body {
             margin-top: 0;
@@ -67,17 +75,64 @@
     }
   }
 
+  .detail_footer_col {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    color: #999999;
+    font-size: 14px;
+    background: white;
+    margin-top: -7px;
+    border-top: 1px solid rgba(180, 180, 180, 0.1);
+    div {
+      width: 34%;
+      text-align: center;
+      // border-right: 1px solid grey;
+      height: 40px;
+      line-height: 40px;
+      color: #1990ff;
+    }
+    span {
+      opacity: 0.15;
+      margin-top: -2px;
+    }
+  }
+
+  .detail_grid {
+    border-top: 15px solid #edf2f6;
+    :global {
+      .not-square-grid .am-grid-icon {
+        width: 50px;
+        height: 60px;
+      }
+    }
+  }
+
   .list_card {
     background: white;
     margin-bottom: 0.5em;
     border-radius: 0;
     padding-bottom: 10px;
-    .normal {
-      color: #d48265;
-      font-size: 14px;
+
+    .status_panel {
+      margin: -8px 0 12px 0;
+      b {
+        font-size: 12px;
+        display: inline-block;
+        width: 42px;
+        height: 22px;
+        text-align: center;
+        line-height: 22px;
+        border-radius: 3px;
+        color: #d48265;
+        border: 1px solid rgba(212, 130, 101, 1);
+      }
     }
     .spec_color {
       color: red !important;
+      border: 1px solid rgba(233, 0, 0, 1) !important;
     }
     .col {
       display: flex;
@@ -94,7 +149,7 @@
         align-items: center;
         justify-content: flex-start;
         flex-wrap: nowrap;
-
+        margin-bottom: 5px;
         b {
           color: #1e1e1e;
           font-weight: 400;
@@ -109,12 +164,77 @@
         color: #219ddd;
         margin: 1em 0.3em;
       }
+    }
+  }
 
+  .status_panel {
+    margin-top: 45px;
+    font-size: 16px;
+    color: rgba(30, 30, 30, 1);
+    .status_title {
+      padding: 16px 16px;
       :global {
-        .am-card-body {
-          &:befor {
-            background-color: none;
+        .am-list-item .am-input-label {
+          font-size: 16px;
+        }
+      }
+    }
+    .status_list {
+      width: 80%;
+      height: 36px;
+      background: #f2f2f2;
+      margin: 0 auto 10px;
+      text-align: center;
+      line-height: 36px;
+      border-radius: 4px;
+    }
+    .status_list_active {
+      background: rgba(25, 144, 255, 0.2);
+      border: 1px solid rgba(25, 144, 255, 1);
+      color: rgba(25, 144, 255, 1);
+    }
+    .status_text {
+      width: 91%;
+      border: 1px solid rgba(218, 218, 218, 1);
+      margin: 0 auto;
+      border-radius: 4px;
+      :global {
+        .am-list-item {
+          border-radius: 4px;
+        }
+        .am-textarea-control textarea {
+          font-size: 16px;
+        }
+      }
+    }
+    .btn_panel {
+      margin-top: 4.5em;
+      .btn {
+        width: 42.8vw;
+        height: 10vw;
+        line-height: 10vw;
+        margin: 0 0.2vw 0 4.65vw;
+        font-size: 3.95vw;
+      }
+      :global {
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+          html:not([data-scale]) .am-button::before {
+            border: 1px solid #ddd;
           }
+        }
+      }
+    }
+    .spec_select {
+      float: right;
+      margin-top: -38px;
+      min-width: 8em;
+      font-size: 16px;
+      :global {
+        .ant-select-selection {
+          border: none;
+        }
+        .ant-select-open .ant-select-selection:focus {
+          box-shadow: none;
         }
       }
     }
@@ -125,6 +245,7 @@
     font-size: 14px;
     box-shadow: rgb(236, 230, 230) 2px 3px 10px 1px;
     margin-top: 45px;
+    background: white;
     div {
       overflow: hidden;
       text-overflow: ellipsis;
@@ -146,8 +267,13 @@
     }
   }
   .change_title {
-    margin: 8px 0 0 15px;
+    padding: 5px 16px;
     font-weight: 600;
+    background: white;
+    margin-top: 15px;
+    font-size: 16px;
+    font-family: PingFangSC-Medium;
+    color: rgba(30, 30, 30, 1);
   }
   .status_card {
     span {
@@ -161,11 +287,33 @@
       color: black;
     }
     .normal {
+      font-size: 12px;
+      display: inline-block;
+      width: 42px;
+      height: 22px;
+      text-align: center;
+      line-height: 22px;
+      border-radius: 3px;
       color: #d48265;
+      border: 1px solid rgba(212, 130, 101, 1);
     }
     .spec_color {
       color: red !important;
+      border: 1px solid rgba(233, 0, 0, 1) !important;
     }
+    :global {
+      .am-card-body {
+        padding: 5px 0 0;
+      }
+    }
+  }
+  .no_info {
+    padding-top: 3em;
+    width: 100%;
+    height: 8em;
+    text-align: center;
+    color: rgb(153, 153, 153);
+    background: white;
   }
 }
 
@@ -195,12 +343,12 @@
     .am-list-item {
       border: 1px solid #dadada;
       padding-left: 5px;
-      border-radius: 5px;
+      // border-radius: 5px;
       font-size: 14px;
-      .am-textarea-control textarea {
-        font-size: 14px;
-        line-height: 14px;
-      }
+      // .am-textarea-control textarea {
+      //   font-size: 14px;
+      //   line-height: 14px;
+      // }
     }
     .am-modal-button-group-h .am-modal-button {
       height: 45px;
@@ -210,18 +358,14 @@
   }
 }
 
-.add_page {
-  .tab_pane {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #fff;
-  }
-}
-
 :global {
   a:hover {
     color: #1e1e1e;
+  }
+  .am-list-item .am-input-control input,
+  .am-textarea-control textarea {
+    font-size: 16px;
+    color: darkgray;
   }
   .am-accordion .am-accordion-item .am-accordion-header {
     color: rgba(180, 180, 180, 1);
@@ -230,7 +374,7 @@
     line-height: 33px;
   }
   .am-accordion .am-accordion-item .am-accordion-header i {
-    top: 10px;
+    top: 8px;
     right: 10px;
   }
   .am-accordion .am-accordion-item .am-accordion-content {
@@ -244,17 +388,17 @@
     font-size: 16px;
     padding: 9px 16px 5px;
   }
-  .am-card-header-content {
-    flex: unset;
-    display: block;
-    width: 71%;
-    font-size: 18px;
-    font-weight: bold;
-    font-family: black;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+  // .am-card-header-content {
+  //   flex: unset;
+  //   display: block;
+  //   width: 68%;
+  //   font-size: 18px;
+  //   font-weight: bold;
+  //   font-family: black;
+  //   overflow: hidden;
+  //   text-overflow: ellipsis;
+  //   white-space: nowrap;
+  // }
   .am-card-body {
     padding: 5px 16px 0;
     border-top: none;
@@ -268,6 +412,10 @@
   }
   .am-modal-transparent {
     width: 290px;
+  }
+  .ant-select-selection-selected-value {
+    color: darkgray;
+    font-size: 16px;
   }
   .ant-select-open .ant-select-selection:focus {
     box-shadow: none;
@@ -295,11 +443,10 @@
     font-weight: bolder;
   }
   .am-list-body {
-    margin-top: 89px;
     background: none;
   }
   .ant-select-selection:hover {
-    border-color: white;
+    border-color: rgba(236, 230, 230, 0);
   }
   .ant-select-focused .ant-select-selection,
   .ant-select-selection:focus,
@@ -314,7 +461,7 @@
   @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
     html:not([data-scale]) .am-accordion::before,
     html:not([data-scale]) .am-accordion .am-accordion-item .am-accordion-header::after {
-      background-color: white;
+      background-color: rgba(236, 230, 230, 0);
     }
     // html:not([data-scale]) .am-accordion .am-accordion-item .am-accordion-header::after {
     //   background-color: #ddd;
@@ -322,11 +469,19 @@
     html:not([data-scale]) .am-card:not(.am-card-full)::before {
       border: none;
     }
-    html:not([data-scale]) .am-card-body::before {
-      background-color: white;
-    }
+    html:not([data-scale]) .am-card-body::before,
     html:not([data-scale]) .am-list-body::before {
-      background-color: white;
+      background-color: rgba(236, 230, 230, 0);
+    }
+    html:not([data-scale])
+      .am-grid.am-grid-line
+      .am-flexbox
+      .am-flexbox-item:not(:last-child)::after {
+      width: 0;
+    }
+    html:not([data-scale]) .am-grid.am-grid-line:not(.am-grid-carousel)::before,
+    html:not([data-scale]) .am-grid.am-grid-line .am-flexbox::after {
+      background-color: rgba(236, 230, 230, 0);
     }
   }
 }

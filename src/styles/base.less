@@ -1,91 +1,91 @@
 @import '~@/utils/utils.less';
-:global{
-    body{
-        background: #fff;
-    }
-    .page{
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        flex: 1;
-    }
-    .page-content{
-        display: flex;
-        flex-direction: column;
-        flex: auto;
-        height: 0;
-    }
-    .page-header{
-        flex: initial;
-        // display: flex;
-        flex-direction: row;
-    }
-    .page-footer{
-        flex: initial;
-        display: flex;
-        flex-direction: column;
-    }
-    .flex-row{
-        display: flex;
-        flex: 1;
-        flex-direction: row;
-    }
-    .flex-column{
-        display: flex;
-        flex: 1;
-        flex-direction: column;
-    }
-    .flex-3{
-        flex: 3;
-    }
-    .flex-1{
-        flex: 1;
-    }
-    .align-center{
-        align-items: center;
-    }
-    .icon{
-        width: @size-middle;
-        height: @size-middle;
-      }
-    .icon-larget{
-        width: @size-larget;
-        height: @size-larget;
-    } 
-    //步骤图标
-    .step-circle{
-        width: @size-middle;
-        height: @size-middle;
-        border-radius: 50%;
-        background-color: @color-defalut;
-        display: table-cell;
-        color: #fff;
-        text-align: center;
-        vertical-align: middle;
-        font-style: normal;
-        font-size: 15px;
-    }
-    .bj-primary{
-        background-color: @color-primary;
-    }
+:global {
+  body {
+    height: 100%;
+  }
+  .page {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    flex: 1;
+    background: #edf2f6;
+  }
+  .page-content {
+    display: flex;
+    flex-direction: column;
+    flex: auto;
+    height: 0;
+  }
+  .page-header {
+    flex: initial;
+    // display: flex;
+    flex-direction: row;
+  }
+  .page-footer {
+    flex: initial;
+    display: flex;
+    flex-direction: column;
+  }
+  .flex-row {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+  }
+  .flex-column {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+  .flex-3 {
+    flex: 3;
+  }
+  .flex-1 {
+    flex: 1;
+  }
+  .align-center {
+    align-items: center;
+  }
+  .icon {
+    width: @size-middle;
+    height: @size-middle;
+  }
+  .icon-larget {
+    width: @size-larget;
+    height: @size-larget;
+  }
+  //步骤图标
+  .step-circle {
+    width: @size-middle;
+    height: @size-middle;
+    border-radius: 50%;
+    background-color: @color-defalut;
+    display: table-cell;
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
+    font-style: normal;
+    font-size: 15px;
+  }
+  .bj-primary {
+    background-color: @color-primary;
+  }
 
-
-    //antd-mobile
-    .am-tab-bar{
-       height: auto;
+  //antd-mobile
+  .am-tab-bar {
+    height: auto;
+  }
+  .am-search-cancel {
+    display: none;
+  }
+  .page {
+    .am-navbar {
+      height: 45px;
     }
-    .am-search-cancel{
-        display: none;
-    }
-    .page{
-        .am-navbar{
-            height: 45px;
-        }
-    }
-    .am-tag{
-        margin: 5px;
-    }
-    .am-button-primary:hover{
-        color: #fff;
-    }
+  }
+  .am-tag {
+    margin: 5px;
+  }
+  .am-button-primary:hover {
+    color: #fff;
+  }
 }

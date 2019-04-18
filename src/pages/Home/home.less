@@ -1,7 +1,5 @@
 .page {
-  color: black;
-  font-size: 14px;
-  background: #edf2f6;
+  // background: #edf2f6;
   .title {
     position: fixed;
     z-index: 999;
@@ -27,21 +25,21 @@
       .warn_card_status {
         z-index: 999;
         display: inline-block;
-        width: 47px;
+        width: 42px;
         height: 22px;
         text-align: center;
         line-height: 18px;
-        border-radius: 2px;
+        border-radius: 3px;
         border: 1px solid rgba(212, 130, 101, 1);
         .warn_card_status_text {
-          font-size: 10px;
+          font-size: 12px;
           color: #d48265;
         }
       }
       .spec {
         width: 100%;
         font-size: 14px;
-        padding: 0 0 0 5px;
+        // padding: 0 0 0 5px;
         color: #999999;
       }
       b {
@@ -61,7 +59,7 @@
 :global {
   @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
     html:not([data-scale]) .am-card-body::before {
-      background-color: none;
+      background-color: rgba(236, 230, 230, 0);
     }
   }
   .am-navbar {
@@ -79,8 +77,8 @@
     display: block;
     width: 71%;
     font-size: 16px;
-    font-weight: bold;
-    font-family: black;
+    font-weight: 400;
+    font-family: PingFangSC-Regular;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

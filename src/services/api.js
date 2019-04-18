@@ -21,7 +21,6 @@ export async function getUserForAssign() {
 }
 // 修改阶段信息
 export async function changeSaleInfo(params) {
-  // debugger;
   return request(`/customer/updateSaleInfo`, {
     method: 'POST',
     body: {
@@ -31,7 +30,6 @@ export async function changeSaleInfo(params) {
 }
 // 修改状态信息
 export async function changeStatusInfo(params) {
-  // debugger;
   return request(`/customer/updateStatus`, {
     method: 'POST',
     body: {
@@ -41,7 +39,6 @@ export async function changeStatusInfo(params) {
 }
 // 转移负责人
 export async function changeBelong(params) {
-  // debugger;
   return request(`/customer/change`, {
     method: 'POST',
     body: {
@@ -60,7 +57,6 @@ export async function getCustomerName(params) {
 }
 // 新增客户
 export async function submitCustomerForm(params) {
-  // debugger;
   return request(`/customer/add`, {
     method: 'POST',
     body: {
@@ -70,7 +66,6 @@ export async function submitCustomerForm(params) {
 }
 // 修改客户信息
 export async function updateCustomerInfo(params) {
-  // debugger;
   return request(`/customer/update`, {
     method: 'POST',
     body: {
@@ -96,7 +91,6 @@ export async function getAllRole() {
 }
 // 设置角色
 export async function setRole(params) {
-  // debugger;
   return request(`/user/setRole`, {
     method: 'POST',
     body: {

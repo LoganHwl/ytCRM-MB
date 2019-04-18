@@ -32,7 +32,6 @@ class app extends Component {
     if (res !== false) {
       if (res === 'Failed to fetch') {
         this.setState({ noNet: true });
-        debugger;
       }
       Toast.hide();
     }
@@ -41,7 +40,7 @@ class app extends Component {
     e.preventDefault();
     let getTimestamp = new Date().getTime();
     router.push({
-      pathname: '/customer-add',
+      pathname: '/customer-detail',
       query: { type: 'detail', id, timestamp: getTimestamp },
     });
   }

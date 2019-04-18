@@ -26,9 +26,24 @@ export default [
             component: './Customer/CustomerList',
           },
           {
+            path: '/change-status',
+            name: 'change-status',
+            component: './Customer/ChangeStatus',
+          },
+          {
             path: '/customer-add',
             name: 'customer-add',
             component: './Customer/AddCustomer',
+          },
+          {
+            path: '/customer-detail',
+            name: 'customer-detail',
+            component: './Customer/CustomerDetail',
+          },
+          {
+            path: '/detail-classification',
+            name: 'detail-classification',
+            component: './Customer/CustomerDetailClassification',
           },
           {
             path: '/status-detail',

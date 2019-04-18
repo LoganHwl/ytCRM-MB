@@ -146,7 +146,6 @@ export default function request(
       .then(checkStatus)
       //.then(response => cachedSave(response, hashcode))
       .then(response => {
-        // debugger
         // DELETE and 204 do not return data by default
         // using .json will report an error.
         if (newOptions.method === 'DELETE' || response.status === 204) {

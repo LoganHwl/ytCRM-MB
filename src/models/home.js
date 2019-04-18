@@ -24,6 +24,7 @@ export default {
     search: {},
     startPage: 1,
     customerList: [],
+    customerDetail: {},
     customerInfo: {},
     saleInfo: {},
     tabsInfo: {},
@@ -67,7 +68,6 @@ export default {
           return false;
         }
       } catch (err) {
-        // debugger;
         const { msg } = err.response || {};
 
         console.log('错误信息', msg);
@@ -190,7 +190,6 @@ export default {
           return false;
         }
       } catch (err) {
-        // debugger;
         const { msg } = err.response || {};
 
         console.log('错误信息', msg);

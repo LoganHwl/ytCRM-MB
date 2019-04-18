@@ -4,28 +4,24 @@ import { InputItem, Button, WhiteSpace, WingBlank } from 'antd-mobile';
 import router from 'umi/router';
 import Header from './header';
 
-
 @connect(({ login }) => ({
   ...login,
 }))
-
 class Base extends Component {
   state = {
     // navLeftVisibility: false,
   };
-  componentWillMount(){
+  componentWillMount() {
     // const userToken = localStorage.getItem('user');
     // if(!userToken){
     //   router.push('/login');
     // }
-    // debugger
-    const {dispatch}=this.props
+    const { dispatch } = this.props;
     dispatch({
       type: 'login/getUserInfo',
-    }).then(res=>{
-    //  let roleId= sessionStorage.getItem('roleId');
-    //  debugger
-    })
+    }).then(res => {
+      //  let roleId= sessionStorage.getItem('roleId');
+    });
   }
   componentDidMount() {
     const userToken = localStorage.getItem('userToken');
@@ -36,10 +32,10 @@ class Base extends Component {
 
   render() {
     return (
-        <div className="page">
-          {/* <Header /> */}
-          <div className="page-content">{this.props.children}</div>
-        </div>
+      <div className="page">
+        {/* <Header /> */}
+        <div className="page-content">{this.props.children}</div>
+      </div>
     );
   }
 }

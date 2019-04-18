@@ -20,7 +20,6 @@ class Header extends Component {
         {this.props.children}
       </NavBar>
       // React.Children.map(this.props.children, function (child) {
-      //   debugger
       //   return <NavBar
       //   mode="dark"
       //   leftContent={<Icon type="left" size='lg' />}

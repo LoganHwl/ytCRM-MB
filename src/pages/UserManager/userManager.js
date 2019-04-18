@@ -36,9 +36,6 @@ class userManager extends Component {
     this.getUserForAssign = this.getUserForAssign.bind(this);
     // this.handleCancel = this.handleCancel.bind(this);
     this.state = {
-      nickName_search: '',
-      realName_search: '',
-      mobile_search: '',
       realName: '',
       mobile: '',
       modalVisible: false,
@@ -53,6 +50,7 @@ class userManager extends Component {
       currentRoleId: '',
       userList: [],
       searchType: 0,
+      searchValue: '',
     };
   }
 
@@ -80,7 +78,6 @@ class userManager extends Component {
     location.reload();
   };
   onEndReached = () => {
-    // debugger
     const { startPage } = this.state;
     if (this.state.isLoading && !this.state.hasMore) {
       return;
@@ -91,21 +88,25 @@ class userManager extends Component {
   };
 
   async handleSearch(v) {
-    const {
-      nickName_search,
-      realName_search,
-      mobile_search,
-      startPage,
-      pageSize,
-      userList,
-    } = this.state;
+    const { startPage, pageSize, userList, searchType, searchValue } = this.state;
     const params = {
       startPage,
       pageSize,
-      nickName: nickName_search,
-      realName: realName_search,
-      mobile: mobile_search,
     };
+    switch (searchType) {
+      case 0:
+        params.realName = searchValue;
+        break;
+      case 1:
+        params.nickName = searchValue;
+        break;
+      case 2:
+        params.mobile = searchValue;
+        break;
+      default:
+        break;
+    }
+    debugger;
     const res = await this.props.dispatch({
       type: 'home/getUserList',
       payload: params,
@@ -124,25 +125,7 @@ class userManager extends Component {
     }
   }
   onSearchConditionChange(v) {
-    const { searchType } = this.state;
-    this.setState({
-      nickName_search: '',
-      realName_search: '',
-      mobile_search: '',
-    });
-    switch (searchType) {
-      case 0:
-        this.setState({ realName_search: v });
-        break;
-      case 1:
-        this.setState({ nickName_search: v });
-        break;
-      case 2:
-        this.setState({ mobile_search: v });
-        break;
-      default:
-        break;
-    }
+    this.setState({ searchValue: v });
   }
   realNameValueChange(v) {
     this.setState({
@@ -306,7 +289,7 @@ class userManager extends Component {
             </Button>
           </div>
         </div>
-        <div style={{ marginTop: '105px' }}>
+        <div className={styles.userManager_card_panel} style={{ marginTop: '95px' }}>
           {userList && userList.length > 0 ? (
             <ListView
               dataSource={dataSource.cloneWithRows(userList)}

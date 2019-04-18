@@ -1,6 +1,13 @@
 .page {
   color: black;
   font-size: 16px;
+  .userManager_card_panel {
+    :global {
+      .am-card-body {
+        padding: 5px 0;
+      }
+    }
+  }
   .search_condition {
     position: fixed;
     z-index: 999;
@@ -11,7 +18,7 @@
     text-align: center;
     background: white;
     box-shadow: rgb(236, 230, 230) 2px 3px 10px 1px;
-    line-height: 42px;
+    line-height: 45px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -80,7 +87,7 @@
       white-space: nowrap;
       display: inline-block;
       width: 73%;
-      line-height: 14px;
+      line-height: 16px;
       vertical-align: middle;
       height: 18px;
     }
@@ -92,13 +99,13 @@
       color: #219ddd;
     }
 
-    :global {
-      .am-card-body {
-        &:befor {
-          background-color: none;
-        }
-      }
-    }
+    // :global {
+    //   .am-card-body {
+    //     &:befor {
+    //       background-color: none;
+    //     }
+    //   }
+    // }
   }
 
   :global {
