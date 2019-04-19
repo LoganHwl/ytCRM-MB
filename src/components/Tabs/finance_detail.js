@@ -29,6 +29,7 @@ class Finance_detail extends React.Component {
     if (res && res.financialInfos) {
       this.setState({ financialInfos: res.financialInfos, canAdd: true });
     }
+    // debugger
   }
 
   // 每个面板都需要点击编辑才能修改
@@ -141,20 +142,23 @@ class Finance_detail extends React.Component {
               <MyCard>
                 <Card.Header
                   title={
-                    <div
-                      className={`${styles.tabsCardHeader} ${
-                        operating === 0 ? styles.detail_header : null
-                      }`}
-                    >
-                      <InputItem
-                        type="number"
-                        value={item.year}
-                        onChange={this.onValueChange.bind(this, 'year', index)}
-                        placeholder={operating === 0 ? '' : '年份'}
-                        disabled={operating === 0 ? true : canEditIndex === index ? false : true}
+                    <div>
+                      <div
+                        className={`${styles.tabsCardHeader} ${
+                          operating === 0 ? styles.detail_header : null
+                        }`}
                       >
-                        {operating === 0 ? '' : '年度'}
-                      </InputItem>
+                        <InputItem
+                          type="number"
+                          value={`${item.year}${operating === 0 ? '年' : ''}`}
+                          onChange={this.onValueChange.bind(this, 'year', index)}
+                          placeholder={operating === 0 ? '' : '年份'}
+                          disabled={operating === 0 ? true : canEditIndex === index ? false : true}
+                        />
+                      </div>
+                      {operating === 0 ? null : (
+                        <span style={{ float: 'left', margin: '-28px 32% 0' }}>年</span>
+                      )}
                     </div>
                   }
                   extra={
@@ -191,7 +195,7 @@ class Finance_detail extends React.Component {
                   >
                     <div>
                       <div>
-                        <div className={styles.col_title}>销售收入</div>
+                        <div className={styles.col_title}>销售收入(万)</div>
                         <InputItem
                           value={
                             operating === 0 && item.salesRevenue != null
@@ -199,14 +203,13 @@ class Finance_detail extends React.Component {
                               : item.salesRevenue
                           }
                           onChange={this.onValueChange.bind(this, 'salesRevenue', index)}
-                          placeholder={operating === 0 ? '' : '万元'}
                           disabled={operating === 0 ? true : canEditIndex === index ? false : true}
                           type={operating === 1 ? 'digit' : ''}
                           error={this.state.hasError}
                         />
                       </div>
                       <div>
-                        <div className={styles.col_title}>利润</div>
+                        <div className={styles.col_title}>利润(万)</div>
                         <InputItem
                           value={
                             operating === 0 && item.profit != null
@@ -214,14 +217,13 @@ class Finance_detail extends React.Component {
                               : item.profit
                           }
                           onChange={this.onValueChange.bind(this, 'profit', index)}
-                          placeholder={operating === 0 ? '' : '万元'}
                           disabled={operating === 0 ? true : canEditIndex === index ? false : true}
                           type={operating === 1 ? 'digit' : ''}
                           error={this.state.hasError}
                         />
                       </div>
                       <div>
-                        <div className={styles.col_title}>净资产</div>
+                        <div className={styles.col_title}>净资产(万)</div>
                         <InputItem
                           value={
                             operating === 0 && item.netAssets != null
@@ -229,7 +231,6 @@ class Finance_detail extends React.Component {
                               : item.netAssets
                           }
                           onChange={this.onValueChange.bind(this, 'netAssets', index)}
-                          placeholder={operating === 0 ? '' : '万元'}
                           disabled={operating === 0 ? true : canEditIndex === index ? false : true}
                           type={operating === 1 ? 'digit' : ''}
                           error={this.state.hasError}
@@ -238,7 +239,7 @@ class Finance_detail extends React.Component {
                     </div>
                     <div>
                       <div>
-                        <div className={styles.col_title}>纳税总额</div>
+                        <div className={styles.col_title}>纳税总额(万)</div>
                         <InputItem
                           value={
                             operating === 0 && item.taxPayment != null
@@ -246,14 +247,13 @@ class Finance_detail extends React.Component {
                               : item.taxPayment
                           }
                           onChange={this.onValueChange.bind(this, 'taxPayment', index)}
-                          placeholder={operating === 0 ? '' : '万元'}
                           disabled={operating === 0 ? true : canEditIndex === index ? false : true}
                           type={operating === 1 ? 'digit' : ''}
                           error={this.state.hasError}
                         />
                       </div>
                       <div>
-                        <div className={styles.col_title}>研发投入</div>
+                        <div className={styles.col_title}>研发投入(万)</div>
                         <InputItem
                           value={
                             operating === 0 && item.develop != null
@@ -261,14 +261,13 @@ class Finance_detail extends React.Component {
                               : item.develop
                           }
                           onChange={this.onValueChange.bind(this, 'develop', index)}
-                          placeholder={operating === 0 ? '' : '万元'}
                           disabled={operating === 0 ? true : canEditIndex === index ? false : true}
                           type={operating === 1 ? 'digit' : ''}
                           error={this.state.hasError}
                         />
                       </div>
                       <div>
-                        <div className={styles.col_title}>固定资产</div>
+                        <div className={styles.col_title}>固定资产(万)</div>
                         <InputItem
                           value={
                             operating === 0 && item.fixedAssets != null
@@ -276,7 +275,7 @@ class Finance_detail extends React.Component {
                               : item.fixedAssets
                           }
                           onChange={this.onValueChange.bind(this, 'fixedAssets', index)}
-                          placeholder={operating === 0 ? '' : '万元'}
+                          // placeholder={operating === 0 ? '' : '万元'}
                           disabled={operating === 0 ? true : canEditIndex === index ? false : true}
                           type={operating === 1 ? 'digit' : ''}
                           error={this.state.hasError}
@@ -296,9 +295,11 @@ class Finance_detail extends React.Component {
           </div>
         ) : null}
         {operating === 0 ? null : (
-          <div className={styles.addOne} onClick={this.addComponent}>
-            <img src={ADD} />
-            {/* <Icon onClick={this.addComponent} type="down" size="lg" /> */}
+          <div>
+            {financialInfos.length > 0 ? null : <div style={{ marginTop: '5em' }} />}
+            <div className={styles.addOne} onClick={this.addComponent}>
+              <img src={ADD} />
+            </div>
           </div>
         )}
       </div>

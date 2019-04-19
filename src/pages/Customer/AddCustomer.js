@@ -53,7 +53,6 @@ class AddCustomer extends Component {
       tabsInfo.foundTime = '';
     }
 
-    debugger;
     if (!tabsInfo.name || tabsInfo.name === '') {
       Toast.fail('客户名称必填', 1);
       return;

@@ -203,6 +203,7 @@ class Contact_detail extends React.Component {
         ) : null}
         {operating === 0 ? null : (
           <div>
+            {contactInfos.length > 0 ? null : <div style={{ marginTop: '5em' }} />}
             <div className={styles.addOne} onClick={this.addComponent}>
               <img src={ADD} />
             </div>

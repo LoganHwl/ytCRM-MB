@@ -2,12 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import Header from '../Base/header';
-import { InputItem, TextareaItem, Button, Toast } from 'antd-mobile';
-import { Select } from 'antd';
+import { List, TextareaItem, Button, Toast, Picker } from 'antd-mobile';
 
 import styles from './style.less';
-
-const Option = Select.Option;
 
 const saleStatusList = [
   {
@@ -72,23 +69,64 @@ class dataStatistics extends Component {
     type: '',
     defaultStatus: null,
     list: [],
+    belongUserName: null,
+    userList: [],
+    canSubmit: false,
   };
 
+  userPickerList(value) {
+    let BUlist = [];
+    value.map(item => {
+      let info = {};
+      info.label = item.realName;
+      info.value = item.id;
+      BUlist.push(info);
+    });
+    this.setState({ userList: BUlist });
+  }
+  componentWillReceiveProps(nextProps) {
+    if (this.props.userForAssign !== nextProps.userForAssign) {
+      if (nextProps.userForAssign && nextProps.userForAssign.length > 0) {
+        this.userPickerList(nextProps.userForAssign);
+      }
+    }
+  }
+  async componentWillMount() {
+    const { dispatch, userForAssign } = this.props;
+    await dispatch({
+      type: 'home/getUserForAssign',
+    });
+    if (userForAssign && userForAssign.length > 0) {
+      this.userPickerList(userForAssign);
+    }
+  }
   async componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch, userForAssign } = this.props;
     const type = this.props.location.query.type;
     const id = this.props.location.query.id;
     this.setState({ type });
-    dispatch({
+    if (type == 2) {
+      this.setState({ selectedId: 0 });
+    }
+
+    await dispatch({
       type: 'home/getUserForAssign',
     });
+    if (userForAssign && userForAssign.length > 0) {
+      this.userPickerList(userForAssign);
+    }
+
     const res = await dispatch({
       type: 'home/getCustomerDetail',
       payload: id,
     });
     if (res && res !== false) {
       if (type == 0) {
-        this.setState({ defaultStatus: res.saleStatus, detail: res, list: saleStatusList });
+        this.setState({
+          defaultStatus: res.saleStatus === null ? '' : res.saleStatus,
+          detail: res,
+          list: saleStatusList,
+        });
       } else if (type == 1) {
         this.setState({ defaultStatus: res.status, detail: res, list: statusList });
       } else if (type == 2) {
@@ -104,9 +142,9 @@ class dataStatistics extends Component {
   // 点击选中的list
   statusChange(e, id) {
     if (this.state.selectedId === id) {
-      this.setState({ selectedId: '' });
+      this.setState({ selectedId: '', canSubmit: false });
     } else {
-      this.setState({ selectedId: id });
+      this.setState({ selectedId: id, canSubmit: true });
     }
   }
   // 取消
@@ -137,7 +175,7 @@ class dataStatistics extends Component {
           return;
         }
       });
-    } else if (key === 1) {
+    } else if (key == 1) {
       const params = {
         remark,
         customerId: detail.id,
@@ -157,7 +195,7 @@ class dataStatistics extends Component {
           return;
         }
       });
-    } else if (key === 2) {
+    } else if (key == 2) {
       const params = {
         userId,
         customerId: detail.id,
@@ -181,15 +219,22 @@ class dataStatistics extends Component {
   }
   // 负责人变更
   principalChange(value) {
-    this.setState(value);
+    this.setState({ canSubmit: true, value });
   }
   // 备注信息
   remarkTextChange(v) {
     this.setState({ remark: v });
   }
   render() {
-    const { userForAssign } = this.props;
-    const { selectedId, type, defaultStatus, list } = this.state;
+    const {
+      selectedId,
+      type,
+      defaultStatus,
+      list,
+      belongUserName,
+      userList,
+      canSubmit,
+    } = this.state;
     return (
       <div className={styles.page} style={{ background: 'white' }}>
         <Header>
@@ -204,22 +249,17 @@ class dataStatistics extends Component {
         <div className={styles.status_panel}>
           {type == 2 ? (
             <div className={styles.status_title}>
-              <InputItem>转给:</InputItem>
-              <Select
-                className={styles.spec_select}
+              <Picker
+                data={userList}
+                cols={1}
+                value={belongUserName}
                 placeholder="选择负责人"
-                allowClear={true}
-                dropdownMatchSelectWidth={false}
-                onChange={value => this.principalChange({ userId: value })}
+                onChange={value => {
+                  this.setState({ belongUserName: value, userId: value[0], canSubmit: true });
+                }}
               >
-                {userForAssign &&
-                  userForAssign.length > 0 &&
-                  userForAssign.map((item, index) => (
-                    <Option key={index} value={item.id}>
-                      {item.realName}
-                    </Option>
-                  ))}
-              </Select>
+                <List.Item arrow="horizontal">转给:</List.Item>
+              </Picker>
             </div>
           ) : (
             <div>
@@ -230,7 +270,7 @@ class dataStatistics extends Component {
                 <div
                   key={item.id}
                   className={
-                    defaultStatus && defaultStatus <= item.id
+                    defaultStatus !== null && defaultStatus <= item.id
                       ? selectedId === '' && defaultStatus === item.id
                         ? `${styles.status_list} ${styles.status_list_active}`
                         : selectedId === item.id
@@ -239,7 +279,7 @@ class dataStatistics extends Component {
                       : styles.status_list
                   }
                   onClick={
-                    defaultStatus && defaultStatus <= item.id
+                    defaultStatus !== null && defaultStatus <= item.id
                       ? e => this.statusChange(e, item.id)
                       : () => Toast.fail('不能往回修改！', 1)
                   }
@@ -298,6 +338,7 @@ class dataStatistics extends Component {
               size="small"
               inline
               onClick={this.submitChange.bind(this, type)}
+              disabled={canSubmit ? false : true}
             >
               确定
             </Button>

@@ -129,10 +129,10 @@ export default {
       try {
         const customerInfo = yield call(updateCustomerInfo, payload);
         if (customerInfo.code === 0) {
-          Toast.success('修改成功', 0.5);
-          setTimeout(() => {
-            history.go(-1);
-          }, 500);
+          Toast.success('修改成功', 1);
+          // setTimeout(() => {
+          //   history.go(-1);
+          // }, 500);
         } else {
           message.error(customerInfo.msg);
           return false;
@@ -224,6 +224,9 @@ export default {
       return { ...state, search: { ...state.search, ...payload } };
     },
     CONDITION_CHANGE(state, { payload }) {
+      return { ...state, customerDetail: { ...state.customerDetail, ...payload } };
+    },
+    CONDITION_CHANGE_ADD(state, { payload }) {
       return { ...state, tabsInfo: { ...state.tabsInfo, ...payload } };
     },
     GET_USERT_FOR_ASSIGN(state, { userForAssign }) {

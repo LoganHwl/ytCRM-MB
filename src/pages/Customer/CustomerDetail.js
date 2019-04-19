@@ -149,7 +149,10 @@ class customerDetail extends Component {
     const { customerDetail } = this.props;
     const { operating } = this.state;
     return (
-      <div className={styles.page} style={{ background: 'white' }}>
+      <div
+        className={`${styles.page} ${styles.customerDetail_panel}`}
+        style={{ background: 'white' }}
+      >
         <NavBar
           style={{ background: '#002140' }}
           mode="dark"

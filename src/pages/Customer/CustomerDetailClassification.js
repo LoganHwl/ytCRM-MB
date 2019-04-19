@@ -95,18 +95,18 @@ class customerDetailClassification extends Component {
       tabsInfo.belongUserId = customerDetail.belongUserId;
       tabsInfo.name = customerDetail.name;
     }
+    customerDetail.customerId = customerDetail.id;
+    // customerDetail.brandCount = Number(customerDetail.brandCount)
+    // console.log(typeof(customerDetail.brandCount))
+    // debugger
     dispatch({
       type: 'home/updateCustomerInfo',
-      payload: tabsInfo,
+      payload: customerDetail,
     });
     this.setState({ operating: 0 });
   };
   render() {
-    const {
-      customerDetail,
-      form: { getFieldDecorator },
-      tabsInfo,
-    } = this.props;
+    const { customerDetail } = this.props;
     const { icon, operating, ID } = this.state;
     return (
       <div className={styles.page} style={icon == 0 || icon == 1 ? { background: 'white' } : null}>
@@ -120,7 +120,7 @@ class customerDetailClassification extends Component {
               <span
                 onClick={() => {
                   this.setState({ operating: 0 });
-                  Toast.loading('重载中...', 2);
+                  Toast.loading('重载中...', 1);
                   window.location.reload();
                 }}
               >
@@ -133,7 +133,9 @@ class customerDetailClassification extends Component {
           }}
           rightContent={
             operating === 0 ? (
-              <span onClick={() => this.setState({ operating: 1 })}>编辑</span>
+              icon != 5 ? (
+                <span onClick={() => this.setState({ operating: 1 })}>编辑</span>
+              ) : null
             ) : (
               <span onClick={this.validate}>保存</span>
             )

@@ -33,12 +33,12 @@ class ChangeHistory extends React.Component {
 
                   <div className={styles.history_col}>
                     <span className={styles.col_title}>变更前信息：</span>
-                    <InputItem value={item.befores} disabled />
+                    <TextareaItem autoHeight value={item.befores} disabled />
                   </div>
 
                   <div className={styles.history_col}>
                     <span className={styles.col_title}>变更后信息：</span>
-                    <InputItem value={item.afters} disabled />
+                    <TextareaItem autoHeight value={item.afters} disabled />
                   </div>
 
                   <div className={styles.history_col}>

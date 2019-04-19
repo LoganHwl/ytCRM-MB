@@ -26,6 +26,7 @@ class OtherInputs_detail extends React.Component {
     if (res && res.expendInfos) {
       this.setState({ expendInfos: res.expendInfos, canAdd: true });
     }
+    // debugger
   }
   // 每个面板都需要点击编辑才能修改
   toggleEditable = (e, key) => {
@@ -137,20 +138,23 @@ class OtherInputs_detail extends React.Component {
               <MyCard>
                 <Card.Header
                   title={
-                    <div
-                      className={`${styles.tabsCardHeader} ${
-                        operating === 0 ? styles.detail_header : null
-                      }`}
-                    >
-                      <InputItem
-                        type="number"
-                        value={item.year}
-                        onChange={this.onValueChange.bind(this, 'year', index)}
-                        placeholder={operating === 0 ? '' : '年份'}
-                        disabled={operating === 0 ? true : canEditIndex === index ? false : true}
+                    <div>
+                      <div
+                        className={`${styles.tabsCardHeader} ${
+                          operating === 0 ? styles.detail_header : null
+                        }`}
                       >
-                        {operating === 0 ? '' : '年度'}
-                      </InputItem>
+                        <InputItem
+                          type="number"
+                          value={`${item.year}${operating === 0 ? '年' : ''}`}
+                          onChange={this.onValueChange.bind(this, 'year', index)}
+                          placeholder={operating === 0 ? '' : '年份'}
+                          disabled={operating === 0 ? true : canEditIndex === index ? false : true}
+                        />
+                      </div>
+                      {operating === 0 ? null : (
+                        <span style={{ float: 'left', margin: '-28px 32% 0' }}>年</span>
+                      )}
                     </div>
                   }
                   extra={
@@ -272,8 +276,11 @@ class OtherInputs_detail extends React.Component {
           </div>
         ) : null}
         {operating === 0 ? null : (
-          <div className={styles.addOne} onClick={this.addComponent}>
-            <img src={ADD} />
+          <div>
+            {expendInfos.length > 0 ? null : <div style={{ marginTop: '5em' }} />}
+            <div className={styles.addOne} onClick={this.addComponent}>
+              <img src={ADD} />
+            </div>
           </div>
         )}
       </div>

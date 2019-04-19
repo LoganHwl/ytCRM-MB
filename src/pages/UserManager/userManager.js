@@ -106,7 +106,6 @@ class userManager extends Component {
       default:
         break;
     }
-    debugger;
     const res = await this.props.dispatch({
       type: 'home/getUserList',
       payload: params,

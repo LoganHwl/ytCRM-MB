@@ -2,7 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
 import Header from '../Base/header';
-import { NavBar, Toast } from 'antd-mobile';
+import { List, Toast, Calendar, Accordion } from 'antd-mobile';
+import enUS from 'antd-mobile/lib/calendar/locale/en_US';
+import zhCN from 'antd-mobile/lib/calendar/locale/zh_CN';
 import { Select, DatePicker } from 'antd';
 
 import moment from 'moment';
@@ -13,6 +15,32 @@ import styles from './static.less';
 import Background from '../../assets/home/combined-shape.svg';
 
 const { RangePicker } = DatePicker;
+const statusList = [
+  {
+    id: 0,
+    title: '全部',
+  },
+  {
+    id: 1,
+    title: '正常',
+  },
+  {
+    id: 2,
+    title: '超时',
+  },
+  {
+    id: 3,
+    title: '关闭',
+  },
+  {
+    id: 4,
+    title: '回收',
+  },
+  {
+    id: 5,
+    title: '正常+超时',
+  },
+];
 
 //定义背景样式
 const sectionStyle = {
@@ -61,11 +89,40 @@ const getNowFormatDate = type => {
     date.getSeconds();
   return currentdate;
 };
+const extra = {
+  '2017/07/15': { info: 'Disable', disable: true },
+};
 
+const now = new Date();
+extra[+new Date(now.getFullYear(), now.getMonth(), now.getDate() + 5)] = {
+  info: 'Disable',
+  disable: true,
+};
+extra[+new Date(now.getFullYear(), now.getMonth(), now.getDate() + 6)] = {
+  info: 'Disable',
+  disable: true,
+};
+extra[+new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7)] = {
+  info: 'Disable',
+  disable: true,
+};
+extra[+new Date(now.getFullYear(), now.getMonth(), now.getDate() + 8)] = {
+  info: 'Disable',
+  disable: true,
+};
+
+Object.keys(extra).forEach(key => {
+  const info = extra[key];
+  const date = new Date(key);
+  if (!Number.isNaN(+date) && !extra[+date]) {
+    extra[+date] = info;
+  }
+});
 @connect(({ home }) => ({
   ...home,
 }))
 class dataStatistics extends Component {
+  originbodyScrollY = document.getElementsByTagName('body')[0].style.overflowY;
   state = {
     noNet: false,
     startPage: 1,
@@ -75,6 +132,10 @@ class dataStatistics extends Component {
     endTime: '',
     roleId: 1,
     list: [],
+    show: false,
+    config: {},
+    activeKey: '',
+    status: '全部',
   };
   async componentWillMount() {
     Toast.loading('正在加载...', 0);
@@ -180,40 +241,84 @@ class dataStatistics extends Component {
       this.setState({ list });
     }
   }
-  async onDateChange(date) {
+
+  onSelectHasDisableDate = dates => {
+    console.warn('onSelectHasDisableDate', dates);
+  };
+
+  async onConfirm(startTime, endTime) {
+    document.getElementsByTagName('body')[0].style.overflowY = this.originbodyScrollY;
     const { dispatch } = this.props;
-    if (date && date.length > 0) {
-      const startTime = moment(date[0].format('YYYY-MM-DD 00:00:00'));
-      const endTime = moment(date[1].format('YYYY-MM-DD 23:59:59'));
-      this.setState({
-        startTime: startTime._i,
-        endTime: endTime._i,
-      });
-      const params = {
-        startTime: startTime._i,
-        endTime: endTime._i,
-        status: this.state.status,
-      };
-      const countInfo = await dispatch({
-        type: 'home/getCountInfo',
-        payload: params,
-      });
-      if (countInfo) {
-        this.resetList(countInfo);
-      }
-    }
-  }
-  async onStatusChange(status) {
-    const { dispatch } = this.props;
-    const { startTime, endTime } = this.state;
     this.setState({
-      status,
+      show: false,
+      startTime,
+      endTime,
     });
     const params = {
       startTime,
       endTime,
-      status,
+      status: this.state.status,
     };
+    const countInfo = await dispatch({
+      type: 'home/getCountInfo',
+      payload: params,
+    });
+    if (countInfo) {
+      this.resetList(countInfo);
+    }
+  }
+
+  onCancel = () => {
+    document.getElementsByTagName('body')[0].style.overflowY = this.originbodyScrollY;
+    this.setState({
+      show: false,
+      startTime: undefined,
+      endTime: undefined,
+    });
+  };
+  renderBtn(zh, config = {}) {
+    // debugger
+    config.locale = zhCN;
+
+    return (
+      <List.Item
+        arrow={<span>*</span>}
+        onClick={() => {
+          document.getElementsByTagName('body')[0].style.overflowY = 'hidden';
+          this.setState({
+            show: true,
+            config,
+          });
+        }}
+        style={{ minHeight: '38px' }}
+      >
+        {zh}
+      </List.Item>
+    );
+  }
+  getDateExtra = date => extra[+date];
+
+  // 手风琴点击及选择对应筛选条件后回调
+  onAccordionChange = e => {
+    if (!e) {
+      this.setState({ activeKey: '' });
+    } else if (e) {
+      this.setState({ activeKey: e });
+    }
+  };
+  // 筛选项---状态
+  async onStatusChange(e, id, title) {
+    const { dispatch } = this.props;
+    const { startTime, endTime } = this.state;
+    this.setState({
+      status: title,
+    });
+    const params = {
+      startTime,
+      endTime,
+      status: id,
+    };
+    this.onAccordionChange();
     const countInfo = await dispatch({
       type: 'home/getCountInfo',
       payload: params,
@@ -225,13 +330,44 @@ class dataStatistics extends Component {
 
   render() {
     const { countInfo } = this.props;
-    const { roleId, list } = this.state;
+    const { roleId, list, config, activeKey, status } = this.state;
     return (
       <div className={styles.page}>
         <Header>客户统计</Header>
         <div className={styles.search_condition}>
-          <span>
-            <RangePicker
+          <Accordion
+            accordion
+            activeKey={activeKey}
+            openAnimation={{}}
+            className={styles.search_accordion}
+            onChange={this.onAccordionChange}
+          >
+            <Accordion.Panel key={'0'} header={status}>
+              <List className="my-list">
+                {statusList.map((item, index) => (
+                  <List.Item key={index} onClick={e => this.onStatusChange(e, item.id, item.title)}>
+                    {item.title}
+                  </List.Item>
+                ))}
+              </List>
+            </Accordion.Panel>
+          </Accordion>
+
+          <List className={styles.calendar_list}>{this.renderBtn('选择日期区间')}</List>
+          <Calendar
+            {...this.state.config}
+            visible={this.state.show}
+            onCancel={this.onCancel}
+            onConfirm={this.onConfirm.bind(this)}
+            onSelectHasDisableDate={this.onSelectHasDisableDate}
+            getDateExtra={this.getDateExtra}
+            // defaultValue={[defaultSelectDate.startDate, defaultSelectDate.endDate]}
+            // defaultDate={now}
+            minDate={new Date(+now - 5184000000)}
+            maxDate={new Date(+now + 31536000000)}
+          />
+
+          {/* <RangePicker
               style={{ width: '16em' }}
               defaultValue={[defaultSelectDate.startDate, defaultSelectDate.endDate]}
               onChange={value => this.onDateChange(value)}
@@ -241,23 +377,7 @@ class dataStatistics extends Component {
                   current.isAfter(moment(Date.now()).add(0, 'days'))
                 );
               }}
-            />
-            <Select
-              // value={search.status}
-              defaultValue={0}
-              placeholder="选择状态"
-              allowClear={true}
-              style={{ width: '7.5em', margin: '0 0 0 10px' }}
-              onChange={value => this.onStatusChange(value)}
-            >
-              <Option value={0}>全部</Option>
-              <Option value={1}>正常</Option>
-              <Option value={2}>超时</Option>
-              {roleId === 1 ? <Option value={3}>关闭</Option> : null}
-              {roleId === 1 ? <Option value={4}>回收</Option> : null}
-              {roleId === 1 ? <Option value={5}>正常+超时</Option> : null}
-            </Select>
-          </span>
+            /> */}
         </div>
 
         <div className={styles.stage}>

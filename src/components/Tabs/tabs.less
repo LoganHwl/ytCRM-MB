@@ -73,37 +73,61 @@
     font-weight: 400;
     span {
       text-align: right;
-      width: 26%;
+      width: 24.5%;
       color: rgba(153, 153, 153, 1);
+    }
+    @media screen and (max-width: 320px) {
+      span {
+        width: 30%;
+      }
+    }
+    @media screen and (min-width: 321px) and (max-width: 360px) {
+      span {
+        width: 26%;
+      }
     }
   }
   :global {
     .am-card-body {
       padding: 5px 0 0;
     }
-    // .am-textarea-control textarea, .am-list-item .am-input-control input{
-    //   font-size: 14px
-    // }
-    // .am-textarea-label.am-textarea-label-5,
-    // .am-list-item .am-input-label.am-input-label-5 {
-    //   width: 84px;
-    // }
-    // .am-list-item .am-input-control input:disabled,
-    // .am-list-item .am-textarea-control textarea:disabled {
-    //   color: #1e1e1e;
-    //   text-align: left;
-    // }
+    .am-list-item,
     .am-list-item.am-input-item {
-      min-height: 22px;
-      height: 22px;
+      min-height: 20px;
+      padding-left: 0;
+      width: 75.5%;
+      word-wrap: break-word;
+      word-break: break-all;
+    }
+    @media screen and (max-width: 320px) {
+      .am-list-item,
+      .am-list-item.am-input-item {
+        width: 70%;
+      }
+    }
+    @media screen and (min-width: 321px) and (max-width: 360px) {
+      .am-list-item,
+      .am-list-item.am-input-item {
+        width: 74%;
+      }
+    }
+    .am-list-item .am-list-line {
+      padding-right: 0;
+    }
+    .am-list-item .am-input-control input:disabled,
+    .am-list-item .am-textarea-control textarea:disabled {
+      font-size: 14px;
+      text-align: left;
+      height: 20px;
+      line-height: 22px;
+    }
+    .am-list-item.am-input-item {
+      min-height: 20px;
+      height: 20px;
     }
     .am-textarea-control {
       padding-top: 0;
       padding-bottom: 0;
-    }
-    .am-textarea-label {
-      line-height: 24px;
-      min-height: 24px;
     }
   }
 }
@@ -111,18 +135,24 @@
 .tabsCard {
   :global {
     .am-card-header {
-      padding: 5px 10px 0;
+      padding: 5px 5px 0;
     }
     .am-card-body {
       padding: 0 5px 6px;
+    }
+    .am-list-item {
+      padding-left: 0;
     }
     .am-list-item.am-input-item {
       height: 32px;
       min-height: 32px;
     }
+    .am-list-item .am-input-control input:disabled {
+      color: #1e1e1e;
+    }
   }
   .tabsCardHeader {
-    font-weight: 600;
+    width: 32% !important;
     :global {
       .am-textarea-label.am-textarea-label-5,
       .am-list-item .am-input-label.am-input-label-5 {
@@ -131,13 +161,17 @@
         color: #999999;
         font-size: 14px;
       }
+      .am-list-item .am-list-line {
+        padding-right: 0;
+      }
       .am-list-item .am-input-control input {
-        width: 65%;
+        // width: 30%;
         padding-right: 7px;
         text-align: left;
         border-bottom: 1px solid #f3f3f3;
         height: 30px;
         line-height: 30px;
+        color: #1e1e1e;
       }
     }
   }
@@ -146,6 +180,8 @@
       .am-list-item .am-input-control input {
         text-align: left;
         border: none;
+        font-weight: 600;
+        color: #1e1e1e;
       }
     }
   }
@@ -201,6 +237,7 @@
       .am-list-item .am-input-control input {
         text-align: left;
         border: none;
+        color: #1e1e1e;
       }
     }
   }
@@ -219,6 +256,7 @@
       .am-list-item .am-input-control input {
         text-align: left;
         border: none;
+        color: #1e1e1e;
       }
     }
   }
@@ -236,23 +274,39 @@
     width: 112px;
     font-size: 16px;
   }
-  // .am-textarea-control textarea,
+  .am-textarea-control textarea {
+    font-size: 16px;
+  }
   .am-list-item .am-input-control input {
     text-align: right;
     font-size: 16px;
   }
   .am-textarea-control textarea:disabled,
   .am-list-item .am-input-control input:disabled {
-    color: #1e1e1e;
+    // color: #1e1e1e;
     text-align: right;
   }
   .am-list-item .am-list-line .am-list-content {
     font-size: 16px;
   }
   .am-list-item .am-list-line .am-list-extra {
-    font-size: 16px;
-    color: darkgrey;
+    // color: #CBCBCB;
+    color: #1e1e1e;
   }
+  // .am-textarea-control textarea::-webkit-input-placeholder {
+  //   color: #bbb;
+  // }
+  // .am-textarea-control textarea::-ms-input-placeholder {
+  //   color: #bbb;
+  // }
+  .am-textarea-control textarea::placeholder {
+    color: #cbcbcb;
+    font-size: 16px;
+  }
+  // .am-textarea-control textarea:disabled {
+  //   color: #bbb;
+  //   background-color: #fff;
+  // }
   .am-textarea-disabled .am-textarea-label,
   .am-list-item.am-input-disabled .am-input-label {
     color: black;

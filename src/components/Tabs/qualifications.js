@@ -162,10 +162,11 @@ class Qualifications extends React.Component {
                 initialValue: customerDetail && customerDetail.lastTwoProject,
               })(
                 <TextareaItem
-                  editable={operating === 0 ? false : true}
+                  disabled={operating === 0 ? true : false}
                   placeholder={!customerDetail ? '近两年申报项目' : null}
                   autoHeight
                   onChange={value => this.onConditionChange({ lastTwoProject: value })}
+                  style={{ textAlign: 'left' }}
                 />
               )}
             </div>
@@ -178,10 +179,11 @@ class Qualifications extends React.Component {
                 initialValue: customerDetail && customerDetail.planProject,
               })(
                 <TextareaItem
-                  editable={operating === 0 ? false : true}
+                  disabled={operating === 0 ? true : false}
                   placeholder={!customerDetail ? '计划申报项目' : null}
                   autoHeight
                   onChange={value => this.onConditionChange({ planProject: value })}
+                  style={{ textAlign: 'left' }}
                 />
               )}
             </div>

@@ -1,4 +1,4 @@
-import { List, InputItem, TextareaItem, DatePicker, Toast } from 'antd-mobile';
+import { List, InputItem, TextareaItem, DatePicker, Toast, Picker } from 'antd-mobile';
 import zh_CN from 'antd-mobile/lib/date-picker/locale/zh_CN';
 import { connect } from 'dva';
 import { createForm } from 'rc-form';
@@ -9,6 +9,83 @@ import { Select } from 'antd';
 import styles from './tabs.less';
 
 const Option = Select.Option;
+
+// 如果不是使用 List.Item 作为 children
+const CustomChildren = props => (
+  <div onClick={props.onClick} style={{ backgroundColor: '#fff', paddingLeft: 15 }}>
+    <div className="test" style={{ display: 'flex', height: '45px', lineHeight: '45px' }}>
+      <div style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {props.children}
+      </div>
+      <div style={{ textAlign: 'right', color: '#888', marginRight: 15 }}>{props.extra}</div>
+    </div>
+  </div>
+);
+
+const levelList = [
+  {
+    label: '高',
+    value: 1,
+  },
+  {
+    label: '中',
+    value: 2,
+  },
+  {
+    label: '低',
+    value: 3,
+  },
+];
+const regionList = [
+  {
+    label: '罗湖区',
+    value: '罗湖区',
+  },
+  {
+    label: '福田区',
+    value: '福田区',
+  },
+  {
+    label: '南山区',
+    value: '南山区',
+  },
+  {
+    label: '盐田区',
+    value: '盐田区',
+  },
+  {
+    label: '宝安区',
+    value: '宝安区',
+  },
+  {
+    label: '龙岗区',
+    value: '龙岗区',
+  },
+  {
+    label: '光明区',
+    value: '光明区',
+  },
+  {
+    label: '坪山区',
+    value: '坪山区',
+  },
+  {
+    label: '龙华区',
+    value: '龙华区',
+  },
+  {
+    label: '大鹏区',
+    value: '大鹏区',
+  },
+  {
+    label: '前海',
+    value: '前海',
+  },
+  {
+    label: '其他',
+    value: '其他',
+  },
+];
 
 @connect(({ home }) => ({
   ...home,
@@ -22,29 +99,61 @@ class BasicInput extends React.Component {
       userRealName: '',
       roleId: '',
       hasError: false,
+      userList: [],
+      level: null,
+      region: null,
+      belongUserName: null,
     };
   }
 
-  componentWillMount() {
-    const { dispatch } = this.props;
-    // dispatch({
-    //     type: 'home/CLEAR_ALL'
-    //   });
-    const userRealName = sessionStorage.getItem('userRealName');
+  userPickerList(value) {
+    let list = [];
+    value.map(item => {
+      let info = {};
+      (info.label = item.realName), (info.value = item.id), list.push(info);
+    });
+    this.setState({ userList: list });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.userForAssign !== nextProps.userForAssign) {
+      if (nextProps.userForAssign && nextProps.userForAssign.length > 0) {
+        this.userPickerList(nextProps.userForAssign);
+      }
+    }
+    if (this.props.customerDetail !== nextProps.customerDetail) {
+      if (nextProps.customerDetail) {
+        let arr = [];
+        let arr_region = [];
+        let arr_BUN = [];
+        arr.push(nextProps.customerDetail.level);
+        arr_region.push(nextProps.customerDetail.region);
+        arr_BUN.push(nextProps.customerDetail.belongUserId);
+        this.setState({ level: arr, region: arr_region, belongUserName: arr_BUN });
+      }
+    }
+  }
+
+  async componentDidMount() {
+    const { dispatch, userForAssign } = this.props;
     const roleId = sessionStorage.getItem('roleId');
     this.setState({
-      userRealName,
       roleId,
     });
-    dispatch({
+    await dispatch({
       type: 'home/getUserForAssign',
     });
+    if (userForAssign && userForAssign.length > 0) {
+      this.userPickerList(userForAssign);
+    }
   }
+
   onErrorClick = () => {
     if (this.state.hasError) {
       Toast.info('只能输入两位小数');
     }
   };
+
   async onConditionChange(pair) {
     const {
       customerDetail,
@@ -93,7 +202,8 @@ class BasicInput extends React.Component {
   render() {
     const { customerDetail, userForAssign, operating } = this.props;
     const { getFieldDecorator } = this.props.form;
-    const { roleId } = this.state;
+    const { roleId, level, region, belongUserName, userList } = this.state;
+
     return (
       <div style={{ background: 'white' }}>
         <List>
@@ -119,28 +229,18 @@ class BasicInput extends React.Component {
           ) : (
             // )
             <div>
-              <InputItem>当前责任人</InputItem>
-              {getFieldDecorator('belongUserId', {
-                initialValue: customerDetail ? customerDetail.belongUserName : null,
-              })(
-                <Select
-                  className={styles.spec_select}
-                  placeholder={!customerDetail ? '当前责任人' : null}
-                  // allowClear={true}
-                  onChange={value => this.onConditionChange({ belongUserId: value })}
-                  filterOption={false}
-                  disabled={roleId != '1' ? true : operating === 0 ? true : false}
-                >
-                  {roleId === '1' &&
-                    userForAssign &&
-                    userForAssign.length > 0 &&
-                    userForAssign.map((item, index) => (
-                      <Option key={index} value={item.id}>
-                        {item.realName}
-                      </Option>
-                    ))}
-                </Select>
-              )}
+              <Picker
+                disabled={roleId != '1' ? true : false}
+                data={userList}
+                cols={1}
+                value={belongUserName}
+                onChange={value => {
+                  this.setState({ belongUserName: value });
+                  this.onConditionChange({ belongUserId: value[0] });
+                }}
+              >
+                <List.Item>当前责任人</List.Item>
+              </Picker>
             </div>
           )}
 
@@ -165,21 +265,18 @@ class BasicInput extends React.Component {
             })(<InputItem disabled={true}>客户等级</InputItem>)
           ) : (
             <div>
-              <InputItem>客户等级</InputItem>
-              {getFieldDecorator('level', {
-                initialValue: customerDetail && customerDetail.level,
-              })(
-                <Select
-                  disabled={operating === 0 ? true : false}
-                  className={styles.spec_select}
-                  placeholder={!customerDetail ? '客户等级' : null}
-                  onChange={value => this.onConditionChange({ level: value })}
-                >
-                  <Option value={1}>高</Option>
-                  <Option value={2}>中</Option>
-                  <Option value={3}>低</Option>
-                </Select>
-              )}
+              <Picker
+                data={levelList}
+                cols={1}
+                value={level}
+                extra={<span />}
+                onChange={value => {
+                  this.setState({ level: value });
+                  this.onConditionChange({ level: value[0] });
+                }}
+              >
+                <List.Item style={{ color: 'black' }}>客户等级</List.Item>
+              </Picker>
             </div>
           )}
           {getFieldDecorator('representative', {
@@ -226,9 +323,15 @@ class BasicInput extends React.Component {
                   disabled={operating === 0 ? true : false}
                   mode="date"
                   locale={zh_CN}
-                  extra={null}
+                  extra={<span />}
                   onChange={value => this.onConditionChange({ foundTime: value })}
                 >
+                  {/* <div
+               style={{ backgroundColor: '#fff', height: '45px', lineHeight: '45px', margin: '0 0 0 15px',borderBottom: '1PX solid rgba(243, 243, 243, .75)' }}
+              >
+                成立时间
+                <span style={{ float: 'right', color: '#888' }}>{region}</span>
+              </div> */}
                   <List.Item>成立时间</List.Item>
                 </DatePicker>
               )}
@@ -275,30 +378,24 @@ class BasicInput extends React.Component {
             })(<InputItem disabled={true}>所属地区</InputItem>)
           ) : (
             <div>
-              <InputItem>所属地区</InputItem>
-              {getFieldDecorator('region', {
-                initialValue: customerDetail && customerDetail.region,
-              })(
-                <Select
-                  disabled={operating === 0 ? true : false}
-                  placeholder={operating === 1 ? '所属地区' : null}
-                  onChange={value => this.onConditionChange({ region: value })}
-                  className={styles.spec_select}
-                >
-                  <Option value="罗湖区">罗湖区</Option>
-                  <Option value="福田区">福田区</Option>
-                  <Option value="南山区">南山区</Option>
-                  <Option value="盐田区">盐田区</Option>
-                  <Option value="宝安区">宝安区</Option>
-                  <Option value="龙岗区">龙岗区</Option>
-                  <Option value="光明区">光明区</Option>
-                  <Option value="坪山区">坪山区</Option>
-                  <Option value="龙华区">龙华区</Option>
-                  <Option value="大鹏区">大鹏区</Option>
-                  <Option value="前海">前海</Option>
-                  <Option value="其他">其他</Option>
-                </Select>
-              )}
+              <Picker
+                data={regionList}
+                cols={1}
+                value={region}
+                extra={<span />}
+                onChange={value => {
+                  this.setState({ region: value });
+                  this.onConditionChange({ region: value[0] });
+                }}
+              >
+                {/* <div
+               style={{ backgroundColor: '#fff', height: '45px', lineHeight: '45px', margin: '0 0 0 15px',borderBottom: '1PX solid rgba(243, 243, 243, .75)' }}
+              >
+                所属地区
+                <span style={{ float: 'right', color: '#888' }}>{region}</span>
+              </div> */}
+                <List.Item>所属地区</List.Item>
+              </Picker>
             </div>
           )}
 
@@ -311,8 +408,9 @@ class BasicInput extends React.Component {
                 <TextareaItem
                   disabled={operating === 0 ? true : false}
                   autoHeight
-                  // placeholder={!customerDetail ? "高端人才情况" : null}
+                  placeholder={!customerDetail ? '高端人才情况' : null}
                   onChange={value => this.onConditionChange({ talentInfo: value })}
+                  style={{ textAlign: 'left' }}
                 />
               )}
             </div>
@@ -329,6 +427,7 @@ class BasicInput extends React.Component {
                   autoHeight
                   placeholder={!customerDetail ? '经营地址' : null}
                   onChange={value => this.onConditionChange({ registeredAddr: value })}
+                  style={{ textAlign: 'left' }}
                 />
               )}
             </div>
@@ -345,6 +444,7 @@ class BasicInput extends React.Component {
                   autoHeight
                   placeholder={!customerDetail ? '主营业务' : null}
                   onChange={value => this.onConditionChange({ businessScope: value })}
+                  style={{ textAlign: 'left' }}
                 />
               )}
             </div>
