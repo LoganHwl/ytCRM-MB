@@ -60,6 +60,11 @@ export default [
             name: 'user-list',
             component: './UserManager/userManager',
           },
+          {
+            path: '/user-change',
+            name: 'user-change',
+            component: './UserManager/userInfoChange',
+          },
         ],
       },
     ],

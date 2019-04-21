@@ -577,7 +577,7 @@ class CustomerList extends Component {
                         size="small"
                         style={{ width: '32%', margin: '0 auto' }}
                       >
-                        点击重试~
+                        点击重试
                       </Button>
                     </div>
                   ) : (
@@ -611,7 +611,7 @@ class CustomerList extends Component {
                     size="small"
                     style={{ width: '32%', margin: '0 auto' }}
                   >
-                    点击重试~
+                    点击重试
                   </Button>
                 </div>
               ) : (

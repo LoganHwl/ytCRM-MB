@@ -13,6 +13,8 @@ import {
   TextareaItem,
   ListView,
   InputItem,
+  Accordion,
+  List,
 } from 'antd-mobile';
 import { Select, Input } from 'antd';
 
@@ -20,6 +22,20 @@ import MyCard from '../../components/Card';
 import styles from './userManager.less';
 
 const Option = Select.Option;
+const searchTypeList = [
+  {
+    id: 0,
+    title: '姓名',
+  },
+  {
+    id: 1,
+    title: '昵称',
+  },
+  {
+    id: 2,
+    title: '手机',
+  },
+];
 
 @connect(({ home }) => ({
   ...home,
@@ -51,6 +67,8 @@ class userManager extends Component {
       userList: [],
       searchType: 0,
       searchValue: '',
+      activeKey: '',
+      searchTypeName: '姓名',
     };
   }
 
@@ -138,14 +156,19 @@ class userManager extends Component {
   }
   // 获取人员分配并打开模态框
   getUserForAssign(detail) {
-    this.setState({
-      isUserForAssign: true,
-      userId: detail.id,
-      currentRoleId: detail.roleId,
-      mobile: detail.mobile,
-      realName: detail.realName,
-      modalVisible: true,
+    router.push({
+      pathname: '/user-change',
+      // query: { type, id: ID },
     });
+
+    // this.setState({
+    //   isUserForAssign: true,
+    //   userId: detail.id,
+    //   currentRoleId: detail.roleId,
+    //   mobile: detail.mobile,
+    //   realName: detail.realName,
+    //   modalVisible: true,
+    // });
   }
   // 关闭模态框
   closeUserForAssign() {
@@ -179,6 +202,22 @@ class userManager extends Component {
     this.handleSearch();
     this.closeUserForAssign();
   }
+  // 手风琴点击及选择对应筛选条件后回调
+  onAccordionChange = e => {
+    if (!e) {
+      this.setState({ activeKey: '' });
+    } else if (e) {
+      this.setState({ activeKey: e });
+    }
+  };
+  // 筛选项
+  async onStatusChange(e, id, title) {
+    this.setState({
+      searchType: id,
+      searchTypeName: title,
+    });
+    this.onAccordionChange();
+  }
   render() {
     const { allRole } = this.props;
     const {
@@ -191,6 +230,8 @@ class userManager extends Component {
       dataSource,
       userList,
       isUserForAssign,
+      activeKey,
+      searchTypeName,
     } = this.state;
     //获取item进行展示
     const row = item => {
@@ -253,7 +294,28 @@ class userManager extends Component {
         <Header>用户管理</Header>
         <div className={styles.search_condition}>
           <div style={{ width: '25%', height: '45px' }}>
-            <Select
+            <Accordion
+              accordion
+              activeKey={activeKey}
+              openAnimation={{}}
+              className={styles.search_accordion}
+              onChange={this.onAccordionChange}
+              style={{ width: '', margin: '' }}
+            >
+              <Accordion.Panel key={'0'} header={searchTypeName}>
+                <List className="my-list">
+                  {searchTypeList.map((item, index) => (
+                    <List.Item
+                      key={index}
+                      onClick={e => this.onStatusChange(e, item.id, item.title)}
+                    >
+                      {item.title}
+                    </List.Item>
+                  ))}
+                </List>
+              </Accordion.Panel>
+            </Accordion>
+            {/* <Select
               // value={search.status}
               defaultValue={0}
               placeholder="姓名"
@@ -264,7 +326,7 @@ class userManager extends Component {
               <Option value={0}>姓名</Option>
               <Option value={1}>昵称</Option>
               <Option value={2}>手机</Option>
-            </Select>
+            </Select> */}
           </div>
           <div style={{ width: '55%', height: '45px' }}>
             <SearchBar
@@ -305,7 +367,7 @@ class userManager extends Component {
                         size="small"
                         style={{ width: '32%', margin: '0 auto' }}
                       >
-                        点击重试~
+                        点击重试
                       </Button>
                     </div>
                   ) : (
@@ -339,7 +401,7 @@ class userManager extends Component {
                     size="small"
                     style={{ width: '32%', margin: '0 auto' }}
                   >
-                    点击重试~
+                    点击重试
                   </Button>
                 </div>
               ) : (
