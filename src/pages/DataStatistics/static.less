@@ -14,12 +14,18 @@
     display: flex;
     justify-content: center;
     .search_accordion {
-      width: 30%;
+      width: 26%;
       height: 30px;
       margin-top: 3px;
+      @media screen and (max-width: 320px) {
+        width: 30%;
+    }
+      @media screen and (min-width: 321px) and (max-width: 360px) {
+        width: 27%;
+    }
       :global {
         .am-accordion-item {
-          width: 110px;
+          width: 96px;
           height: 32px;
           border-radius: 4px;
           border: 1px solid rgba(203, 203, 203, 1);
@@ -29,17 +35,41 @@
         .am-accordion-item .am-accordion-header {
           height: 30px;
           line-height: 30px;
-          width: 100px;
-          padding: 0;
-          text-align: left;
+          width: 68px;
+          padding: 0 18px 0 0;
+          text-align: center;
+          border-radius: 4px;
+          @media screen and (max-width: 320px) {
+            font-size: 13px;
+        }
         }
       }
     }
     .calendar_list {
       height: 40px;
-      width: 65%;
+      width: 68%;
       display: inline-block;
+      @media screen and (max-width: 320px) {
+        width: 63%;
+    }
+      @media screen and (min-width: 321px) and (max-width: 360px) {
+        width: 67%;
+    }
+      .riliImg{
+        @media screen and (max-width: 320px) {
+          width: .8em;
+          height: .8em;
+          top: 0.67em;
+          right: 0.2em;
+      }
+      }
       :global {
+        .am-list-item{
+          padding-left: 8px;
+        }
+        .am-list-item .am-list-line{
+          padding-right: 0;
+        }
         .am-list-item .am-list-line .am-list-content {
           height: 32px;
           border-radius: 4px;
@@ -49,22 +79,28 @@
           text-align: center;
           color: rgba(203, 203, 203, 1);
           line-height: 1.9;
+          padding-right: 18px;
+          @media screen and (max-width: 320px) {
+            line-height: 2.3;
+            font-size: 14px;
+        }
+        }
+        .am-list-item .am-list-line .am-list-arrow{
+          width: 0;
+          margin-left: 0;
         }
       }
     }
 
     :global {
       .am-accordion .am-accordion-item .am-accordion-content {
-        width: 355%;
-        margin-left: -9px;
+        width: 387%;
+        margin-left: -12px;
         margin-top: 7px;
       }
-      // .am-accordion .am-accordion-item .am-accordion-header{
-      //   height: 40px;
-      //   line-height: 40px;
-      // }
       .am-accordion .am-accordion-item .am-accordion-header i {
         top: 8px;
+        right: 2px;
       }
     }
   }
@@ -82,16 +118,16 @@
       }
       .count {
         text-align: center;
-        line-height: 1.5em;
+        line-height: 2em;
         z-index: 2;
         color: white;
-        height: 1.5em;
+        height: 2em;
         min-height: 20px;
         border-radius: 4px;
       }
     }
     .percent {
-      margin: 0.5vw 0 0;
+      // margin: 0.5vw 0 0;
       display: inline-block;
       font-size: 0.6vw;
     }

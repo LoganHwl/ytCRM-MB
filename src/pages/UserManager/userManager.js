@@ -7,21 +7,15 @@ import {
   SearchBar,
   Button,
   WhiteSpace,
-  Icon,
-  Modal,
   Toast,
-  TextareaItem,
   ListView,
-  InputItem,
   Accordion,
   List,
 } from 'antd-mobile';
-import { Select, Input } from 'antd';
 
 import MyCard from '../../components/Card';
 import styles from './userManager.less';
 
-const Option = Select.Option;
 const searchTypeList = [
   {
     id: 0,
@@ -69,6 +63,7 @@ class userManager extends Component {
       searchValue: '',
       activeKey: '',
       searchTypeName: '姓名',
+      roleId:''
     };
   }
 
@@ -85,6 +80,8 @@ class userManager extends Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
+    const roleId = sessionStorage.getItem('roleId');
+    this.setState({roleId})
     dispatch({
       type: 'home/getAllRole',
     });
@@ -156,11 +153,17 @@ class userManager extends Component {
   }
   // 获取人员分配并打开模态框
   getUserForAssign(detail) {
+    let params ={
+          userId: detail.id,
+          roleId: detail.roleId,
+          mobile: detail.mobile,
+          realName: detail.realName,
+    }
+
     router.push({
       pathname: '/user-change',
-      // query: { type, id: ID },
+      query: { detail:JSON.stringify(params) },
     });
-
     // this.setState({
     //   isUserForAssign: true,
     //   userId: detail.id,
@@ -232,6 +235,7 @@ class userManager extends Component {
       isUserForAssign,
       activeKey,
       searchTypeName,
+      roleId
     } = this.state;
     //获取item进行展示
     const row = item => {
@@ -239,8 +243,8 @@ class userManager extends Component {
         <MyCard key={item.id}>
           <Card.Body>
             <div className={styles.col}>
-              <div style={{ width: '24%' }}>
-                <div style={{ background: '#000', width: '68px', borderRadius: '5px' }}>
+              <div className={styles.left}>
+                <div className={styles.img_mask}>
                   <img src={item.headImgUrl} />
                 </div>
                 <span className={styles.role_name}>
@@ -255,7 +259,7 @@ class userManager extends Component {
                           : null}
                 </span>
               </div>
-              <div style={{ width: '56%' }}>
+              <div className={styles.center}>
                 <div>
                   <b>姓名：</b>
                   <span className={styles.col_span}>{item.realName}</span>
@@ -269,9 +273,9 @@ class userManager extends Component {
                   <span className={styles.col_span}>{item.mobile}</span>
                 </div>
               </div>
-              <div style={{ width: '20%' }}>
+              <div className={styles.right}>
                 <div>
-                  <Button
+                  {roleId == 1 ?<Button
                     className={styles.btn}
                     size="small"
                     data-id={item.id}
@@ -280,7 +284,8 @@ class userManager extends Component {
                     }}
                   >
                     修改
-                  </Button>
+                  </Button>:null}
+                  
                 </div>
               </div>
             </div>
@@ -293,7 +298,7 @@ class userManager extends Component {
       <div className={styles.page}>
         <Header>用户管理</Header>
         <div className={styles.search_condition}>
-          <div style={{ width: '25%', height: '45px' }}>
+          <div className={styles.left}>
             <Accordion
               accordion
               activeKey={activeKey}
@@ -315,20 +320,8 @@ class userManager extends Component {
                 </List>
               </Accordion.Panel>
             </Accordion>
-            {/* <Select
-              // value={search.status}
-              defaultValue={0}
-              placeholder="姓名"
-              allowClear={true}
-              style={{ width: '6em', margin: '0 10px' }}
-              onChange={value => this.setState({ searchType: value })}
-            >
-              <Option value={0}>姓名</Option>
-              <Option value={1}>昵称</Option>
-              <Option value={2}>手机</Option>
-            </Select> */}
           </div>
-          <div style={{ width: '55%', height: '45px' }}>
+          <div className={styles.center}>
             <SearchBar
               className={styles.search_input}
               placeholder="输入关键字搜索"
@@ -338,7 +331,7 @@ class userManager extends Component {
               }}
             />
           </div>
-          <div style={{ width: '20%', height: '45px' }}>
+          <div className={styles.right}>
             <Button
               className={styles.search_btn}
               type="default"
@@ -410,63 +403,6 @@ class userManager extends Component {
             </div>
           )}
         </div>
-
-        {/** 角色分配弹窗 */}
-        <Modal
-          visible={modalVisible}
-          transparent
-          maskClosable={true}
-          onClose={this.closeUserForAssign.bind(this)}
-          title="修改"
-        >
-          <div>
-            <div className={styles.modal_list}>
-              <span>真实姓名:</span>
-              <InputItem
-                size="small"
-                placeholder="真实姓名"
-                defaultValue={realName}
-                onChange={v => this.realNameValueChange(v)}
-              />
-            </div>
-            <div className={styles.modal_list}>
-              <span>手机号码:</span>
-              <InputItem
-                placeholder="手机号码"
-                defaultValue={mobile}
-                onChange={v => this.mobileValueChange(v)}
-              />
-            </div>
-            <div className={styles.modal_list}>
-              <span>设置角色:</span>
-              <Select
-                onChange={value => this.setState({ currentRoleId: value })}
-                value={currentRoleId}
-                filterOption={false}
-                dropdownMatchSelectWidth={false}
-                // dropdownStyle={{width:"40%"}}
-              >
-                {allRole &&
-                  allRole.data.length > 0 &&
-                  allRole.data.map((item, index) => (
-                    <Option key={index} value={item.id}>
-                      {item.name}
-                    </Option>
-                  ))}
-              </Select>
-            </div>
-            <div className={styles.modal_btn}>
-              <Button onClick={this.closeUserForAssign.bind(this)}>取消</Button>
-              <Button
-                onClick={this.handleSubmitBelong.bind(this)}
-                style={{ marginLeft: '8%' }}
-                type="primary"
-              >
-                确定
-              </Button>
-            </div>
-          </div>
-        </Modal>
       </div>
     );
   }

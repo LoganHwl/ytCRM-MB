@@ -1,20 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
-import router from 'umi/router';
 import Header from '../Base/header';
-import { List, Toast, Calendar, Accordion } from 'antd-mobile';
-import enUS from 'antd-mobile/lib/calendar/locale/en_US';
+import { List, Toast, Calendar, Accordion,Icon } from 'antd-mobile';
 import zhCN from 'antd-mobile/lib/calendar/locale/zh_CN';
-import { Select, DatePicker } from 'antd';
-
-import moment from 'moment';
 
 import styles from './static.less';
-
 //引入图片路径
-import Background from '../../assets/home/combined-shape.svg';
+import Background from '../../assets/dataStatic/Combined.svg';
+import rili from '../../assets/dataStatic/Group.svg';
 
-const { RangePicker } = DatePicker;
+import '../../styles/iconfont.less'
+
 const statusList = [
   {
     id: 0,
@@ -46,9 +42,9 @@ const statusList = [
 const sectionStyle = {
   width: '1em',
   height: '1em',
-  minWidth: '37px',
-  minHeight: '32px',
-  margin: '0 .5em 0 2em',
+  // minWidth: '37px',
+  minHeight: '35px',
+  margin: '0 0 .1em 2.65em',
   verticalAlign: 'bottom',
   textAlign: 'center',
   backgroundImage: `url(${Background})`,
@@ -57,16 +53,24 @@ const sectionStyle = {
   backgroundSize: 'contain',
   display: 'inline-block',
 };
+const riliStyle = {
+  width: '1em',
+  height: '1em',
+  verticalAlign: 'bottom',
+  backgroundImage: `url(${rili})`,
+  backgroundRepeat: 'no-repeat',
+  backgroundSize: '100% 100%',
+  backgroundSize: 'contain',
+  display: 'inline-block',
+  position: 'absolute',
+  top: '.53em',
+  right: '.2em'
+};
 
 // 默认选择时间为最近一个月
-const defaultSelectDate = {
-  startDate: moment().subtract(1, 'month'),
-  endDate: moment().endOf('day'),
-};
 const getNowFormatDate = type => {
   let date = new Date();
   let seperator1 = '-';
-  let seperator2 = ':';
   let month = type === 1 ? date.getMonth() + 1 : date.getMonth();
   let strDate = date.getDate();
   if (month >= 1 && month <= 9) {
@@ -80,44 +84,21 @@ const getNowFormatDate = type => {
     seperator1 +
     month +
     seperator1 +
-    strDate +
-    ' ' +
-    date.getHours() +
-    seperator2 +
-    date.getMinutes() +
-    seperator2 +
-    date.getSeconds();
+    strDate 
   return currentdate;
 };
-const extra = {
-  '2017/07/15': { info: 'Disable', disable: true },
-};
+// const extra = {
+//   '2019/04/15': { info: 'Disable', disable: true },
+// };
 
-const now = new Date();
-extra[+new Date(now.getFullYear(), now.getMonth(), now.getDate() + 5)] = {
-  info: 'Disable',
-  disable: true,
-};
-extra[+new Date(now.getFullYear(), now.getMonth(), now.getDate() + 6)] = {
-  info: 'Disable',
-  disable: true,
-};
-extra[+new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7)] = {
-  info: 'Disable',
-  disable: true,
-};
-extra[+new Date(now.getFullYear(), now.getMonth(), now.getDate() + 8)] = {
-  info: 'Disable',
-  disable: true,
-};
+// Object.keys(extra).forEach((key) => {
+//   const info = extra[key];
+//   const date = new Date(key);
+//   if (!Number.isNaN(+date) && !extra[+date]) {
+//     extra[+date] = info;
+//   }
+// });
 
-Object.keys(extra).forEach(key => {
-  const info = extra[key];
-  const date = new Date(key);
-  if (!Number.isNaN(+date) && !extra[+date]) {
-    extra[+date] = info;
-  }
-});
 @connect(({ home }) => ({
   ...home,
 }))
@@ -135,7 +116,8 @@ class dataStatistics extends Component {
     show: false,
     config: {},
     activeKey: '',
-    status: '全部',
+    statusName: '全部',
+    status:0
   };
   async componentWillMount() {
     Toast.loading('正在加载...', 0);
@@ -150,8 +132,8 @@ class dataStatistics extends Component {
     });
     const params_count = {
       status: 0,
-      startTime,
-      endTime,
+      startTime:startTime +' 00:00:00',
+      endTime:endTime+' 23:59:59',
     };
     const countInfo = await dispatch({
       type: 'home/getCountInfo',
@@ -242,47 +224,43 @@ class dataStatistics extends Component {
     }
   }
 
-  onSelectHasDisableDate = dates => {
-    console.warn('onSelectHasDisableDate', dates);
-  };
 
-  async onConfirm(startTime, endTime) {
+  onConfirm= async(s, e)=> {
     document.getElementsByTagName('body')[0].style.overflowY = this.originbodyScrollY;
-    const { dispatch } = this.props;
+    const { dispatch} = this.props;
+    const startTime = s.toLocaleString().replace(/\//g,'-');
+    const sub_startTime = startTime.substring(0, startTime.indexOf(' '));
+    const endTime = e.toLocaleString().replace(/\//g,'-');
+    const sub_endTime = endTime.substring(0, endTime.indexOf(' '));
     this.setState({
       show: false,
-      startTime,
-      endTime,
+      startTime:sub_startTime,
+      endTime:sub_endTime,
     });
     const params = {
-      startTime,
-      endTime,
+      startTime:sub_startTime +' 00:00:00',
+      endTime:sub_endTime +' 23:59:59',
       status: this.state.status,
     };
-    const countInfo = await dispatch({
+   const res = await dispatch({
       type: 'home/getCountInfo',
       payload: params,
     });
-    if (countInfo) {
-      this.resetList(countInfo);
+    if (res) {
+      this.resetList(res);
     }
   }
-
   onCancel = () => {
     document.getElementsByTagName('body')[0].style.overflowY = this.originbodyScrollY;
-    this.setState({
-      show: false,
-      startTime: undefined,
-      endTime: undefined,
-    });
+    this.setState({show: false});
   };
   renderBtn(zh, config = {}) {
     // debugger
     config.locale = zhCN;
 
     return (
+      <div>
       <List.Item
-        arrow={<span>*</span>}
         onClick={() => {
           document.getElementsByTagName('body')[0].style.overflowY = 'hidden';
           this.setState({
@@ -294,9 +272,13 @@ class dataStatistics extends Component {
       >
         {zh}
       </List.Item>
+      <span style={riliStyle} className={styles.riliImg}></span>
+      </div>
     );
   }
-  getDateExtra = date => extra[+date];
+  getDateExtra = date =>{
+    extra[+date];
+  } 
 
   // 手风琴点击及选择对应筛选条件后回调
   onAccordionChange = e => {
@@ -311,7 +293,8 @@ class dataStatistics extends Component {
     const { dispatch } = this.props;
     const { startTime, endTime } = this.state;
     this.setState({
-      status: title,
+      statusName: title,
+      status:id
     });
     const params = {
       startTime,
@@ -327,14 +310,13 @@ class dataStatistics extends Component {
       this.resetList(countInfo);
     }
   }
-
   render() {
     const { countInfo } = this.props;
-    const { roleId, list, config, activeKey, status } = this.state;
+    const { roleId, list, config, activeKey, statusName } = this.state;
     return (
       <div className={styles.page}>
         <Header>客户统计</Header>
-        <div className={styles.search_condition}>
+        <div className={styles.search_condition}>        
           <Accordion
             accordion
             activeKey={activeKey}
@@ -342,7 +324,7 @@ class dataStatistics extends Component {
             className={styles.search_accordion}
             onChange={this.onAccordionChange}
           >
-            <Accordion.Panel key={'0'} header={status}>
+            <Accordion.Panel key={'0'} header={statusName}>
               <List className="my-list">
                 {statusList.map((item, index) => (
                   <List.Item key={index} onClick={e => this.onStatusChange(e, item.id, item.title)}>
@@ -353,31 +335,17 @@ class dataStatistics extends Component {
             </Accordion.Panel>
           </Accordion>
 
-          <List className={styles.calendar_list}>{this.renderBtn('选择日期区间')}</List>
+          <List className={styles.calendar_list}>
+          {this.renderBtn(`${this.state.startTime}~${this.state.endTime}`)}
+          
+          </List>
           <Calendar
             {...this.state.config}
             visible={this.state.show}
             onCancel={this.onCancel}
-            onConfirm={this.onConfirm.bind(this)}
-            onSelectHasDisableDate={this.onSelectHasDisableDate}
-            getDateExtra={this.getDateExtra}
-            // defaultValue={[defaultSelectDate.startDate, defaultSelectDate.endDate]}
-            // defaultDate={now}
-            minDate={new Date(+now - 5184000000)}
-            maxDate={new Date(+now + 31536000000)}
+            onConfirm={this.onConfirm}
+            // getDateExtra={this.getDateExtra}
           />
-
-          {/* <RangePicker
-              style={{ width: '16em' }}
-              defaultValue={[defaultSelectDate.startDate, defaultSelectDate.endDate]}
-              onChange={value => this.onDateChange(value)}
-              disabledDate={current => {
-                return (
-                  // current.isBefore(moment(Date.now()).add(-30, 'days')) ||
-                  current.isAfter(moment(Date.now()).add(0, 'days'))
-                );
-              }}
-            /> */}
         </div>
 
         <div className={styles.stage}>
@@ -389,7 +357,7 @@ class dataStatistics extends Component {
                   <span
                     className={styles.count}
                     style={{
-                      width: parseFloat(item.width) <= parseFloat('3.0%') ? '3.0%' : item.width,
+                      width: parseFloat(item.width) <= parseFloat('5.0%') ? '5.0%' : item.width,
                       background: item.color,
                     }}
                   >
@@ -405,7 +373,7 @@ class dataStatistics extends Component {
               </div>
             ))
           ) : (
-            <div className={styles.no_info}>暂无数据</div>
+            <div className={styles.no_info}>暂无数据~</div>
           )}
         </div>
       </div>

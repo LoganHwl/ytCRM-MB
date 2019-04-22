@@ -214,11 +214,11 @@ class BasicInput extends React.Component {
           )}
           <div>
             <Picker
-              placeholder="选择负责人"
               disabled={roleId != '1' ? true : false}
               data={userList}
               cols={1}
               value={belongUserName}
+              extra={<span style={{color:'#bbb'}}>选择负责人</span>}
               onChange={value => {
                 this.setState({ belongUserName: value });
               }}
@@ -238,7 +238,7 @@ class BasicInput extends React.Component {
               data={levelList}
               cols={1}
               value={level}
-              placeholder="客户等级"
+              extra={<span style={{color:'#bbb'}}>选择客户等级</span>}
               onChange={value => {
                 this.setState({ level: value });
                 this.onConditionChange({ level: value[0] });
@@ -282,6 +282,7 @@ class BasicInput extends React.Component {
                 : null,
           })(
             <DatePicker
+            extra={<span style={{color:'#bbb'}}>选择成立时间</span>}
               mode="date"
               locale={zh_CN}
               onChange={value => this.onConditionChange({ foundTime: value })}
@@ -328,7 +329,7 @@ class BasicInput extends React.Component {
               data={regionList}
               cols={1}
               value={region}
-              placeholder="所属地区"
+              extra={<span style={{color:'#bbb'}}>选择所属地区</span>}
               onChange={value => {
                 this.setState({ region: value });
                 this.onConditionChange({ region: value[0] });

@@ -1,9 +1,14 @@
 @import '~@/utils/utils.less';
 
+
+
 .list_card {
   margin: 0.6em auto;
   box-shadow: #ece6e6 1px 2px 3px 2px;
   padding: 0 16px;
+  @media screen and (max-width: 320px) {
+      padding: 0 10px;
+    }
   .col {
     display: flex;
     width: 100%;

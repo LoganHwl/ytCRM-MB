@@ -54,6 +54,9 @@
         border-radius: 3em;
         border: 1px solid #219ddd;
         color: #219ddd;
+        @media screen and (max-width: 320px) {
+          padding:0 13px;
+      }      
       }
     }
 
@@ -67,12 +70,19 @@
         font-size: 14px;
         font-weight: normal;
         font-family: PingFangSC-Regular;
+        @media screen and (max-width: 320px) {
+          width: 40%;
+          margin:0;
+      }
         .search_select_more {
           padding: 10px 16px;
           .search_select_more_btn {
             margin: 8px 20px 6px 0;
             min-width: 6em;
             line-height: 32px;
+            @media screen and (max-width: 320px) {
+              margin: 8px 16px 6px 0;
+          }
           }
         }
         :global {
@@ -126,7 +136,7 @@
     padding-bottom: 10px;
 
     .status_panel {
-      margin: -8px 0 12px 0;
+      margin: -6px 0 12px 0;
       b {
         font-size: 12px;
         display: inline-block;
@@ -233,6 +243,7 @@
         @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
           html:not([data-scale]) .am-button::before {
             border: 1px solid #ddd;
+            height: 198%;
           }
         }
       }
@@ -387,7 +398,7 @@
     right: 10px;
   }
   .am-accordion .am-accordion-item .am-accordion-content {
-    width: 105%;
+    width: 109%;
     margin-left: -9px;
     box-shadow: rgb(236, 230, 230) 2px 3px 10px 1px;
     position: absolute;

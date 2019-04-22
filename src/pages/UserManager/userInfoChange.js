@@ -6,110 +6,99 @@ import { List, InputItem, Button, Toast, Picker } from 'antd-mobile';
 
 import styles from './userManager.less';
 
-const saleStatusList = [
-  {
-    id: 1,
-    title: '线索',
-  },
-  {
-    id: 2,
-    title: '沟通',
-  },
-  {
-    id: 3,
-    title: '面谈',
-  },
-  {
-    id: 4,
-    title: '签约',
-  },
-  {
-    id: 5,
-    title: '合作',
-  },
-];
-const statusList = [
-  {
-    id: 1,
-    title: '正常',
-  },
-  {
-    id: 2,
-    title: '超时',
-  },
-  {
-    id: 3,
-    title: '关闭',
-  },
-  {
-    id: 4,
-    title: '回收',
-  },
-];
-const resetOrKeep = [
-  {
-    id: 0,
-    title: '保留当前阶段',
-  },
-  {
-    id: 1,
-    title: '重置为线索',
-  },
-];
 
 @connect(({ home }) => ({
   ...home,
 }))
 class userInfoChange extends Component {
   state = {
-    detail: {},
-    selectedId: '',
     userId: '',
-    remark: '',
-    type: '',
-    defaultStatus: null,
-    list: [],
-    belongUserName: null,
-    userList: [],
+    realName:'',
+    mobile:'',
+    roleId: '',
+    roleName:'',
     canSubmit: false,
+    roleList:[],
+    defaultId:''
   };
 
-  userPickerList(value) {
+  rolePickerList(value) {
     let BUlist = [];
     value.map(item => {
       let info = {};
-      info.label = item.realName;
+      info.label = item.name;
       info.value = item.id;
       BUlist.push(info);
     });
-    this.setState({ userList: BUlist });
+    this.setState({ roleList: BUlist });
   }
   componentWillReceiveProps(nextProps) {
-    if (this.props.userForAssign !== nextProps.userForAssign) {
-      if (nextProps.userForAssign && nextProps.userForAssign.length > 0) {
-        this.userPickerList(nextProps.userForAssign);
+    if (this.props.allRole !== nextProps.allRole) {
+      if (nextProps.allRole && nextProps.allRole.code === 0 && nextProps.allRole.data) {
+        this.rolePickerList(nextProps.allRole.data);
+      }else {
+        Toast.fail(nextProps.allRole.msg,1);
+        return
       }
     }
   }
-  async componentWillMount() {
-    const { dispatch, userForAssign } = this.props;
-    await dispatch({
-      type: 'home/getUserForAssign',
-    });
-    if (userForAssign && userForAssign.length > 0) {
-      this.userPickerList(userForAssign);
-    }
-  }
+  componentWillMount() {}
   async componentDidMount() {
-    const { dispatch, userForAssign } = this.props;
-    await dispatch({
-      type: 'home/getUserForAssign',
+    
+    const { dispatch, allRole } = this.props;
+    const d = this.props.location.query.detail;
+    const detail = JSON.parse(d) 
+    let arr =[];
+    arr.push(detail.roleId)
+    this.setState({ 
+      userId: detail.userId,
+      realName:detail.realName,
+      mobile:detail.mobile,
+      roleId: detail.roleId,
+      roleName:arr,
+      defaultId:arr
     });
-    if (userForAssign && userForAssign.length > 0) {
-      this.userPickerList(userForAssign);
+    await dispatch({
+      type: 'home/getAllRole',
+    });
+    if (allRole && allRole.code === 0 && allRole.data) {
+      this.rolePickerList(allRole.data);
+    }else {
+      Toast.fail(allRole.msg,1);
+      return
     }
   }
 
+  roleNameValueChange(v) {
+    const {defaultId} = this.state
+    this.setState({
+      roleName: v,
+      roleId:v[0],
+      canSubmit: true,
+    });
+    if(JSON.stringify(v) === JSON.stringify(defaultId)){
+      this.setState({canSubmit: false,})
+    }
+  }
+
+  realNameValueChange(v) {
+    this.setState({
+      realName: v,
+      canSubmit: true,
+    });
+    if(v === ''){
+      this.setState({canSubmit: false,})
+    }
+  }
+  mobileValueChange(v) {
+    this.setState({
+      mobile: v,
+      canSubmit: true,
+    });
+    if(v === ''){
+      this.setState({canSubmit: false,})
+    }
+  }
   // 重新刷新页面
   reload = () => {
     location.reload();
@@ -126,122 +115,86 @@ class userInfoChange extends Component {
   onCancel() {
     history.go(-1);
   }
-  // 提交阶段&状态&负责人的更改
-  submitChange(key, e) {
+  // 提交更改
+  async submitChange( e) {
     const { dispatch } = this.props;
-    const { detail, remark, selectedId, userId, defaultStatus } = this.state;
-    if (key == 0) {
-      const params = {
-        remark,
-        customerId: detail.id,
-        status: selectedId === '' ? defaultStatus : selectedId,
-      };
-      dispatch({
-        type: 'home/changeSaleInfo',
-        payload: params,
-      }).then(res => {
-        if (res.code === 0) {
-          Toast.success('修改成功', 1);
-          setTimeout(() => {
-            this.onCancel();
-          }, 600);
-        } else {
-          Toast.fail(res.msg, 1);
-          return;
-        }
-      });
-    } else if (key == 1) {
-      const params = {
-        remark,
-        customerId: detail.id,
-        status: selectedId === '' ? defaultStatus : selectedId,
-      };
-      dispatch({
-        type: 'home/changeStatusInfo',
-        payload: params,
-      }).then(res => {
-        if (res.code === 0) {
-          Toast.success('修改成功', 1);
-          setTimeout(() => {
-            this.onCancel();
-          }, 600);
-        } else {
-          Toast.fail(res.msg, 1);
-          return;
-        }
-      });
-    } else if (key == 2) {
-      const params = {
-        userId,
-        customerId: detail.id,
-        flush: selectedId == 1 ? true : false,
-      };
-      dispatch({
-        type: 'home/changeBelong',
-        payload: params,
-      }).then(res => {
-        if (res.code === 0) {
-          Toast.success('修改成功', 1);
-          setTimeout(() => {
-            this.onCancel();
-          }, 600);
-        } else {
-          Toast.fail(res.msg, 1);
-          return;
-        }
-      });
+    const {
+      realName,
+      mobile,
+      roleId,
+      userId,
+      defaultId
+    } = this.state;
+    if (!userId) {
+      Toast.fail('缺少用户ID', 1);
+      return;
     }
-  }
-  // 负责人变更
-  principalChange(value) {
-    this.setState({ canSubmit: true, value });
-  }
-  // 备注信息
-  remarkTextChange(v) {
-    this.setState({ remark: v });
-  }
+    const params = {
+      realName,
+      mobile,
+      roleId,
+      userId,
+    };
+    await dispatch({
+      type: 'home/setRole',
+      payload: params,
+    });
+    Toast.success('修改成功',1);
+    // if(defaultId[0] == 1){
+    //   setTimeout(()=>{
+    //     router.push('/login');
+    //   },500)
+    // }else {
+    //   setTimeout(()=>{
+    //     history.go(-1)
+    //   },500)
+    // }
+    setTimeout(()=>{
+      history.go(-1)
+    },500)
+    
+  };
+
   render() {
     const {
-      selectedId,
-      type,
-      defaultStatus,
-      list,
-      belongUserName,
-      userList,
+      realName,
+      mobile,
+      roleName,
+      roleList,
       canSubmit,
+      defaultId
     } = this.state;
     return (
-      <div className={styles.page} style={{ background: 'white' }}>
+      <div className={styles.page} style={{ background: 'white',height:'100%' }}>
         <Header>修改用户信息</Header>
         <div className={styles.status_panel}>
           <div className={styles.status_title}>
             <Picker
-              data={userList}
+              data={roleList}
               cols={1}
-              value={belongUserName}
-              placeholder="选择负责人"
-              onChange={value => {
-                this.setState({ belongUserName: value, userId: value[0], canSubmit: true });
-              }}
+              value={roleName}
+              placeholder="选择角色"
+              extra={<span></span>}
+              onChange={value => {this.roleNameValueChange(value)}}
             >
-              <List.Item arrow="horizontal">转给:</List.Item>
+              <List.Item arrow="horizontal">设置角色:</List.Item>
             </Picker>
           </div>
           <div>
-            <div className={styles.modal_list}>
+            <div className={styles.status_text}>
               <span>真实姓名:</span>
               <InputItem
                 size="small"
                 placeholder="真实姓名"
-                // defaultValue={realName}
+                value={realName}
                 onChange={v => this.realNameValueChange(v)}
               />
             </div>
-            <div className={styles.modal_list}>
+            <div className={styles.status_text}>
               <span>手机号码:</span>
               <InputItem
                 placeholder="手机号码"
-                // defaultValue={mobile}
+                value={mobile}
                 onChange={v => this.mobileValueChange(v)}
               />
             </div>
@@ -261,7 +214,7 @@ class userInfoChange extends Component {
               type="primary"
               size="small"
               inline
-              onClick={this.submitChange.bind(this, type)}
+              onClick={this.submitChange.bind(this)}
               disabled={canSubmit ? false : true}
             >
               确定

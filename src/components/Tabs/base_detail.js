@@ -234,6 +234,7 @@ class BasicInput extends React.Component {
                 data={userList}
                 cols={1}
                 value={belongUserName}
+                extra={<span />}
                 onChange={value => {
                   this.setState({ belongUserName: value });
                   this.onConditionChange({ belongUserId: value[0] });

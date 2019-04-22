@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import router from 'umi/router';
 import style from './index.less';
-import { styles } from '_ansi-colors@3.2.4@ansi-colors';
+// import { styles } from '_ansi-colors@3.2.4@ansi-colors';
 
 class app extends Component {
   PropTypes = {
@@ -58,7 +58,7 @@ class app extends Component {
             <div className="card-img">
               <img src={item.src} alt="" />
             </div>
-            <div className={styles.title}>{item.title}</div>
+            <div>{item.title}</div>
           </div>
         ))}
       </div>
