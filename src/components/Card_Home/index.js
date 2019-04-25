@@ -26,18 +26,22 @@ class app extends Component {
         });
         break;
       case 2:
-        router.push({
-          pathname: '/customer-list',
-        });
+      router.push({
+        pathname: '/customer-list',
+         query: { timestamp: getTimestamp },
+      });
         break;
       case 3:
         router.push({
           pathname: '/static',
-          //  query: { type: 'detail.id' },
+           query: { timestamp: getTimestamp },
         });
         break;
       case 4:
-        router.push('/user-list');
+      router.push({
+        pathname: '/user-list',
+         query: { timestamp: getTimestamp },
+      });
         break;
 
       default:
@@ -55,7 +59,7 @@ class app extends Component {
       <div className={`${style['card-wrap']} ${className}`}>
         {list.map(item => (
           <div className={style.card} key={item.id} onClick={this.goto.bind(this, item.id)}>
-            <div className="card-img">
+            <div>
               <img src={item.src} alt="" />
             </div>
             <div>{item.title}</div>

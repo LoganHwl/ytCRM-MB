@@ -137,7 +137,7 @@ class dataStatistics extends Component {
 
   // 重新刷新页面
   reload = () => {
-    location.reload();
+    window.location.reload();
   };
   // 点击选中的list
   statusChange(e, id) {
@@ -323,7 +323,7 @@ class dataStatistics extends Component {
           )}
 
           <div className={styles.btn_panel}>
-            <Button
+            {/* <Button
               className={styles.btn}
               type="default"
               size="small"
@@ -331,7 +331,7 @@ class dataStatistics extends Component {
               onClick={this.onCancel.bind(this)}
             >
               取消
-            </Button>
+            </Button> */}
             <Button
               className={styles.btn}
               type="primary"

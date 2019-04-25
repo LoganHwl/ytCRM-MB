@@ -11,17 +11,24 @@ import user_management from '@/assets/home/user_management.svg';
 
 import styles from './home.less';
 
-@connect(({ home, loading }) => ({
+@connect(({login, home, loading }) => ({
   ...home,
+  ...login,
   loading: loading.effects['home/getWarningList'],
 }))
 class app extends Component {
-  state = { noNet: false };
+  state = { noNet: false ,roleId:''};
   componentWillMount() {
     Toast.loading('正在加载...', 0);
   }
   async componentDidMount() {
     const { dispatch } = this.props;
+    
+    await dispatch({
+      type: 'login/getUserInfo',
+    });
+    const roleId = sessionStorage.getItem('roleId');
+    this.setState({roleId});
     const res = await dispatch({
       type: 'home/getWarningList',
       payload: {
@@ -34,6 +41,8 @@ class app extends Component {
         this.setState({ noNet: true });
       }
       Toast.hide();
+    }else {
+      Toast.fail(res.msg,1)
     }
   }
   showDetail(id, e) {
@@ -65,16 +74,21 @@ class app extends Component {
     { id: 3, title: '数据统计', src: data },
     { id: 4, title: '用户管理', src: user_management },
   ];
+  cardList_noPermission = [
+    { id: 1, title: '新增用户', src: new_customer },
+    { id: 2, title: '客户列表', src: customer_list },
+    { id: 3, title: '数据统计', src: data },
+  ];
   render() {
     const { warningList } = this.props;
-
+    const {roleId} =this.state
     return (
       <div className={styles.page}>
         <NavBar style={{ background: '#002140' }} mode="dark">
           客户管理后台
         </NavBar>
         <div className={styles.title}>
-          <Card_Home list={this.cardList} />
+          <Card_Home list={roleId == 1 ? this.cardList:this.cardList_noPermission} />
           <div className={styles.warn_title}>超时预警</div>
         </div>
         <div className={styles.timeout_warn}>
@@ -95,7 +109,7 @@ class app extends Component {
           ) : (
             warningList &&
             warningList.list &&
-            warningList.list.length > 1 &&
+            warningList.list.length > 1 ?
             warningList.list.map((item, index) => (
               <Card
                 key={index}
@@ -147,11 +161,11 @@ class app extends Component {
                 <Card.Body>
                   <div className={styles.spec}>
                     <div>
-                      责任人：
+                      责&ensp;任&ensp;人：
                       <b>{item.belongUserName}</b>
                     </div>
                     <div>
-                      级别：
+                      级&emsp;&emsp;别：
                       <b>
                         {item.level && item.expireStatus === 1
                           ? '高'
@@ -162,13 +176,15 @@ class app extends Component {
                               : null}
                       </b>
                     </div>
-                    {/* <div style={{ paddingTtop: '.45em' }}>
-                      {' '}
-                      <Icon type="right" size="md" />
-                    </div> */}
+                    <div>
+                    过期日期：
+                    <b style={item.expireStatus === 3 ? { color: 'red' } : { color: 'black' }}>
+                        {item.expireTime}
+                      </b>
+                    </div>
                   </div>
                 </Card.Body>
-                <Card.Footer
+                {/* <Card.Footer
                   content={
                     <div>
                       过期日期：
@@ -177,10 +193,13 @@ class app extends Component {
                       </b>
                     </div>
                   }
-                />
+                /> */}
               </Card>
             ))
-          )}
+            :
+            <div style={{ marginTop: '6em', textAlign: 'center', fontSize: '16px', color: '#999999' }}>暂无数据~</div>
+          )      
+      }
         </div>
       </div>
     );

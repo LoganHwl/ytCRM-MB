@@ -29,6 +29,11 @@ class customerDetailClassification extends Component {
     render: false,
     ID: '',
   };
+  componentWillReceiveProps(nextState) {
+    if (nextState.operating !== this.state.operating) {
+      this.forceUpdate()
+    }
+  }
   componentWillMount() {
     const { dispatch } = this.props;
     const icon = this.props.location.query.icon;

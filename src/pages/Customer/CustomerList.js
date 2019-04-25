@@ -6,22 +6,15 @@ import {
   SearchBar,
   Button,
   WhiteSpace,
-  Icon,
-  Modal,
   Toast,
-  TextareaItem,
   ListView,
   Accordion,
   List,
 } from 'antd-mobile';
-import { createForm } from 'rc-form';
 import Header from '../Base/header';
 
 import styles from './style.less';
-import { Select, Radio } from 'antd';
-// import 'antd/lib/select/style/index.css';
-const Option = Select.Option;
-const RadioGroup = Radio.Group;
+
 const saleStatusList = [
   {
     id: 1,
@@ -120,8 +113,27 @@ class CustomerList extends Component {
         dataSource: this.state.dataSource.cloneWithRows(nextState.customerList),
       });
     }
+//     if (nextState.activeKey !== this.state.activeKey) {
+//       // 为元素添加事件监听  
+//       document.body.addEventListener("touchmove", (ev) => {
+//         if(this.state.activeKey != ''){
+//          ev.preventDefault();
+//         }
+       
+//      }, {
+//        passive: false //  禁止 passive 效果
+//      })
+//     }else{
+//       document.body.removeEventListener("touchmove", (ev) => {        
+//         ev.preventDefault();       
+// }, {
+//  passive: false //  禁止 passive 效果
+// })
+//     }      
+     
   }
   componentWillMount() {
+    document.body.style.overflow='auto'; 
     Toast.loading('正在加载...', 0);
   }
   onEndReached = () => {
@@ -136,6 +148,7 @@ class CustomerList extends Component {
   };
 
   componentWillUnmount() {
+    this.setState({activeKey:''})
     // 清除状态
     this.props.dispatch({
       type: 'home/CLEAR_ALL',
@@ -143,10 +156,11 @@ class CustomerList extends Component {
   }
   componentDidMount() {
     const { dispatch } = this.props;
+    const {activeKey}=this.state
     dispatch({
       type: 'home/getUserForAssign',
     });
-    this.onSearch();
+    this.onSearch();   
   }
   // 分页&过滤查询客户列表数据
   async onSearch(v) {
@@ -222,20 +236,33 @@ class CustomerList extends Component {
   // 重新刷新页面
   reload = () => {
     location.reload();
-    // const { dispatch } = this.props;
-    // dispatch({
-    //   type: 'home/getUserForAssign',
-    // });
-    // this.onSearch();
   };
-
+  hideMask=()=>{
+    document.body.style.overflow='auto'; 
+    this.setState({activeKey:''})
+  }
   // 手风琴点击及选择对应筛选条件后回调
   onAccordionChange = e => {
+    
     if (!e) {
+      document.body.style.position='static';
+      document.body.style.overflow='auto'; 
+//       document.body.removeEventListener("touchmove", (ev) => {        
+//         ev.preventDefault();       
+// }, {
+//  passive: false //  禁止 passive 效果
+// })
       this.setState({ activeKey: '' });
     } else if (e) {
-      this.setState({ activeKey: e });
-    }
+      document.body.style.position='fixed'; 
+      document.body.style.overflow='hidden'; 
+    //       document.body.addEventListener("touchmove", (ev) => {        
+    //           ev.preventDefault();       
+    //  }, {
+    //    passive: false //  禁止 passive 效果
+    //  })
+      this.setState({ activeKey: e } )
+      }
   };
   // 筛选项---责任人姓名
   belongeNameChange(e, title) {
@@ -327,7 +354,7 @@ class CustomerList extends Component {
     //获取item进行展示
     const row = item => {
       return (
-        <div>
+        <div className={styles.customerList_card}>
           <Card
             key={item.id}
             className={styles.list_card}
@@ -429,7 +456,7 @@ class CustomerList extends Component {
       );
     };
     return (
-      <div className={styles.page}>
+      <div className={styles.page}>      
         <div>
           <Header>客户列表</Header>
         </div>
@@ -440,12 +467,13 @@ class CustomerList extends Component {
               value={customer_value}
               placeholder="搜索客户名"
               showCancelButton
+              onSubmit={() => this.onSearch()}
               onChange={value => {
                 this.setState({ customer_value: value });
                 this.onSearchConditionChange({ name: value });
               }}
             />
-            <Button
+            {/* <Button
               className={styles.search_btn}
               type="default"
               size="small"
@@ -453,16 +481,20 @@ class CustomerList extends Component {
               onClick={() => this.onSearch()}
             >
               搜索
-            </Button>
+            </Button> */}
           </div>
+          <div className={`${styles.accordion_color} ${styles.accordion_color_active}`} > 
+          
           <Accordion
             accordion
             activeKey={activeKey}
             openAnimation={{}}
             className={styles.search_bottom}
             onChange={this.onAccordionChange}
+           style={{zIndex:1000}}
           >
             <Accordion.Panel key={'0'} header={realName} className={styles.search_select}>
+            
               <List className="my-list">
                 <List.Item onClick={e => this.belongeNameChange(e, '不限责任人')}>
                   不限责任人
@@ -483,9 +515,9 @@ class CustomerList extends Component {
                   ))}
               </List>
             </Accordion.Panel>
-            <Accordion.Panel key={'1'} header={saleStatus} className={styles.search_select}>
+            <Accordion.Panel key={'1'} header={saleStatus} className={styles.search_select} style={{margin:'0 0 0 .5em'}}>
               <List className="my-list">
-                <List.Item onClick={e => this.saleStatusChange(e, '不限阶段')}>不限阶段</List.Item>
+                <List.Item onClick={e => this.saleStatusChange(e, '不限阶段')} >不限阶段</List.Item>
                 {saleStatusList.map((item, index) => (
                   <List.Item key={index} onClick={e => this.saleStatusChange(e, item.title)}>
                     {item.title}
@@ -501,6 +533,7 @@ class CustomerList extends Component {
                     className={styles.search_select_more_btn}
                     key={index}
                     type={item.id === levelId ? 'primary' : ''}
+                    style={item.id === levelId  ? null:{background:'rgba(255, 255, 255, 1)'}}
                     inline
                     size="small"
                     onClick={e => this.levelChange(e, item.id)}
@@ -514,6 +547,7 @@ class CustomerList extends Component {
                     className={styles.search_select_more_btn}
                     key={index}
                     type={item.id === statusId ? 'primary' : ''}
+                    style={item.id === statusId  ? null:{background:'rgba(255, 255, 255, 1)'}}
                     inline
                     size="small"
                     onClick={e => this.statusChange(e, item.id)}
@@ -525,6 +559,7 @@ class CustomerList extends Component {
                 <Button
                   className={styles.search_select_more_btn}
                   type={order === 0 ? 'primary' : ''}
+                  style={order === 0 ? {}:{background:'rgba(255, 255, 255, 1)'}}
                   inline
                   size="small"
                   onClick={e => this.sortChange(e, 0)}
@@ -534,6 +569,7 @@ class CustomerList extends Component {
                 <Button
                   className={styles.search_select_more_btn}
                   type={order === 1 ? 'primary' : ''}
+                  style={order === 1 ? {}:{background:'rgba(255, 255, 255, 1)'}}
                   inline
                   size="small"
                   onClick={e => this.sortChange(e, 1)}
@@ -543,6 +579,7 @@ class CustomerList extends Component {
                 <div style={{ textAlign: 'center' }}>
                   <Button
                     className={styles.search_select_more_btn}
+                    style={{border:'none'}}
                     type="primary"
                     inline
                     size="small"
@@ -557,10 +594,12 @@ class CustomerList extends Component {
               </div>
             </Accordion.Panel>
           </Accordion>
+          </div>
         </div>
 
         <WhiteSpace size="md" />
-        <div style={{ marginTop: '115px' }}>
+        <div style={{ marginTop: '115px' }} className='list_view_panel'>
+        
           {customerList && customerList.length > 0 ? (
             <ListView
               dataSource={dataSource.cloneWithRows(customerList)}
@@ -620,6 +659,7 @@ class CustomerList extends Component {
             </div>
           )}
         </div>
+        {activeKey !='' ?<div className={styles.search_more_mask} onClick={this.hideMask}></div>:null}
       </div>
     );
   }

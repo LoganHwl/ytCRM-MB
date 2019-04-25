@@ -4,6 +4,7 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import StaticContainer from 'react-static-container';
 import style from './index.less';
 
+
 class app extends Component {
   PropTypes = {
     open: PropTypes.bool,
@@ -39,9 +40,9 @@ class app extends Component {
     const { action } = history;
     //goback:pop,push:push
     const className = action === 'POP' ? 'translation-arrow-right' : 'translation-arrow-left';
-    // const className = 'translation-arrow-left'
     const { pathname } = location;
     const key = pathname !== '/user' ? '' : 'pathname';
+    // debugger
     return (
       <ReactCSSTransitionGroup
         component="div"

@@ -87,17 +87,6 @@ const getNowFormatDate = type => {
     strDate 
   return currentdate;
 };
-// const extra = {
-//   '2019/04/15': { info: 'Disable', disable: true },
-// };
-
-// Object.keys(extra).forEach((key) => {
-//   const info = extra[key];
-//   const date = new Date(key);
-//   if (!Number.isNaN(+date) && !extra[+date]) {
-//     extra[+date] = info;
-//   }
-// });
 
 @connect(({ home }) => ({
   ...home,
@@ -266,6 +255,7 @@ class dataStatistics extends Component {
           this.setState({
             show: true,
             config,
+            activeKey:''
           });
         }}
         style={{ minHeight: '38px' }}

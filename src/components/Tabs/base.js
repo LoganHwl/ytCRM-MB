@@ -201,6 +201,7 @@ class BasicInput extends React.Component {
     return (
       <div style={{ background: 'white' }}>
         <List>
+        <div style={{marginLeft:'16px',borderBottom:'1px solid rgba(218, 218, 218, 0.5)'}}>
           {getFieldDecorator('name', {
             initialValue: customerDetail && customerDetail.name,
           })(
@@ -212,6 +213,7 @@ class BasicInput extends React.Component {
               style={{ textAlign: 'right' }}
             />
           )}
+          </div>
           <div>
             <Picker
               disabled={roleId != '1' ? true : false}

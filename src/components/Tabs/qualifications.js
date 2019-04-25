@@ -158,34 +158,44 @@ class Qualifications extends React.Component {
           <div>
             <div className={style.status_title}>近两年申报项目</div>
             <div className={style.status_text}>
-              {getFieldDecorator('lastTwoProject', {
-                initialValue: customerDetail && customerDetail.lastTwoProject,
-              })(
-                <TextareaItem
-                  disabled={operating === 0 ? true : false}
-                  placeholder={!customerDetail ? '近两年申报项目' : null}
-                  autoHeight
-                  onChange={value => this.onConditionChange({ lastTwoProject: value })}
-                  style={{ textAlign: 'left' }}
-                />
-              )}
+            {operating === 0 ? <div style={{minHeight:'32px',height:'auto',color:'#bbb',lineHeight:'20px',wordWrap:'break-word',width:'100%',paddingTop:'5px'}}>
+              {customerDetail && customerDetail.lastTwoProject}
+            </div> :
+                 getFieldDecorator('lastTwoProject', {
+                  initialValue: customerDetail && customerDetail.lastTwoProject,
+                })(
+                  <TextareaItem
+                    disabled={operating === 0 ? true : false}
+                    placeholder={!customerDetail ? '近两年申报项目' : null}
+                    autoHeight
+                    onChange={value => this.onConditionChange({ lastTwoProject: value })}
+                    style={{ textAlign: 'left' }}
+                  />
+                )
+            }
+            
             </div>
           </div>
 
           <div>
             <div className={style.status_title}>计划申报项目</div>
             <div className={style.status_text}>
-              {getFieldDecorator('planProject', {
-                initialValue: customerDetail && customerDetail.planProject,
-              })(
-                <TextareaItem
-                  disabled={operating === 0 ? true : false}
-                  placeholder={!customerDetail ? '计划申报项目' : null}
-                  autoHeight
-                  onChange={value => this.onConditionChange({ planProject: value })}
-                  style={{ textAlign: 'left' }}
-                />
-              )}
+            {operating === 0 ? <div style={{minHeight:'32px',height:'auto',color:'#bbb',lineHeight:'20px',wordWrap:'break-word',width:'100%',paddingTop:'5px'}}>
+              {customerDetail && customerDetail.planProject}
+            </div> :
+                getFieldDecorator('planProject', {
+                  initialValue: customerDetail && customerDetail.planProject,
+                })(
+                  <TextareaItem
+                    disabled={operating === 0 ? true : false}
+                    placeholder={!customerDetail ? '计划申报项目' : null}
+                    autoHeight
+                    onChange={value => this.onConditionChange({ planProject: value })}
+                    style={{ textAlign: 'left' }}
+                  />
+                )
+            }
+             
             </div>
           </div>
         </List>

@@ -207,6 +207,15 @@ class BasicInput extends React.Component {
     return (
       <div style={{ background: 'white' }}>
         <List>
+          <div>
+          {operating === 0 ? 
+          <div className={styles.name_panel}>
+            <span className={styles.title} >客户名称</span>
+            <span className={styles.info}>{customerDetail && customerDetail.name}</span>
+          </div>
+         
+          :
+          <div style={{marginLeft:'16px',borderBottom:'1px solid rgba(218, 218, 218, 0.5)'}}>
           {getFieldDecorator('name', {
             initialValue: customerDetail && customerDetail.name,
           })(
@@ -219,6 +228,22 @@ class BasicInput extends React.Component {
               onChange={value => this.onConditionChange({ name: value })}
             />
           )}
+          </div>
+            }  
+            
+          </div>
+          {/* {getFieldDecorator('name', {
+            initialValue: customerDetail && customerDetail.name,
+          })(
+            <TextareaItem
+              disabled={operating === 0 ? true : false}
+              title="客户名称"
+              placeholder={!customerDetail ? '客户名称' : null}
+              autoHeight
+              style={{ textAlign: 'right' }}
+              onChange={value => this.onConditionChange({ name: value })}
+            />
+          )} */}
           {operating === 0 ? (
             <InputItem
               disabled={true}
@@ -403,7 +428,10 @@ class BasicInput extends React.Component {
           <div>
             <div className={styles.status_title}>高端人才情况</div>
             <div className={styles.status_text}>
-              {getFieldDecorator('talentInfo', {
+            {operating === 0 ? <div style={{minHeight:'32px',height:'auto',color:'#bbb',lineHeight:'20px',wordWrap:'break-word',width:'100%',paddingTop:'5px'}}>
+              {customerDetail && customerDetail.talentInfo}
+            </div> :
+               getFieldDecorator('talentInfo', {
                 initialValue: customerDetail && customerDetail.talentInfo,
               })(
                 <TextareaItem
@@ -413,14 +441,18 @@ class BasicInput extends React.Component {
                   onChange={value => this.onConditionChange({ talentInfo: value })}
                   style={{ textAlign: 'left' }}
                 />
-              )}
+              )
+            }           
             </div>
           </div>
 
           <div>
             <div className={styles.status_title}>经营地址</div>
             <div className={styles.status_text}>
-              {getFieldDecorator('registeredAddr', {
+            {operating === 0 ? <div style={{minHeight:'32px',height:'auto',color:'#bbb',lineHeight:'20px',wordWrap:'break-word',width:'100%',paddingTop:'5px'}}>
+              {customerDetail && customerDetail.registeredAddr}
+            </div> :
+              getFieldDecorator('registeredAddr', {
                 initialValue: customerDetail && customerDetail.registeredAddr,
               })(
                 <TextareaItem
@@ -430,24 +462,29 @@ class BasicInput extends React.Component {
                   onChange={value => this.onConditionChange({ registeredAddr: value })}
                   style={{ textAlign: 'left' }}
                 />
-              )}
+              )
+            }           
             </div>
           </div>
 
           <div style={{ background: 'white' }}>
             <div className={styles.status_title}>主营业务</div>
             <div className={styles.status_text}>
-              {getFieldDecorator('businessScope', {
-                initialValue: customerDetail && customerDetail.businessScope,
-              })(
-                <TextareaItem
-                  disabled={operating === 0 ? true : false}
-                  autoHeight
-                  placeholder={!customerDetail ? '主营业务' : null}
-                  onChange={value => this.onConditionChange({ businessScope: value })}
-                  style={{ textAlign: 'left' }}
-                />
-              )}
+            {operating === 0 ? <div style={{minHeight:'32px',height:'auto',color:'#bbb',lineHeight:'20px',wordWrap:'break-word',width:'100%',paddingTop:'5px'}}>
+              {customerDetail && customerDetail.businessScope}
+            </div> :
+                getFieldDecorator('businessScope', {
+                  initialValue: customerDetail && customerDetail.businessScope,
+                })(
+                  <TextareaItem
+                    disabled={operating === 0 ? true : false}
+                    autoHeight
+                    placeholder={!customerDetail ? '主营业务' : null}
+                    onChange={value => this.onConditionChange({ businessScope: value })}
+                    style={{ textAlign: 'left' }}
+                  />
+                )
+            }              
             </div>
           </div>
         </List>

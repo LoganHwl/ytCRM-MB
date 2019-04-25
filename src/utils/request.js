@@ -1,7 +1,9 @@
 import fetch from 'dva/fetch';
 import { notification } from 'antd';
+import { Toast } from 'antd-mobile';
 import router from 'umi/router';
 import hash from 'hash.js';
+import cookie from 'react-cookies';
 import { isAntdPro } from './utils';
 import { HOST } from './config';
 
@@ -85,7 +87,9 @@ export default function request(
     // credentials: 'include',
   };
   const newOptions = { ...defaultOptions, ...options };
-  const userToken = localStorage.getItem('userToken'); //44dc3445e2fb3f57ff9f877ea2a2256a
+  const userToken = sessionStorage.getItem('userToken');
+  // const userToken = cookie.load('userToken'); //44dc3445e2fb3f57ff9f877ea2a2256a
+ 
   if (
     newOptions.method === 'POST' ||
     newOptions.method === 'PUT' ||
@@ -101,6 +105,7 @@ export default function request(
       };
       newOptions.body = JSON.stringify(newOptions.body);
     } else {
+      
       // newOptions.body is FormData
       newOptions.headers = {
         // Accept: 'application/json',
@@ -128,8 +133,8 @@ export default function request(
   //请求之前加入token
   if (!url.includes('/login') && !url.includes('/logout')) {
     const setToken = {
-      token: '250b26274c51c1e1fe182efb24db3733',
-      // token: userToken,
+      // token: '250b26274c51c1e1fe182efb24db3733',
+      token: userToken,
     };
     newOptions.headers = {
       ...newOptions.headers,
@@ -140,7 +145,6 @@ export default function request(
   }
   console.log('url', url);
   console.log('newOptions', newOptions);
-
   return (
     fetch(HOST + url, newOptions)
       .then(checkStatus)
@@ -161,7 +165,8 @@ export default function request(
         console.log(response);
         if (response.code == '10003') {
           router.push('/login');
-          return {};
+          Toast.fail(response.msg,1)
+          return response;
         } else {
           return response;
         }

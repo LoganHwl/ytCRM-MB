@@ -1,6 +1,6 @@
 .page {
   color: black;
-  font-size: 16px;
+  font-size: 14px;
   .userManager_card_panel {
     :global {
       .am-card-body {
@@ -13,7 +13,7 @@
     z-index: 999;
     top: 45px;
     width: 100%;
-    padding: 0 5px;
+    padding: 0 15px;
     height: 45px;
     text-align: center;
     background: white;
@@ -23,6 +23,11 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: nowrap;
+    :global{
+      .am-search{
+        padding : 0 0 0 8px;
+      }
+    }
     .left{
       width: 22%;
       height: 45px;
@@ -31,10 +36,10 @@
       }
     }
     .center{
-      width: 58%;
+      width: 78%;
       height: 45px;
       @media screen and (max-width: 320px) {
-          width: 55%
+          width: 75%
       }
       .search_input {
         background: none;
@@ -42,7 +47,7 @@
         vertical-align: middle;
         :global {
           .am-search-input {
-            border-radius: 1em;
+            border-radius: 2em;
             border: 1px solid rgba(0, 0, 0, 0.1);
             height: 32px;
   
@@ -51,25 +56,24 @@
             }
   
             .am-search-synthetic-ph {
-              line-height: 30px;
+              line-height: 31px;
             }
           }
         }
       }
     }
-    .right{
-      width: 20%;
-      height: 45px;
-      .search_btn {
-        height: 32px;
-        line-height: 32px;
-        border-radius: 3em;
-        border: 1px solid #219ddd;
-        color: #219ddd;
-        vertical-align: middle;
-        margin-top: -2px;
-      }
-    }
+    // .right{
+    //   width: 20%;
+    //   height: 45px;
+    //   .search_btn {
+    //     height: 30px;
+    //     line-height: 31px;
+    //     border-radius: 3em;
+    //     border: 1px solid #219ddd;
+    //     color: #219ddd;
+    //     vertical-align: middle;
+    //   }
+    // }
 
 
     :global {
@@ -80,9 +84,9 @@
         height: 33px;
       }
       .am-accordion .am-accordion-item .am-accordion-header {
-        font-size: 16px;
+        font-size: 14px;
         height: 30px;
-        line-height: 29px;
+        line-height: 33px;
         width: 45%;
         margin: 0 auto;
         padding-left: 10px;
@@ -93,7 +97,7 @@
         margin-top: 7px;
       }
       .am-search-input input[type='search'] {
-        font-size: 16px;
+        font-size: 14px;
       }
     }
   }
@@ -104,7 +108,7 @@
     justify-content: space-between;
     flex-wrap: nowrap;
     color: #999999;
-    font-size: 16px;
+    font-size: 14px;
     .left{
       width: 24%;
       .img_mask{
@@ -114,7 +118,7 @@
       }
       .role_name {
         position: absolute;
-        bottom: 0.6em;
+        bottom: 0.45em;
         color: rgba(255, 255, 255, 1);
         font-size: 14px;
         width: 68px;
@@ -167,7 +171,7 @@
         }
         .role_name {
           width: 60px;
-          bottom: .75em;
+          bottom: .55em;
         }
         img {
           width: 60px;
@@ -189,7 +193,7 @@
   }
   .status_panel {
     margin-top: 45px;
-    font-size: 16px;
+    font-size: 14px;
     color: rgba(30, 30, 30, 1);
     .status_title {
       padding: 16px 16px;
@@ -200,7 +204,7 @@
           border-bottom: 1px solid #F1F1F1;
         }
         .am-list-item .am-input-label {
-          font-size: 16px;
+          font-size: 14px;
         }
       }
     }
@@ -266,7 +270,7 @@
       float: right;
       margin-top: -38px;
       min-width: 8em;
-      font-size: 16px;
+      font-size: 14px;
       :global {
         .ant-select-selection {
           border: none;
@@ -347,7 +351,7 @@
 }
 .modal_btn {
   margin-top: 20px;
-  font-size: 16px;
+  font-size: 14px;
   display: flex;
   justify-content: center;
   :global {
@@ -367,10 +371,10 @@
       background-color: white;
     }
   }
-  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
-    html:not([data-scale]) .am-button::before {
-      height: 200%;
-      border: 2px solid rgba(203, 203, 203, .5);
-    }
-  }
+  // @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+  //   html:not([data-scale]) .am-button::before {
+  //     height: 200%;
+  //     border: 2px solid rgba(203, 203, 203, .5);
+  //   }
+  // }
 }

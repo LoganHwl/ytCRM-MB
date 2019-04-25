@@ -1,19 +1,21 @@
+let getTimestamp = new Date().getTime();
 export default [
+   
   // user
   {
     path: '/',
     component: './index',
     // redirect: '/home',
     routes: [
-      // { path: '/', redirect: '/login' },
-      { path: '/login', component: './User/Login' },
+      // 登录
+      { path: `/login`, component: './User/Login' },
       {
         path: '/',
         component: './Base',
         routes: [
           {
             path: '/',
-            redirect: '/home',
+            redirect: `/home?timestamp=${getTimestamp}`,
           },
           {
             path: '/home',

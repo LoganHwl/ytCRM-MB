@@ -40,7 +40,6 @@ class userManager extends Component {
     const ds = new ListView.DataSource({
       rowHasChanged: (r1, r2) => r1 !== r2,
     });
-    // this.handleSearch = this.handleSearch.bind(this);
 
     // this.showMoreMsg = this.showMoreMsg.bind(this);
     this.getUserForAssign = this.getUserForAssign.bind(this);
@@ -326,12 +325,13 @@ class userManager extends Component {
               className={styles.search_input}
               placeholder="输入关键字搜索"
               showCancelButton
+              onSubmit={() => this.handleSearch()}
               onChange={value => {
                 this.onSearchConditionChange(value);
               }}
             />
           </div>
-          <div className={styles.right}>
+          {/* <div className={styles.right}>
             <Button
               className={styles.search_btn}
               type="default"
@@ -341,7 +341,7 @@ class userManager extends Component {
             >
               搜索
             </Button>
-          </div>
+          </div> */}
         </div>
         <div className={styles.userManager_card_panel} style={{ marginTop: '95px' }}>
           {userList && userList.length > 0 ? (

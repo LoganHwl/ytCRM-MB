@@ -1,3 +1,22 @@
+.name_panel{
+  min-height: 42px;
+  display: flex;
+  margin-left: 16px;
+  border-bottom: 1PX solid rgba(218, 218, 218, 0.5);
+  line-height: 23px;
+  height: auto;
+  padding: 10px 0;
+  .title{
+    width: 28%;
+  }
+  .info{
+    width: 70%;
+    word-break: break-word;
+    text-align: right;
+    padding-right: 10px;
+    color: #bbb;
+  }
+}
 .spec_select {
   float: right;
   margin-top: -2.7em;
@@ -13,15 +32,20 @@
 }
 .status_title {
   padding: 7px 15px 0;
-  font-size: 16px;
+  font-size: 14px;
   color: black;
 }
 .status_text {
-  // margin: 0 0 0 15px;
-  border-bottom: 1px solid rgba(218, 218, 218, 0.27);
+  margin-left: 16px;
+  padding-right: 16px;
+  border-bottom: 1px solid rgba(218, 218, 218, 0.5);
   :global {
+    .am-list-item{
+      padding-left: 0
+    }
+
     .am-textarea-control textarea {
-      font-size: 16px;
+      font-size: 14px;
     }
   }
 }
@@ -49,7 +73,7 @@
     width: 36%;
     padding: 10px 10px 0 0;
     display: inline-block;
-    font-size: 16px;
+    font-size: 14px;
     color: black;
   }
 }
@@ -62,7 +86,7 @@
   margin-top: 15px;
   border: 1px solid rgba(221, 221, 221, 0.3);
   border-radius: 25px;
-  box-shadow: rgb(236, 230, 230) 1px 1px 6px 0px;
+  // box-shadow: rgb(236, 230, 230) 1px 1px 6px 0px;
 }
 .history_pane {
   width: 100%;
@@ -135,7 +159,7 @@
 .tabsCard {
   :global {
     .am-card-header {
-      padding: 5px 5px 0;
+      padding: 10px 5px 0;
     }
     .am-card-body {
       padding: 0 5px 6px;
@@ -146,6 +170,8 @@
     .am-list-item.am-input-item {
       height: 32px;
       min-height: 32px;
+      line-height: 12px;
+      border-radius: 0
     }
     .am-list-item .am-input-control input:disabled {
       color: #1e1e1e;
@@ -170,8 +196,9 @@
         text-align: left;
         border-bottom: 1px solid #f3f3f3;
         height: 30px;
-        line-height: 30px;
+        line-height: 12px;
         color: #1e1e1e;
+        border-radius: 0;
       }
     }
   }
@@ -182,11 +209,12 @@
         border: none;
         font-weight: 600;
         color: #1e1e1e;
+        border-radius: 0;
       }
     }
   }
   .btn_pane {
-    font-size: 16px;
+    font-size: 14px;
     color: #999999;
     .confirm {
       color: #1990ff;
@@ -202,7 +230,7 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: nowrap;
-    font-size: 16px;
+    font-size: 14px;
     padding-top: 10px;
     .col_title {
       font-size: 14px;
@@ -225,7 +253,8 @@
         text-align: left;
         border-bottom: 1px solid #f3f3f3;
         height: 30px;
-        line-height: 30px;
+        line-height: 12px;
+        border-radius: 0;
       }
     }
   }
@@ -272,14 +301,14 @@
   .am-textarea-label.am-textarea-label-5,
   .am-list-item .am-input-label.am-input-label-5 {
     width: 112px;
-    font-size: 16px;
+    font-size: 14px;
   }
   .am-textarea-control textarea {
-    font-size: 16px;
+    font-size: 14px;
   }
   .am-list-item .am-input-control input {
     text-align: right;
-    font-size: 16px;
+    font-size: 14px;
   }
   .am-textarea-control textarea:disabled,
   .am-list-item .am-input-control input:disabled {
@@ -287,29 +316,28 @@
     text-align: right;
   }
   .am-list-item .am-list-line .am-list-content {
-    font-size: 16px;
+    font-size: 14px;
   }
   .am-list-item .am-list-line .am-list-extra {
-    // color: #CBCBCB;
+    font-size: 14px;
     color: #1e1e1e;
   }
-  // .am-textarea-control textarea::-webkit-input-placeholder {
-  //   color: #bbb;
+  // .am-picker-popup-item{
+  //   font-size: 14px
   // }
-  // .am-textarea-control textarea::-ms-input-placeholder {
-  //   color: #bbb;
-  // }
+  .am-picker-popup-header-left{
+    color: #cbcbcb;
+  }
   .am-textarea-control textarea::placeholder {
     color: #cbcbcb;
-    font-size: 16px;
+    font-size: 14px;
   }
-  // .am-textarea-control textarea:disabled {
-  //   color: #bbb;
-  //   background-color: #fff;
-  // }
   .am-textarea-disabled .am-textarea-label,
   .am-list-item.am-input-disabled .am-input-label {
     color: black;
+  }
+  .am-list .am-list-item.am-textarea-item{
+    padding-left: 0;
   }
   .am-card {
     min-height: 70px;
@@ -323,7 +351,4 @@
   .ant-radio-disabled .ant-radio-inner::after {
     background-color: #1890ff;
   }
-  // .am-tabs-content-wrap{
-  //   margin-top: 45px
-  // }
 }

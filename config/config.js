@@ -4,6 +4,8 @@ import pageRoutes from './router.config';
 import webpackplugin from './plugin.config';
 import defaultSettings from '../src/defaultSettings';
 
+let getTimestamp = new Date().getTime();
+
 export default {
   // add for transfer to umi
   plugins: [
@@ -77,11 +79,11 @@ export default {
     },
   },
   manifest: {
-    name: 'balibali',
+    name: 'yeTing-CRM',
     background_color: '#FFF',
-    description: 'An out-of-box UI solution for enterprise applications as a React boilerplate.',
+    description: '',
     display: 'standalone',
-    start_url: '/index.html',
+    start_url: '/index.html'+'?'+'timeStamp=' + getTimestamp,
     icons: [
       {
         src: '/favicon.png',
