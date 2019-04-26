@@ -6,20 +6,19 @@ import { List, InputItem, Button, Toast, Picker } from 'antd-mobile';
 
 import styles from './userManager.less';
 
-
 @connect(({ home }) => ({
   ...home,
 }))
 class userInfoChange extends Component {
   state = {
     userId: '',
-    realName:'',
-    mobile:'',
+    realName: '',
+    mobile: '',
     roleId: '',
-    roleName:'',
+    roleName: '',
     canSubmit: false,
-    roleList:[],
-    defaultId:''
+    roleList: [],
+    defaultId: '',
   };
 
   rolePickerList(value) {
@@ -36,48 +35,47 @@ class userInfoChange extends Component {
     if (this.props.allRole !== nextProps.allRole) {
       if (nextProps.allRole && nextProps.allRole.code === 0 && nextProps.allRole.data) {
         this.rolePickerList(nextProps.allRole.data);
-      }else {
-        Toast.fail(nextProps.allRole.msg,1);
-        return
+      } else {
+        Toast.fail(nextProps.allRole.msg, 1);
+        return;
       }
     }
   }
   componentWillMount() {}
   async componentDidMount() {
-    
     const { dispatch, allRole } = this.props;
     const d = this.props.location.query.detail;
-    const detail = JSON.parse(d) 
-    let arr =[];
-    arr.push(detail.roleId)
-    this.setState({ 
+    const detail = JSON.parse(d);
+    let arr = [];
+    arr.push(detail.roleId);
+    this.setState({
       userId: detail.userId,
-      realName:detail.realName,
-      mobile:detail.mobile,
+      realName: detail.realName,
+      mobile: detail.mobile,
       roleId: detail.roleId,
-      roleName:arr,
-      defaultId:arr
+      roleName: arr,
+      defaultId: arr,
     });
     await dispatch({
       type: 'home/getAllRole',
     });
     if (allRole && allRole.code === 0 && allRole.data) {
       this.rolePickerList(allRole.data);
-    }else {
-      Toast.fail(allRole.msg,1);
-      return
+    } else {
+      Toast.fail(allRole.msg, 1);
+      return;
     }
   }
 
   roleNameValueChange(v) {
-    const {defaultId} = this.state
+    const { defaultId } = this.state;
     this.setState({
       roleName: v,
-      roleId:v[0],
+      roleId: v[0],
       canSubmit: true,
     });
-    if(JSON.stringify(v) === JSON.stringify(defaultId)){
-      this.setState({canSubmit: false,})
+    if (JSON.stringify(v) === JSON.stringify(defaultId)) {
+      this.setState({ canSubmit: false });
     }
   }
 
@@ -86,8 +84,8 @@ class userInfoChange extends Component {
       realName: v,
       canSubmit: true,
     });
-    if(v === ''){
-      this.setState({canSubmit: false,})
+    if (v === '') {
+      this.setState({ canSubmit: false });
     }
   }
   mobileValueChange(v) {
@@ -95,8 +93,8 @@ class userInfoChange extends Component {
       mobile: v,
       canSubmit: true,
     });
-    if(v === ''){
-      this.setState({canSubmit: false,})
+    if (v === '') {
+      this.setState({ canSubmit: false });
     }
   }
   // 重新刷新页面
@@ -116,15 +114,9 @@ class userInfoChange extends Component {
     history.go(-1);
   }
   // 提交更改
-  async submitChange( e) {
+  async submitChange(e) {
     const { dispatch } = this.props;
-    const {
-      realName,
-      mobile,
-      roleId,
-      userId,
-      defaultId
-    } = this.state;
+    const { realName, mobile, roleId, userId, defaultId } = this.state;
     if (!userId) {
       Toast.fail('缺少用户ID', 1);
       return;
@@ -139,7 +131,7 @@ class userInfoChange extends Component {
       type: 'home/setRole',
       payload: params,
     });
-    Toast.success('修改成功',1);
+    Toast.success('修改成功', 1);
     // if(defaultId[0] == 1){
     //   setTimeout(()=>{
     //     router.push('/login');
@@ -149,23 +141,15 @@ class userInfoChange extends Component {
     //     history.go(-1)
     //   },500)
     // }
-    setTimeout(()=>{
-      history.go(-1)
-    },500)
-    
-  };
+    setTimeout(() => {
+      history.go(-1);
+    }, 500);
+  }
 
   render() {
-    const {
-      realName,
-      mobile,
-      roleName,
-      roleList,
-      canSubmit,
-      defaultId
-    } = this.state;
+    const { realName, mobile, roleName, roleList, canSubmit, defaultId } = this.state;
     return (
-      <div className={styles.page} style={{ background: 'white',height:'100%' }}>
+      <div className={styles.page} style={{ background: 'white', height: '100%' }}>
         <Header>修改用户信息</Header>
         <div className={styles.status_panel}>
           <div className={styles.status_title}>
@@ -174,8 +158,10 @@ class userInfoChange extends Component {
               cols={1}
               value={roleName}
               placeholder="选择角色"
-              extra={<span></span>}
-              onChange={value => {this.roleNameValueChange(value)}}
+              extra={<span />}
+              onChange={value => {
+                this.roleNameValueChange(value);
+              }}
             >
               <List.Item arrow="horizontal">设置角色:</List.Item>
             </Picker>
@@ -200,7 +186,7 @@ class userInfoChange extends Component {
             </div>
           </div>
           <div className={styles.btn_panel}>
-            <Button
+            {/* <Button
               className={styles.btn}
               type="default"
               size="small"
@@ -208,7 +194,7 @@ class userInfoChange extends Component {
               onClick={this.onCancel.bind(this)}
             >
               取消
-            </Button>
+            </Button> */}
             <Button
               className={styles.btn}
               type="primary"

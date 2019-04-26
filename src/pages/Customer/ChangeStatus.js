@@ -57,11 +57,17 @@ const resetOrKeep = [
   },
 ];
 
+const screenHeight = document.body.clientHeight; // 这里是给到了一个默认值 （这个很重要），
+const originHeight = document.body.clientHeight; //默认高度在watch里拿来做比较
+
 @connect(({ home }) => ({
   ...home,
 }))
 class dataStatistics extends Component {
   state = {
+    screenHeight,
+    originHeight,
+    isOriginHei: true,
     detail: {},
     selectedId: '',
     userId: '',
@@ -90,6 +96,16 @@ class dataStatistics extends Component {
         this.userPickerList(nextProps.userForAssign);
       }
     }
+
+    // if (nextState.screenHeight !== this.state.screenHeight) {
+    //   this.setState({
+    //     isOriginHei: false,
+    //   });
+    // }else{
+    //   this.setState({
+    //     isOriginHei: true,
+    //   });
+    // }
   }
   async componentWillMount() {
     const { dispatch, userForAssign } = this.props;
@@ -101,6 +117,13 @@ class dataStatistics extends Component {
     }
   }
   async componentDidMount() {
+    window.onresize = () => {
+      return (() => {
+        window.screenHeight = document.body.clientHeight;
+        this.state.screenHeight = window.screenHeight;
+      })();
+    };
+
     const { dispatch, userForAssign } = this.props;
     const type = this.props.location.query.type;
     const id = this.props.location.query.id;
@@ -234,6 +257,7 @@ class dataStatistics extends Component {
       belongUserName,
       userList,
       canSubmit,
+      isOriginHei,
     } = this.state;
     return (
       <div className={styles.page} style={{ background: 'white' }}>
@@ -333,6 +357,7 @@ class dataStatistics extends Component {
               取消
             </Button> */}
             <Button
+              display={isOriginHei ? true : 'none'}
               className={styles.btn}
               type="primary"
               size="small"

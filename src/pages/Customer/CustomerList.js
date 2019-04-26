@@ -1,19 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import {
-  Card,
-  SearchBar,
-  Button,
-  WhiteSpace,
-  Toast,
-  ListView,
-  Accordion,
-  List,
-} from 'antd-mobile';
+import { Card, SearchBar, Button, WhiteSpace, Toast, ListView, Accordion, List } from 'antd-mobile';
 import Header from '../Base/header';
 
 import styles from './style.less';
+
+import triangle from '../../assets/Triangle.svg';
+import triangleActive from '../../assets/Triangle-active.svg';
 
 const saleStatusList = [
   {
@@ -102,9 +96,11 @@ class CustomerList extends Component {
       saleStatus: '不限阶段',
       moreCondition: '更多筛选',
       activeKey: '',
+      activeArr: [],
       statusId: '',
       levelId: '',
       order: '',
+      hasChoice: false,
     };
   }
   componentWillReceiveProps(nextState) {
@@ -113,27 +109,27 @@ class CustomerList extends Component {
         dataSource: this.state.dataSource.cloneWithRows(nextState.customerList),
       });
     }
-//     if (nextState.activeKey !== this.state.activeKey) {
-//       // 为元素添加事件监听  
-//       document.body.addEventListener("touchmove", (ev) => {
-//         if(this.state.activeKey != ''){
-//          ev.preventDefault();
-//         }
-       
-//      }, {
-//        passive: false //  禁止 passive 效果
-//      })
-//     }else{
-//       document.body.removeEventListener("touchmove", (ev) => {        
-//         ev.preventDefault();       
-// }, {
-//  passive: false //  禁止 passive 效果
-// })
-//     }      
-     
+
+    //     if (nextState.activeKey !== this.state.activeKey) {
+    //       // 为元素添加事件监听
+    //       document.body.addEventListener("touchmove", (ev) => {
+    //         if(this.state.activeKey != ''){
+    //          ev.preventDefault();
+    //         }
+
+    //      }, {
+    //        passive: false //  禁止 passive 效果
+    //      })
+    //     }else{
+    //       document.body.removeEventListener("touchmove", (ev) => {
+    //         ev.preventDefault();
+    // }, {
+    //  passive: false //  禁止 passive 效果
+    // })
+    //     }
   }
   componentWillMount() {
-    document.body.style.overflow='auto'; 
+    document.body.style.overflow = 'auto';
     Toast.loading('正在加载...', 0);
   }
   onEndReached = () => {
@@ -148,32 +144,75 @@ class CustomerList extends Component {
   };
 
   componentWillUnmount() {
-    this.setState({activeKey:''})
+    this.setState({ activeKey: '' });
     // 清除状态
     this.props.dispatch({
       type: 'home/CLEAR_ALL',
     });
   }
+
   componentDidMount() {
+    // let ios = navigator.userAgent.indexOf('iphone');//判断是否为ios
+    // if(ios === -1){
+    //     //ios下运行
+    //     if(this.refs.list_view_panel){
+    //       var divEl = this.refs.list_view_panel//你需要滑动的dom元素
+    //     this.preventOverScroll(divEl);
+    //     }
+
+    // }
     const { dispatch } = this.props;
-    const {activeKey}=this.state
     dispatch({
       type: 'home/getUserForAssign',
     });
-    this.onSearch();   
+    this.onSearch();
   }
+  preventOverScroll(scrollPane) {
+    // See http://www.quirksmode.org/js/events_order.html
+    // var CAPTURE_PHASE = true; // happens first, outside to inside
+    // var BUBBLE_PHASE = false; // happens second, inside to outside
+    // // These variables will be captured by the closures below
+    // var allowScrollUp = true, allowScrollDown = true, lastY = 0;
+    // scrollPane.addEventListener('touchstart',(e)=> {
+    // // See http://www.w3.org/TR/cssom-view/#dom-element-scrolltop
+    // allowScrollUp = (this.scrollTop > 0);
+    // allowScrollDown = (this.scrollTop < this.scrollHeight - this.clientHeight);
+    // // Remember where the touch started
+    // lastY = e.pageY;
+    // },
+    // CAPTURE_PHASE);
+    // // If the touch is on the scroll pane, don’t let it get to the
+    // // body object which will cancel it
+    // scrollPane.addEventListener('touchmove',(e)=> {
+    // var up = (event.pageY > lastY);
+    // var down = !up;
+    // lastY = event.pageY;
+    // // Trying to start past scroller bounds
+    // if ((up && allowScrollUp) || (down && allowScrollDown)) {
+    // // Stop this event from propagating, lest
+    // // another object cancel it.
+    // e.stopPropagation();
+    // } else {
+    // // Cancel this event
+    // event.preventDefault();
+    // }
+    // },
+    // CAPTURE_PHASE);
+  }
+
   // 分页&过滤查询客户列表数据
   async onSearch(v) {
     const { dispatch, search } = this.props;
     const { pageSize, page, customerList } = this.state;
-
-    dispatch({
-      type: 'home/CHANGE_PAGENO',
-      startPage: page,
-    });
+    if (v === 1) {
+      dispatch({
+        type: 'home/CHANGE_PAGENO',
+        startPage: page,
+      });
+    }
 
     const params = {
-      startPage: page,
+      startPage: v === 1 ? page : 1,
       pageSize,
     };
 
@@ -237,47 +276,127 @@ class CustomerList extends Component {
   reload = () => {
     location.reload();
   };
-  hideMask=()=>{
-    document.body.style.overflow='auto'; 
-    this.setState({activeKey:''})
-  }
+  hideMask = () => {
+    document.body.style.position = 'static';
+    const { activeArr, activeKey, realName, saleStatus, statusId, levelId, order } = this.state;
+    this.setState({ activeKey: '' });
+
+    if (
+      (realName === '不限责任人' && activeArr.includes(0)) ||
+      (saleStatus === '不限阶段' && activeArr.includes(1)) ||
+      (statusId === '' && levelId === '' && order === '' && activeArr.includes(2))
+    ) {
+      activeArr.splice(activeArr.findIndex(item => item === activeKey), 1);
+
+      this.setState({ activeArr });
+    }
+  };
   // 手风琴点击及选择对应筛选条件后回调
-  onAccordionChange = e => {
-    
-    if (!e) {
-      document.body.style.position='static';
-      document.body.style.overflow='auto'; 
-//       document.body.removeEventListener("touchmove", (ev) => {        
-//         ev.preventDefault();       
-// }, {
-//  passive: false //  禁止 passive 效果
-// })
-      this.setState({ activeKey: '' });
-    } else if (e) {
-      document.body.style.position='fixed'; 
-      document.body.style.overflow='hidden'; 
-    //       document.body.addEventListener("touchmove", (ev) => {        
-    //           ev.preventDefault();       
+  showFilterPanel(v) {
+    const { activeKey, activeArr, realName, saleStatus, statusId, levelId, order } = this.state;
+    // debugger
+    switch (v) {
+      case 0:
+        if (activeKey === 0) {
+          document.body.style.position = 'static';
+          this.setState({ activeKey: '' });
+          if (realName === '不限责任人') {
+            activeArr.splice(activeArr.findIndex(item => item === activeKey), 1);
+            this.setState({ activeArr });
+          }
+
+          // debugger
+        } else {
+          document.body.style.position = 'fixed';
+          activeArr.push(0);
+          let arr = Array.from(new Set(activeArr));
+          this.setState({ activeKey: 0, activeArr: arr });
+          if (
+            (saleStatus === '不限阶段' && activeArr.includes(1)) ||
+            (statusId === '' && levelId === '' && order === '' && activeArr.includes(2))
+          ) {
+            activeArr.splice(activeArr.findIndex(item => item === 1 || item === 2), 1);
+            this.setState({ activeArr });
+          }
+        }
+        break;
+      case 1:
+        if (activeKey === 1) {
+          document.body.style.position = 'static';
+          this.setState({ activeKey: '' });
+          if (saleStatus === '不限阶段') {
+            activeArr.splice(activeArr.findIndex(item => item === activeKey), 1);
+            this.setState({ activeArr });
+          }
+
+          // debugger
+        } else {
+          document.body.style.position = 'fixed';
+          activeArr.push(1);
+          let arr = Array.from(new Set(activeArr));
+          this.setState({ activeKey: 1, activeArr: arr });
+
+          if (
+            (realName === '不限责任人' && activeArr.includes(0)) ||
+            (statusId === '' && levelId === '' && order === '' && activeArr.includes(2))
+          ) {
+            activeArr.splice(activeArr.findIndex(item => item === 0 || item === 2), 1);
+            this.setState({ activeArr });
+          }
+          // debugger
+        }
+        break;
+      case 2:
+        if (activeKey === 2) {
+          document.body.style.position = 'static';
+          this.setState({ activeKey: '' });
+          if (statusId === '' && levelId === '' && order === '') {
+            activeArr.splice(activeArr.findIndex(item => item === activeKey), 1);
+            this.setState({ activeArr });
+          }
+          // debugger
+        } else {
+          document.body.style.position = 'fixed';
+          activeArr.push(2);
+          let arr = Array.from(new Set(activeArr));
+          this.setState({ activeKey: 2, activeArr: arr });
+          if (
+            (realName === '不限责任人' && activeArr.includes(0)) ||
+            (saleStatus === '不限阶段' && activeArr.includes(1))
+          ) {
+            activeArr.splice(activeArr.findIndex(item => item === 0 || item === 1), 1);
+            this.setState({ activeArr });
+          }
+          // debugger
+        }
+        break;
+
+      default:
+        break;
+    }
+  }
+  // 筛选项---责任人姓名
+  belongeNameChange(e, title) {
+    // document.body.style.position='static';
+    // this.refs.filterList.addEventListener("touchend", (ev) => {
+    //      ev.preventDefault();
+    //      ev.stopPropagation();
     //  }, {
     //    passive: false //  禁止 passive 效果
     //  })
-      this.setState({ activeKey: e } )
-      }
-  };
-  // 筛选项---责任人姓名
-  belongeNameChange(e, title) {
-    this.setState({ realName: title });
+    this.setState({ realName: title }, () => {
+      this.showFilterPanel(0);
+    });
     if (title === '不限责任人') {
       this.onSearchConditionChange({ belongUserName: '' });
     } else {
       this.onSearchConditionChange({ belongUserName: title });
     }
-
-    this.onAccordionChange();
   }
   // 筛选项---销售阶段
   saleStatusChange(e, title) {
-    this.setState({ saleStatus: title });
+    document.body.style.position = 'static';
+    this.setState({ saleStatus: title, activeKey: '' });
     if (title === '不限阶段') {
       this.onSearchConditionChange({ saleStatus: '' });
     } else {
@@ -287,8 +406,6 @@ class CustomerList extends Component {
         }
       });
     }
-
-    this.onAccordionChange();
   }
   // 更多筛选---状态
   statusChange(e, id) {
@@ -326,19 +443,43 @@ class CustomerList extends Component {
 
     // this.onAccordionChange()
   }
+  searchInputFocus = () => {
+    document.body.style.position = 'static';
+    const { activeArr, activeKey, realName, saleStatus, statusId, levelId, order } = this.state;
+    this.setState({ activeKey: '' });
+    if (
+      (realName === '不限责任人' && activeArr.includes(0)) ||
+      (saleStatus === '不限阶段' && activeArr.includes(1)) ||
+      (statusId === '' && levelId === '' && order === '' && activeArr.includes(2))
+    ) {
+      activeArr.splice(activeArr.findIndex(item => item === activeKey), 1);
+      this.setState({ activeArr });
+    }
+  };
+  listScroll(s) {
+    document.body.addEventListener(
+      'touchstart',
+      () => {
+        if (this.scrollTop === 0) {
+          debugger;
+          //滚动到1
+          this.scrollTop = 1;
+        } else if (this.scrollTop == this.scrollHeight - this.clientHeight) {
+          debugger;
+          //滚动到最低端-1
+          this.scrollTop = this.scrollHeight - this.clientHeight - 1;
+        }
+      },
+      true
+    );
+  }
   render() {
     const {
       // customerList,
       userForAssign,
     } = this.props;
     const {
-      key,
       customer_value,
-      // radio_value,
-      // saleStatusNum,
-      // saleStatusNumChange,
-      // statusNum,
-      // statusNumChange,
       dataSource,
       customerList,
       isLoading,
@@ -347,6 +488,7 @@ class CustomerList extends Component {
       saleStatus,
       moreCondition,
       activeKey,
+      activeArr,
       statusId,
       levelId,
       order,
@@ -456,7 +598,8 @@ class CustomerList extends Component {
       );
     };
     return (
-      <div className={styles.page}>      
+      <div className={styles.page}>
+        {/* {activeKey !=='' ?<div className={styles.search_more_mask} onClick={this.hideMask}></div>:null}      */}
         <div>
           <Header>客户列表</Header>
         </div>
@@ -467,6 +610,7 @@ class CustomerList extends Component {
               value={customer_value}
               placeholder="搜索客户名"
               showCancelButton
+              onFocus={this.searchInputFocus}
               onSubmit={() => this.onSearch()}
               onChange={value => {
                 this.setState({ customer_value: value });
@@ -483,123 +627,178 @@ class CustomerList extends Component {
               搜索
             </Button> */}
           </div>
-          <div className={`${styles.accordion_color} ${styles.accordion_color_active}`} > 
-          
-          <Accordion
-            accordion
-            activeKey={activeKey}
-            openAnimation={{}}
-            className={styles.search_bottom}
-            onChange={this.onAccordionChange}
-           style={{zIndex:1000}}
-          >
-            <Accordion.Panel key={'0'} header={realName} className={styles.search_select}>
-            
-              <List className="my-list">
-                <List.Item onClick={e => this.belongeNameChange(e, '不限责任人')}>
-                  不限责任人
-                </List.Item>
-                {userForAssign &&
-                  userForAssign.length > 0 &&
-                  userForAssign.map((item, index) => (
-                    <List.Item
-                      key={index}
-                      onClick={e => this.belongeNameChange(e, item.realName)}
-                      //   v => {
-                      //   this.setState({ realName: item.realName });
-                      //   this.onAccordionChange();
-                      // }}
-                    >
-                      {item.realName}
-                    </List.Item>
-                  ))}
-              </List>
-            </Accordion.Panel>
-            <Accordion.Panel key={'1'} header={saleStatus} className={styles.search_select} style={{margin:'0 0 0 .5em'}}>
-              <List className="my-list">
-                <List.Item onClick={e => this.saleStatusChange(e, '不限阶段')} >不限阶段</List.Item>
-                {saleStatusList.map((item, index) => (
-                  <List.Item key={index} onClick={e => this.saleStatusChange(e, item.title)}>
-                    {item.title}
-                  </List.Item>
-                ))}
-              </List>
-            </Accordion.Panel>
-            <Accordion.Panel key={'2'} header={moreCondition} className={styles.search_select}>
-              <div className={styles.search_select_more}>
-                <div>级别:</div>
-                {level.map((item, index) => (
-                  <Button
-                    className={styles.search_select_more_btn}
-                    key={index}
-                    type={item.id === levelId ? 'primary' : ''}
-                    style={item.id === levelId  ? null:{background:'rgba(255, 255, 255, 1)'}}
-                    inline
-                    size="small"
-                    onClick={e => this.levelChange(e, item.id)}
-                  >
-                    {item.title}
-                  </Button>
-                ))}
-                <div>状态:</div>
-                {statusList.map((item, index) => (
-                  <Button
-                    className={styles.search_select_more_btn}
-                    key={index}
-                    type={item.id === statusId ? 'primary' : ''}
-                    style={item.id === statusId  ? null:{background:'rgba(255, 255, 255, 1)'}}
-                    inline
-                    size="small"
-                    onClick={e => this.statusChange(e, item.id)}
-                  >
-                    {item.title}
-                  </Button>
-                ))}
-                <div>排序:</div>
-                <Button
-                  className={styles.search_select_more_btn}
-                  type={order === 0 ? 'primary' : ''}
-                  style={order === 0 ? {}:{background:'rgba(255, 255, 255, 1)'}}
-                  inline
-                  size="small"
-                  onClick={e => this.sortChange(e, 0)}
-                >
-                  高-中-低
-                </Button>
-                <Button
-                  className={styles.search_select_more_btn}
-                  type={order === 1 ? 'primary' : ''}
-                  style={order === 1 ? {}:{background:'rgba(255, 255, 255, 1)'}}
-                  inline
-                  size="small"
-                  onClick={e => this.sortChange(e, 1)}
-                >
-                  低-中-高
-                </Button>
-                <div style={{ textAlign: 'center' }}>
-                  <Button
-                    className={styles.search_select_more_btn}
-                    style={{border:'none'}}
-                    type="primary"
-                    inline
-                    size="small"
+          <div className={styles.search_bottom}>
+            <div
+              className={styles.search_select}
+              style={{ textAlign: 'left' }}
+              onClick={this.showFilterPanel.bind(this, 0)}
+            >
+              <span
+                className={styles.title}
+                style={activeArr.includes(0) ? { color: 'rgba(25, 144, 255, 1)' } : {}}
+              >
+                {realName}
+              </span>
+              <img src={activeKey === 0 ? triangleActive : triangle} alt="" />
+            </div>
+            <div className={styles.search_select} onClick={this.showFilterPanel.bind(this, 1)}>
+              <span style={activeArr.includes(1) ? { color: 'rgba(25, 144, 255, 1)' } : {}}>
+                {saleStatus}
+              </span>
+              <img src={activeKey === 1 ? triangleActive : triangle} />
+            </div>
+            <div
+              className={styles.search_select}
+              style={{ textAlign: 'right' }}
+              onClick={this.showFilterPanel.bind(this, 2)}
+            >
+              <span style={activeArr.includes(2) ? { color: 'rgba(25, 144, 255, 1)' } : {}}>
+                更多筛选
+              </span>
+              <img src={activeKey === 2 ? triangleActive : triangle} />
+            </div>
+          </div>
+
+          {activeKey === 0 ? (
+            <div className={styles.wrap}>
+              <div className={styles.filterList} ref="filterList">
+                <List>
+                  <List.Item
                     onClick={e => {
-                      this.onAccordionChange();
-                      this.onSearch();
+                      this.belongeNameChange(e, '不限责任人');
+                      activeArr.splice(activeArr.findIndex(item => item === 0), 1);
+                      this.setState({ activeArr });
                     }}
                   >
-                    确定
-                  </Button>
-                </div>
+                    不限责任人
+                  </List.Item>
+                  {userForAssign &&
+                    userForAssign.length > 0 &&
+                    userForAssign.map((item, index) => (
+                      <List.Item
+                        key={index}
+                        onClick={e => this.belongeNameChange(e, item.realName)}
+                      >
+                        {item.realName}
+                      </List.Item>
+                    ))}
+                  {/* <WhiteSpace size="xs" style={{background:'white'}}/> */}
+                </List>
+                <div className={styles.search_more_mask} onClick={this.hideMask} />
               </div>
-            </Accordion.Panel>
-          </Accordion>
-          </div>
+            </div>
+          ) : activeKey === 1 ? (
+            <div className={styles.wrap}>
+              <div className={styles.filterList}>
+                <List>
+                  <List.Item
+                    onClick={e => {
+                      this.saleStatusChange(e, '不限阶段');
+                      activeArr.splice(activeArr.findIndex(item => item === 1), 1);
+                      this.setState({ activeArr });
+                    }}
+                  >
+                    不限阶段
+                  </List.Item>
+                  {saleStatusList.map((item, index) => (
+                    <List.Item key={index} onClick={e => this.saleStatusChange(e, item.title)}>
+                      {item.title}
+                    </List.Item>
+                  ))}
+                </List>
+                <div className={styles.search_more_mask} onClick={this.hideMask} />
+              </div>
+            </div>
+          ) : activeKey === 2 ? (
+            <div className={styles.wrap}>
+              <div className={`${styles.filterList} ${styles.search_select_more}`}>
+                <div className={styles.search_select_more_position}>
+                  <div>级别:</div>
+                  {level.map((item, index) => (
+                    <Button
+                      className={styles.search_select_more_btn}
+                      key={index}
+                      type={item.id === levelId ? 'primary' : ''}
+                      style={
+                        item.id === levelId
+                          ? null
+                          : { background: 'rgba(247,247,247,1)', color: '#BCBCBC' }
+                      }
+                      inline
+                      size="small"
+                      onClick={e => this.levelChange(e, item.id)}
+                    >
+                      {item.title}
+                    </Button>
+                  ))}
+                  <div>状态:</div>
+                  {statusList.map((item, index) => (
+                    <Button
+                      className={styles.search_select_more_btn}
+                      key={index}
+                      type={item.id === statusId ? 'primary' : ''}
+                      style={
+                        item.id === statusId
+                          ? null
+                          : { background: 'rgba(247,247,247,1)', color: '#BCBCBC' }
+                      }
+                      inline
+                      size="small"
+                      onClick={e => this.statusChange(e, item.id)}
+                    >
+                      {item.title}
+                    </Button>
+                  ))}
+                  <div>排序:</div>
+                  <Button
+                    className={styles.search_select_more_btn}
+                    type={order === 0 ? 'primary' : ''}
+                    style={
+                      order === 0 ? {} : { background: 'rgba(247,247,247,1)', color: '#BCBCBC' }
+                    }
+                    inline
+                    size="small"
+                    onClick={e => this.sortChange(e, 0)}
+                  >
+                    高-中-低
+                  </Button>
+                  <Button
+                    className={styles.search_select_more_btn}
+                    type={order === 1 ? 'primary' : ''}
+                    style={
+                      order === 1 ? {} : { background: 'rgba(247,247,247,1)', color: '#BCBCBC' }
+                    }
+                    inline
+                    size="small"
+                    onClick={e => this.sortChange(e, 1)}
+                  >
+                    低-中-高
+                  </Button>
+                  <div style={{ textAlign: 'center' }}>
+                    <Button
+                      className={styles.search_select_more_btn}
+                      // style={{border:'none'}}
+                      type="primary"
+                      inline
+                      size="small"
+                      onClick={e => {
+                        document.body.style.position = 'static';
+                        this.setState({ activeKey: '' });
+                        this.onSearch();
+                      }}
+                    >
+                      确定
+                    </Button>
+                  </div>
+                </div>
+                <div className={styles.search_more_mask} onClick={this.hideMask} />
+              </div>
+            </div>
+          ) : null}
         </div>
 
         <WhiteSpace size="md" />
-        <div style={{ marginTop: '115px' }} className='list_view_panel'>
-        
+        <div style={{ marginTop: '115px' }} className="list_view_panel" ref="list_view_panel">
           {customerList && customerList.length > 0 ? (
             <ListView
               dataSource={dataSource.cloneWithRows(customerList)}
@@ -630,9 +829,7 @@ class CustomerList extends Component {
               initialListSize={20}
               pageSize={20}
               useBodyScroll
-              onScroll={() => {
-                console.log('scroll');
-              }}
+              onScroll={this.listScroll.bind(this)}
               scrollRenderAheadDistance={500}
               onEndReached={this.onEndReached}
               onEndReachedThreshold={20}
@@ -659,7 +856,6 @@ class CustomerList extends Component {
             </div>
           )}
         </div>
-        {activeKey !='' ?<div className={styles.search_more_mask} onClick={this.hideMask}></div>:null}
       </div>
     );
   }
