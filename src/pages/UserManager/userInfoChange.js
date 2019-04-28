@@ -61,7 +61,7 @@ class userInfoChange extends Component {
     });
     if (allRole && allRole.code === 0 && allRole.data) {
       this.rolePickerList(allRole.data);
-    } else {
+    } else if(allRole && allRole.code !== 0) {
       Toast.fail(allRole.msg, 1);
       return;
     }
@@ -78,8 +78,24 @@ class userInfoChange extends Component {
       this.setState({ canSubmit: false });
     }
   }
-
+ async testName(){
+    const {dispatch}=this.props
+    const {realName}=this.state
+  // 客户名称输入框失去焦点时请求后台验证是否重名
+  
+  if (realName) {
+    const res = await dispatch({
+      type: 'home/getUserRealName',
+      payload: realName,
+    });
+    if (res && res.data === false) {
+      Toast.fail('用户名已存在', 1);
+      return
+    }
+  }
+  }
   realNameValueChange(v) {
+   
     this.setState({
       realName: v,
       canSubmit: true,
@@ -93,9 +109,6 @@ class userInfoChange extends Component {
       mobile: v,
       canSubmit: true,
     });
-    if (v === '') {
-      this.setState({ canSubmit: false });
-    }
   }
   // 重新刷新页面
   reload = () => {
@@ -121,17 +134,36 @@ class userInfoChange extends Component {
       Toast.fail('缺少用户ID', 1);
       return;
     }
+    if (!realName) {
+      Toast.fail('真实姓名必填', 1);
+      return;
+    }
     const params = {
       realName,
       mobile,
       roleId,
       userId,
     };
-    await dispatch({
+    if (realName) {
+      const name_res = await dispatch({
+        type: 'home/getUserRealName',
+        payload: realName,
+      });
+      if (name_res && name_res.data === false) {
+        Toast.fail('用户名已存在', 1);
+        return
+      }
+    }
+    const res =  await dispatch({
       type: 'home/setRole',
       payload: params,
     });
-    Toast.success('修改成功', 1);
+    if(res && res.code === 0){
+      Toast.success('修改成功', 1);
+    }else{
+      Toast.success(res.msg, 1);
+    }
+    
     // if(defaultId[0] == 1){
     //   setTimeout(()=>{
     //     router.push('/login');
@@ -174,6 +206,7 @@ class userInfoChange extends Component {
                 placeholder="真实姓名"
                 value={realName}
                 onChange={v => this.realNameValueChange(v)}
+                onBlur={this.testName.bind(this)}
               />
             </div>
             <div className={styles.status_text}>

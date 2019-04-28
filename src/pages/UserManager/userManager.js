@@ -74,6 +74,7 @@ class userManager extends Component {
     }
   }
   componentWillMount() {
+    document.body.style.position = 'static';
     Toast.loading('正在加载...', 0);
   }
 
@@ -178,7 +179,7 @@ class userManager extends Component {
   }
   // 分配角色数据提交
   async handleSubmitBelong(e) {
-    e.preventDefault();
+    // e.preventDefault();
 
     const { dispatch } = this.props;
     const { realName, mobile, currentRoleId, userId } = this.state;

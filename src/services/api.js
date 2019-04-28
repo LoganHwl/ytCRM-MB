@@ -55,6 +55,11 @@ export async function getCustomerDetail(params) {
 export async function getCustomerName(params) {
   return request(`/customer/getName/${String(params)}`);
 }
+
+// 验证用户真实姓名是否存在
+export async function getUserRealName(params) {
+  return request(`/user/existName/${String(params)}`);
+}
 // 新增客户
 export async function submitCustomerForm(params) {
   return request(`/customer/add`, {

@@ -59,7 +59,7 @@ class customerDetailClassification extends Component {
   }
   // 校验表单数据并提交
   validate = e => {
-    e.preventDefault();
+    // e.preventDefault();
     const { dispatch, tabsInfo, customerDetail } = this.props;
     const { icon } = this.state;
     if (icon == 0) {

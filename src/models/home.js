@@ -9,6 +9,7 @@ import {
   submitCustomerForm,
   updateCustomerInfo,
   getCustomerName,
+  getUserRealName,
   getCountInfo,
   getUserList,
   getAllRole,
@@ -148,7 +149,19 @@ export default {
         if (customerName.code === 0) {
           return customerName;
         } else {
-          message.error(customerName.msg);
+          return false;
+        }
+      } catch (err) {
+        const { msg } = err.response || {};
+        console.log('错误信息', msg);
+      }
+    },
+    *getUserRealName({ payload }, { call }) {
+      try {
+        const userRealName = yield call(getUserRealName, payload);
+        if (userRealName.code === 0) {
+          return userRealName;
+        } else {
           return false;
         }
       } catch (err) {
@@ -203,7 +216,8 @@ export default {
       });
     },
     *setRole({ payload }, { call }) {
-      yield call(setRole, payload);
+     const res = yield call(setRole, payload);
+     return res
     },
   },
 

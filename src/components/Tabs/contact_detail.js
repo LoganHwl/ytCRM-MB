@@ -29,7 +29,7 @@ class Contact_detail extends React.Component {
   }
   // 每个面板都需要点击编辑才能修改
   toggleEditable = (e, key) => {
-    e.preventDefault();
+    // e.preventDefault();
     const { canEditIndex } = this.state;
     if (canEditIndex !== '') {
       Toast.fail('请先确认', 1);

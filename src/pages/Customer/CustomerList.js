@@ -129,7 +129,7 @@ class CustomerList extends Component {
     //     }
   }
   componentWillMount() {
-    document.body.style.overflow = 'auto';
+    document.body.style.position = 'static';
     Toast.loading('正在加载...', 0);
   }
   onEndReached = () => {
@@ -255,7 +255,7 @@ class CustomerList extends Component {
     }
   }
   showDetail(id, e) {
-    e.preventDefault();
+    // e.preventDefault();
     let getTimestamp = new Date().getTime();
     router.push({
       pathname: '/customer-detail',
@@ -264,7 +264,7 @@ class CustomerList extends Component {
   }
   showStatusDetail(id, e) {
     e.stopPropagation();
-    e.preventDefault();
+    // e.preventDefault();
     let getTimestamp = new Date().getTime();
     router.push({
       pathname: '/status-detail',
@@ -456,23 +456,23 @@ class CustomerList extends Component {
       this.setState({ activeArr });
     }
   };
-  listScroll(s) {
-    document.body.addEventListener(
-      'touchstart',
-      () => {
-        if (this.scrollTop === 0) {
-          debugger;
-          //滚动到1
-          this.scrollTop = 1;
-        } else if (this.scrollTop == this.scrollHeight - this.clientHeight) {
-          debugger;
-          //滚动到最低端-1
-          this.scrollTop = this.scrollHeight - this.clientHeight - 1;
-        }
-      },
-      true
-    );
-  }
+  // listScroll(s) {
+  //   document.body.addEventListener(
+  //     'touchstart',
+  //     () => {
+  //       if (this.scrollTop === 0) {
+  //         debugger;
+  //         //滚动到1
+  //         this.scrollTop = 1;
+  //       } else if (this.scrollTop == this.scrollHeight - this.clientHeight) {
+  //         debugger;
+  //         //滚动到最低端-1
+  //         this.scrollTop = this.scrollHeight - this.clientHeight - 1;
+  //       }
+  //     },
+  //     true
+  //   );
+  // }
   render() {
     const {
       // customerList,
@@ -829,7 +829,7 @@ class CustomerList extends Component {
               initialListSize={20}
               pageSize={20}
               useBodyScroll
-              onScroll={this.listScroll.bind(this)}
+              // onScroll={this.listScroll.bind(this)}
               scrollRenderAheadDistance={500}
               onEndReached={this.onEndReached}
               onEndReachedThreshold={20}

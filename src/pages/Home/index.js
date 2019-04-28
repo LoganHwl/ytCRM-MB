@@ -19,6 +19,7 @@ import styles from './home.less';
 class app extends Component {
   state = { noNet: false ,roleId:''};
   componentWillMount() {
+    document.body.style.position = 'static';
     Toast.loading('正在加载...', 0);
   }
   async componentDidMount() {
@@ -46,7 +47,7 @@ class app extends Component {
     }
   }
   showDetail(id, e) {
-    e.preventDefault();
+    // e.preventDefault();
     let getTimestamp = new Date().getTime();
     router.push({
       pathname: '/customer-detail',
@@ -55,7 +56,7 @@ class app extends Component {
   }
   showStatusDetail(id, e) {
     e.stopPropagation();
-    e.preventDefault();
+    // e.preventDefault();
     let getTimestamp = new Date().getTime();
     router.push({
       pathname: '/status-detail',
