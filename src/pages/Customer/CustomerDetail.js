@@ -172,7 +172,7 @@ class customerDetail extends Component {
             )
           }
           onLeftClick={() => {
-            operating === 0 ? history.back(1) : null;
+            operating === 0 ? history.back(-1) : null;
           }}
         >
           客户详情

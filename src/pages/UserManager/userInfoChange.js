@@ -81,9 +81,10 @@ class userInfoChange extends Component {
  async testName(){
     const {dispatch}=this.props
     const {realName}=this.state
+    const d = this.props.location.query.detail;
+    const detail = JSON.parse(d);
   // 客户名称输入框失去焦点时请求后台验证是否重名
-  
-  if (realName) {
+  if (realName && realName !== detail.realName) {
     const res = await dispatch({
       type: 'home/getUserRealName',
       payload: realName,
@@ -130,6 +131,8 @@ class userInfoChange extends Component {
   async submitChange(e) {
     const { dispatch } = this.props;
     const { realName, mobile, roleId, userId, defaultId } = this.state;
+    const d = this.props.location.query.detail;
+    const detail = JSON.parse(d);
     if (!userId) {
       Toast.fail('缺少用户ID', 1);
       return;
@@ -144,7 +147,7 @@ class userInfoChange extends Component {
       roleId,
       userId,
     };
-    if (realName) {
+    if (realName && realName !== detail.realName ) {
       const name_res = await dispatch({
         type: 'home/getUserRealName',
         payload: realName,
@@ -164,15 +167,6 @@ class userInfoChange extends Component {
       Toast.success(res.msg, 1);
     }
     
-    // if(defaultId[0] == 1){
-    //   setTimeout(()=>{
-    //     router.push('/login');
-    //   },500)
-    // }else {
-    //   setTimeout(()=>{
-    //     history.go(-1)
-    //   },500)
-    // }
     setTimeout(() => {
       history.go(-1);
     }, 500);

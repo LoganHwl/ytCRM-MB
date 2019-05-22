@@ -31,6 +31,8 @@ export default {
     tabsInfo: {},
     componentArray: [1],
     userList: [],
+    activeArr:[],
+    canOnRefresh:false
   },
 
   effects: {
@@ -237,6 +239,13 @@ export default {
     SEARCH_CONDITION_CHANGE(state, { payload }) {
       return { ...state, search: { ...state.search, ...payload } };
     },
+    ACTIVEARR_CHANGE(state, { payload }) {
+      // debugger
+      return { ...state, activeArr: payload  };
+    },
+    CANONREFRESH_CHANGE(state) {
+      return {...state, canOnRefresh: true  };
+    },
     CONDITION_CHANGE(state, { payload }) {
       return { ...state, customerDetail: { ...state.customerDetail, ...payload } };
     },
@@ -247,7 +256,10 @@ export default {
       return { ...state, userForAssign };
     },
     CLEAR_ALL(state) {
-      return { ...state, search: {}, tabsInfo: {}, customerDetail: null };
+      return { ...state, tabsInfo: {}, customerDetail: null };
+    },
+    CLEAR_SEARCH(state) {
+      return {...state, search: {},activeArr:[],startPage:1,canOnRefresh:false};
     },
     GET_COUNT_INFO(state, { countInfo }) {
       return { ...state, countInfo };

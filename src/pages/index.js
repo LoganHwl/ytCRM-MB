@@ -44,7 +44,7 @@ class app extends Component {
         sessionStorage.setItem('userToken', t[1]);
       }
     }
-    sessionStorage.setItem('userToken', '250b26274c51c1e1fe182efb24db3733');
+    // sessionStorage.setItem('userToken', '250b26274c51c1e1fe182efb24db3733');
   }
   componentDidMount() {
     // 为元素添加事件监听

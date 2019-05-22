@@ -39,6 +39,7 @@ export default {
     ],
   ],
   define: {
+    ENV: process.env.UMI_ENV || '',
     APP_TYPE: process.env.APP_TYPE || '',
   },
   // 路由配置

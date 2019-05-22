@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import router from 'umi/router';
-import { Card, SearchBar, Button, WhiteSpace, Toast, ListView, Accordion, List } from 'antd-mobile';
+import { Card, SearchBar, Button, WhiteSpace, Toast, ListView,PullToRefresh, Accordion, List,NavBar,Icon } from 'antd-mobile';
 import Header from '../Base/header';
 
 import styles from './style.less';
 
 import triangle from '../../assets/Triangle.svg';
 import triangleActive from '../../assets/Triangle-active.svg';
+
 
 const saleStatusList = [
   {
@@ -109,40 +110,11 @@ class CustomerList extends Component {
         dataSource: this.state.dataSource.cloneWithRows(nextState.customerList),
       });
     }
-
-    //     if (nextState.activeKey !== this.state.activeKey) {
-    //       // 为元素添加事件监听
-    //       document.body.addEventListener("touchmove", (ev) => {
-    //         if(this.state.activeKey != ''){
-    //          ev.preventDefault();
-    //         }
-
-    //      }, {
-    //        passive: false //  禁止 passive 效果
-    //      })
-    //     }else{
-    //       document.body.removeEventListener("touchmove", (ev) => {
-    //         ev.preventDefault();
-    // }, {
-    //  passive: false //  禁止 passive 效果
-    // })
-    //     }
   }
   componentWillMount() {
     document.body.style.position = 'static';
     Toast.loading('正在加载...', 0);
   }
-  onEndReached = () => {
-    const { page } = this.state;
-    // hasMore: from backend data, indicates whether it is the last page, here is false
-    if (this.state.isLoading && !this.state.hasMore) {
-      return;
-    }
-    let p = page + 1;
-    this.setState({ isLoading: true, page: p });
-    this.onSearch(1);
-  };
-
   componentWillUnmount() {
     this.setState({ activeKey: '' });
     // 清除状态
@@ -152,75 +124,57 @@ class CustomerList extends Component {
   }
 
   componentDidMount() {
-    // let ios = navigator.userAgent.indexOf('iphone');//判断是否为ios
-    // if(ios === -1){
-    //     //ios下运行
-    //     if(this.refs.list_view_panel){
-    //       var divEl = this.refs.list_view_panel//你需要滑动的dom元素
-    //     this.preventOverScroll(divEl);
-    //     }
-
-    // }
     const { dispatch } = this.props;
+    // debugger
     dispatch({
       type: 'home/getUserForAssign',
     });
     this.onSearch();
   }
-  preventOverScroll(scrollPane) {
-    // See http://www.quirksmode.org/js/events_order.html
-    // var CAPTURE_PHASE = true; // happens first, outside to inside
-    // var BUBBLE_PHASE = false; // happens second, inside to outside
-    // // These variables will be captured by the closures below
-    // var allowScrollUp = true, allowScrollDown = true, lastY = 0;
-    // scrollPane.addEventListener('touchstart',(e)=> {
-    // // See http://www.w3.org/TR/cssom-view/#dom-element-scrolltop
-    // allowScrollUp = (this.scrollTop > 0);
-    // allowScrollDown = (this.scrollTop < this.scrollHeight - this.clientHeight);
-    // // Remember where the touch started
-    // lastY = e.pageY;
-    // },
-    // CAPTURE_PHASE);
-    // // If the touch is on the scroll pane, don’t let it get to the
-    // // body object which will cancel it
-    // scrollPane.addEventListener('touchmove',(e)=> {
-    // var up = (event.pageY > lastY);
-    // var down = !up;
-    // lastY = event.pageY;
-    // // Trying to start past scroller bounds
-    // if ((up && allowScrollUp) || (down && allowScrollDown)) {
-    // // Stop this event from propagating, lest
-    // // another object cancel it.
-    // e.stopPropagation();
-    // } else {
-    // // Cancel this event
-    // event.preventDefault();
-    // }
-    // },
-    // CAPTURE_PHASE);
-  }
+
+  // 下拉
+  // onRefresh = () => {
+  //    const {startPage}=this.props
+  //   const { page } = this.state;
+  //   let p = startPage - 1;
+  //   if(p <=0){
+  //     return
+  //   }
+  //   debugger
+  //   this.setState({ page: p });
+  //   this.onSearch();
+  // };
+  // 上拉加载
+  onEndReached = () => {
+    const {startPage}=this.props
+    // hasMore: from backend data, indicates whether it is the last page, here is false
+    if (this.state.isLoading && !this.state.hasMore) {
+      return;
+    }
+    let p = startPage + 1;
+    this.setState({ isLoading: true, page: p });
+    this.onSearch(1);
+  };
 
   // 分页&过滤查询客户列表数据
   async onSearch(v) {
     const { dispatch, search } = this.props;
     const { pageSize, page, customerList } = this.state;
-    if (v === 1) {
       dispatch({
         type: 'home/CHANGE_PAGENO',
-        startPage: page,
+        startPage: v === 1 ? page : 1,
       });
-    }
-
     const params = {
-      startPage: v === 1 ? page : 1,
+      startPage:v === 1 ? page : 1,
       pageSize,
     };
-
     for (const [key, value] of Object.entries(search)) {
       if (value) {
         params[key] = value;
       }
-    }
+    };
+   
+    // debugger
     const res = await dispatch({
       type: 'home/getCustomerList',
       payload: params,
@@ -259,7 +213,10 @@ class CustomerList extends Component {
     let getTimestamp = new Date().getTime();
     router.push({
       pathname: '/customer-detail',
-      query: { type: 'detail', id, timestamp: getTimestamp },
+      query: { type: 'detail', id },
+    });
+    this.props.dispatch({
+      type: 'home/CANONREFRESH_CHANGE'
     });
   }
   showStatusDetail(id, e) {
@@ -270,6 +227,13 @@ class CustomerList extends Component {
       pathname: '/status-detail',
       query: { id, timestamp: getTimestamp },
     });
+    this.props.dispatch({
+      type: 'home/CANONREFRESH_CHANGE'
+    });
+  }
+  // 电话一栏点击禁止进入详情页面
+  stopDefaultEvent(e){
+    e.stopPropagation();
   }
 
   // 重新刷新页面
@@ -278,6 +242,7 @@ class CustomerList extends Component {
   };
   hideMask = () => {
     document.body.style.position = 'static';
+    const { dispatch } = this.props;
     const { activeArr, activeKey, realName, saleStatus, statusId, levelId, order } = this.state;
     this.setState({ activeKey: '' });
 
@@ -287,35 +252,50 @@ class CustomerList extends Component {
       (statusId === '' && levelId === '' && order === '' && activeArr.includes(2))
     ) {
       activeArr.splice(activeArr.findIndex(item => item === activeKey), 1);
-
+      
+      dispatch({
+        type: 'home/ACTIVEARR_CHANGE',
+        payload: activeArr,
+      });
       this.setState({ activeArr });
     }
   };
   // 手风琴点击及选择对应筛选条件后回调
   showFilterPanel(v) {
-    const { activeKey, activeArr, realName, saleStatus, statusId, levelId, order } = this.state;
-    // debugger
+    const {activeArr,search}=this.props
+    const { activeKey, realName, saleStatus, statusId, levelId, order } = this.state;
+    
     switch (v) {
       case 0:
         if (activeKey === 0) {
           document.body.style.position = 'static';
           this.setState({ activeKey: '' });
-          if (realName === '不限责任人') {
+          if (search.realName === '不限责任人') {
             activeArr.splice(activeArr.findIndex(item => item === activeKey), 1);
+            this.props.dispatch({
+              type: 'home/ACTIVEARR_CHANGE',
+              payload: activeArr,
+            });
             this.setState({ activeArr });
           }
-
-          // debugger
         } else {
-          document.body.style.position = 'fixed';
+          document.body.style.position = 'fixed';         
           activeArr.push(0);
           let arr = Array.from(new Set(activeArr));
           this.setState({ activeKey: 0, activeArr: arr });
+          this.props.dispatch({
+            type: 'home/ACTIVEARR_CHANGE',
+            payload: arr,
+          });
           if (
-            (saleStatus === '不限阶段' && activeArr.includes(1)) ||
-            (statusId === '' && levelId === '' && order === '' && activeArr.includes(2))
+            (search.saleStatus === '不限阶段' && activeArr.includes(1)) ||
+            (search.statusId === '' && search.levelId === '' && search.order === '' && activeArr.includes(2))
           ) {
             activeArr.splice(activeArr.findIndex(item => item === 1 || item === 2), 1);
+            this.props.dispatch({
+              type: 'home/ACTIVEARR_CHANGE',
+              payload: activeArr,
+            });
             this.setState({ activeArr });
           }
         }
@@ -324,8 +304,12 @@ class CustomerList extends Component {
         if (activeKey === 1) {
           document.body.style.position = 'static';
           this.setState({ activeKey: '' });
-          if (saleStatus === '不限阶段') {
+          if (search.saleStatus === '不限阶段') {
             activeArr.splice(activeArr.findIndex(item => item === activeKey), 1);
+            this.props.dispatch({
+              type: 'home/ACTIVEARR_CHANGE',
+              payload: activeArr,
+            });
             this.setState({ activeArr });
           }
 
@@ -335,12 +319,20 @@ class CustomerList extends Component {
           activeArr.push(1);
           let arr = Array.from(new Set(activeArr));
           this.setState({ activeKey: 1, activeArr: arr });
+          this.props.dispatch({
+            type: 'home/ACTIVEARR_CHANGE',
+            payload: arr,
+          });
 
           if (
-            (realName === '不限责任人' && activeArr.includes(0)) ||
-            (statusId === '' && levelId === '' && order === '' && activeArr.includes(2))
+            (search.realName === '不限责任人' && activeArr.includes(0)) ||
+            (search.statusId === '' && search.levelId === '' && search.order === '' && activeArr.includes(2))
           ) {
             activeArr.splice(activeArr.findIndex(item => item === 0 || item === 2), 1);
+            this.props.dispatch({
+              type: 'home/ACTIVEARR_CHANGE',
+              payload: activeArr,
+            });
             this.setState({ activeArr });
           }
           // debugger
@@ -350,8 +342,12 @@ class CustomerList extends Component {
         if (activeKey === 2) {
           document.body.style.position = 'static';
           this.setState({ activeKey: '' });
-          if (statusId === '' && levelId === '' && order === '') {
+          if (search.statusId === '' && search.levelId === '' && search.order === '') {
             activeArr.splice(activeArr.findIndex(item => item === activeKey), 1);
+            this.props.dispatch({
+              type: 'home/ACTIVEARR_CHANGE',
+              payload: activeArr,
+            });
             this.setState({ activeArr });
           }
           // debugger
@@ -360,11 +356,19 @@ class CustomerList extends Component {
           activeArr.push(2);
           let arr = Array.from(new Set(activeArr));
           this.setState({ activeKey: 2, activeArr: arr });
+          this.props.dispatch({
+            type: 'home/ACTIVEARR_CHANGE',
+            payload: arr,
+          });
           if (
-            (realName === '不限责任人' && activeArr.includes(0)) ||
-            (saleStatus === '不限阶段' && activeArr.includes(1))
+            (search.realName === '不限责任人' && activeArr.includes(0)) ||
+            (search.saleStatus === '不限阶段' && activeArr.includes(1))
           ) {
             activeArr.splice(activeArr.findIndex(item => item === 0 || item === 1), 1);
+            this.props.dispatch({
+              type: 'home/ACTIVEARR_CHANGE',
+              payload: activeArr,
+            });
             this.setState({ activeArr });
           }
           // debugger
@@ -377,13 +381,6 @@ class CustomerList extends Component {
   }
   // 筛选项---责任人姓名
   belongeNameChange(e, title) {
-    // document.body.style.position='static';
-    // this.refs.filterList.addEventListener("touchend", (ev) => {
-    //      ev.preventDefault();
-    //      ev.stopPropagation();
-    //  }, {
-    //    passive: false //  禁止 passive 效果
-    //  })
     this.setState({ realName: title }, () => {
       this.showFilterPanel(0);
     });
@@ -447,36 +444,34 @@ class CustomerList extends Component {
     document.body.style.position = 'static';
     const { activeArr, activeKey, realName, saleStatus, statusId, levelId, order } = this.state;
     this.setState({ activeKey: '' });
+   
     if (
       (realName === '不限责任人' && activeArr.includes(0)) ||
       (saleStatus === '不限阶段' && activeArr.includes(1)) ||
       (statusId === '' && levelId === '' && order === '' && activeArr.includes(2))
     ) {
       activeArr.splice(activeArr.findIndex(item => item === activeKey), 1);
+      this.props.dispatch({
+        type: 'home/ACTIVEARR_CHANGE',
+        payload: activeArr,
+      });
       this.setState({ activeArr });
     }
   };
-  // listScroll(s) {
-  //   document.body.addEventListener(
-  //     'touchstart',
-  //     () => {
-  //       if (this.scrollTop === 0) {
-  //         debugger;
-  //         //滚动到1
-  //         this.scrollTop = 1;
-  //       } else if (this.scrollTop == this.scrollHeight - this.clientHeight) {
-  //         debugger;
-  //         //滚动到最低端-1
-  //         this.scrollTop = this.scrollHeight - this.clientHeight - 1;
-  //       }
-  //     },
-  //     true
-  //   );
-  // }
+  listScroll(){
+    // console.log(window.scrollY);
+    if(window.scrollY < 200){
+      console.log('window.scrollY < 200')
+    }
+
+  }
   render() {
     const {
       // customerList,
       userForAssign,
+      search,
+      activeArr,
+      canOnRefresh
     } = this.props;
     const {
       customer_value,
@@ -488,7 +483,7 @@ class CustomerList extends Component {
       saleStatus,
       moreCondition,
       activeKey,
-      activeArr,
+      // activeArr,
       statusId,
       levelId,
       order,
@@ -565,11 +560,15 @@ class CustomerList extends Component {
                     </div>
                     <div>
                       电话：
-                      <b>
+                      <a  onClick={this.stopDefaultEvent.bind(this)}
+                        href={`tel:${item.contactInfos &&
+                          item.contactInfos.length > 0 &&
+                          item.contactInfos[0].phone}#mp.weixin.qq.com`}>
                         {item.contactInfos &&
                           item.contactInfos.length > 0 &&
-                          item.contactInfos[0].phone}
-                      </b>
+                          item.contactInfos[0].phone
+                        }
+                      </a>
                     </div>
                   </div>
                   <div className={styles.spec}>
@@ -601,7 +600,20 @@ class CustomerList extends Component {
       <div className={styles.page}>
         {/* {activeKey !=='' ?<div className={styles.search_more_mask} onClick={this.hideMask}></div>:null}      */}
         <div>
-          <Header>客户列表</Header>
+        <NavBar
+          style={{ background: '#002140' }}
+          mode="dark"
+          leftContent={<Icon type="left" size="lg" />}
+          onLeftClick={() => {
+            history.back(-1);
+            this.props.dispatch({
+              type: 'home/CLEAR_SEARCH',
+            });
+          }}
+        >
+          客户列表
+        </NavBar>
+          {/* <Header>客户列表</Header> */}
         </div>
         <div className={styles.search}>
           <div className={styles.search_top}>
@@ -635,15 +647,19 @@ class CustomerList extends Component {
             >
               <span
                 className={styles.title}
-                style={activeArr.includes(0) ? { color: 'rgba(25, 144, 255, 1)' } : {}}
+                style={activeArr && activeArr.includes(0) ? { color: 'rgba(25, 144, 255, 1)' } : {}}
               >
-                {realName}
+                {search && search.belongUserName?search.belongUserName:realName}
               </span>
               <img src={activeKey === 0 ? triangleActive : triangle} alt="" />
             </div>
             <div className={styles.search_select} onClick={this.showFilterPanel.bind(this, 1)}>
-              <span style={activeArr.includes(1) ? { color: 'rgba(25, 144, 255, 1)' } : {}}>
-                {saleStatus}
+              <span style={activeArr && activeArr.includes(1) ? { color: 'rgba(25, 144, 255, 1)' } : {}}>
+              {search && search.saleStatus?search.saleStatus === 1 ?'线索':
+              search.saleStatus === 2 ?'沟通':
+              search.saleStatus === 3 ?'面谈':
+              search.saleStatus === 4 ?'签约':
+              search.saleStatus === 5 ?'合作':'不限阶段':saleStatus}
               </span>
               <img src={activeKey === 1 ? triangleActive : triangle} />
             </div>
@@ -652,7 +668,7 @@ class CustomerList extends Component {
               style={{ textAlign: 'right' }}
               onClick={this.showFilterPanel.bind(this, 2)}
             >
-              <span style={activeArr.includes(2) ? { color: 'rgba(25, 144, 255, 1)' } : {}}>
+              <span style={activeArr && activeArr.includes(2) ? { color: 'rgba(25, 144, 255, 1)' } : {}}>
                 更多筛选
               </span>
               <img src={activeKey === 2 ? triangleActive : triangle} />
@@ -666,8 +682,12 @@ class CustomerList extends Component {
                   <List.Item
                     onClick={e => {
                       this.belongeNameChange(e, '不限责任人');
-                      activeArr.splice(activeArr.findIndex(item => item === 0), 1);
-                      this.setState({ activeArr });
+                      // activeArr.splice(activeArr.findIndex(item => item === 0), 1);
+                      // this.props.dispatch({
+                      //   type: 'home/ACTIVEARR_CHANGE',
+                      //   payload: activeArr,
+                      // });
+                      // this.setState({ activeArr });
                     }}
                   >
                     不限责任人
@@ -694,8 +714,12 @@ class CustomerList extends Component {
                   <List.Item
                     onClick={e => {
                       this.saleStatusChange(e, '不限阶段');
-                      activeArr.splice(activeArr.findIndex(item => item === 1), 1);
-                      this.setState({ activeArr });
+                      // activeArr.splice(activeArr.findIndex(item => item === 1), 1);
+                      // this.props.dispatch({
+                      //   type: 'home/ACTIVEARR_CHANGE',
+                      //   payload: activeArr,
+                      // });
+                      // this.setState({ activeArr });
                     }}
                   >
                     不限阶段
@@ -718,9 +742,10 @@ class CustomerList extends Component {
                     <Button
                       className={styles.search_select_more_btn}
                       key={index}
-                      type={item.id === levelId ? 'primary' : ''}
+                      type={item.id === search.level ? 'primary' : ''}
                       style={
-                        item.id === levelId
+                        item.id === search.level
+                        // levelId
                           ? null
                           : { background: 'rgba(247,247,247,1)', color: '#BCBCBC' }
                       }
@@ -829,9 +854,14 @@ class CustomerList extends Component {
               initialListSize={20}
               pageSize={20}
               useBodyScroll
-              // onScroll={this.listScroll.bind(this)}
+              onScroll={this.listScroll.bind(this)}
               scrollRenderAheadDistance={500}
               onEndReached={this.onEndReached}
+              // pullToRefresh={
+              //   canOnRefresh === true && <PullToRefresh
+              //   // refreshing={this.state.refreshing}
+              //   onRefresh={this.onRefresh}
+              // />}
               onEndReachedThreshold={20}
               // scrollEventThrottle={50}
             />
